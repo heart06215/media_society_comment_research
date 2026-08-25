@@ -1,0 +1,13 @@
+# ===== 敏感信息——绝不入库 =====
+data/config.json
+data/cookie.txt
+.env
+*.env
+
+# ===== 运行产物 / 构建缓存 =====
+__pycache__/
+*.pyc
+.docx_build/
+
+# ===== 本地工具会话 =====
+.zcode/

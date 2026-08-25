@@ -1,0 +1,11 @@
+flask>=3.0
+flask-cors>=4.0
+requests>=2.31
+langchain>=1.0
+langchain-openai>=1.0
+langchain-core>=1.0
+langgraph>=1.0
+pydantic>=2.0
+fire>=0.7
+openai>=1.30
+matplotlib>=3.7  # 论文插图生成(make_paper_figures.py)
