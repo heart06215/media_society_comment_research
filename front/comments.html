@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>破妄 · 评论浏览</title>
+<script src="theme.js"></script>
+<link rel="stylesheet" href="base.css">
+<style>
+  .filter-bar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:18px; }
+  .f-cat { padding:9px 16px; border:2px solid var(--line); font-weight:900; font-size:12px; letter-spacing:2px; text-transform:uppercase; cursor:pointer; background:var(--surface); }
+  .f-cat:hover { background:var(--hover); }
+  .f-cat.on.praise { background:var(--cat-praise); color:#fff; }
+  .f-cat.on.blame { background:var(--cat-blame); color:#fff; }
+  .f-cat.on.shui { background:var(--cat-shui); color:#0E1116; }
+  .f-cat.on.noise { background:var(--cat-noise); color:#fff; }
+  .f-cat.on.all { background:var(--ink); color:var(--paper); }
+  html[data-theme="dark"] .f-cat.on.all { color:#090B10; }
+  .c-card { position:relative; border:2px solid var(--line); background:var(--surface); padding:14px 16px 12px 22px; margin-bottom:10px;
+    clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%); }
+  .c-card::before { content:""; position:absolute; left:0; top:0; bottom:0; width:7px; background:var(--muted); }
+  .c-card.praise::before { background:var(--cat-praise); }
+  .c-card.blame::before { background:var(--cat-blame); }
+  .c-card.shui::before { background:var(--cat-shui); }
+  .c-card.noise::before { background:var(--cat-noise); }
+  .c-text { margin:8px 0; font-size:13.5px; line-height:1.7; }
+  .c-meta { display:flex; gap:16px; font-size:11px; color:var(--muted); flex-wrap:wrap; letter-spacing:.5px; }
+  .c-meta b { color:var(--ink); font-weight:900; }
+  .pager { display:flex; gap:10px; margin-top:18px; align-items:center; flex-wrap:wrap; }
+  .slang-chip { display:inline-block; font-size:11px; padding:1px 8px; border:1.5px solid var(--violet); color:var(--violet); margin-right:6px; font-weight:700; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="/">
+    <span class="logo"><span class="ring"></span><span class="core"></span><span class="cut"></span></span>
+    <span><span class="brand-name">破妄</span></span>
+  </a>
+  <nav class="nav">
+    <a href="/">首页</a>
+    <a href="/dashboard">看板</a>
+    <a href="/comments" class="active">评论</a>
+    <a href="/chat">问答</a>
+    <a href="/label">标注</a>
+    <button class="theme-toggle" data-theme-toggle><span class="ico"></span><span class="txt">夜间</span></button>
+  </nav>
+</header>
+
+<div class="wrap">
+  <div class="kicker">Comments Explorer</div>
+  <h1 class="display" style="font-size:44px;margin-bottom:6px">评论<span class="stroke">浏览</span></h1>
+  <p class="muted mb-2">按四分类筛选 · 关键词搜索 · 时间/点赞排序 · 查看模型判定理由与网络用语标签</p>
+
+  <div class="filter-bar">
+    <select id="videoSel" style="min-width:210px"></select>
+    <div class="f-cat on all" data-c="all">全部</div>
+    <div class="f-cat praise" data-c="赞美">赞美</div>
+    <div class="f-cat blame" data-c="贬低">贬低</div>
+    <div class="f-cat shui" data-c="水军">水军</div>
+    <div class="f-cat noise" data-c="无意义">无意义</div>
+    <input id="searchBox" placeholder="关键词搜索 ↵" style="flex:1;min-width:170px">
+    <select id="orderSel"><option value="ctime">按时间</option><option value="like">按点赞</option></select>
+  </div>
+
+  <!-- 四分类速览条 -->
+  <div id="catStrip" class="flex mb-2" style="gap:8px;flex-wrap:wrap"></div>
+
+  <div id="list"><div class="muted">加载中...</div></div>
+  <div class="pager">
+    <button class="btn ghost" id="prevB">← 上一页</button>
+    <span id="pageInfo" class="muted mono"></span>
+    <button class="btn ghost" id="nextB">下一页 →</button>
+    <span style="flex:1"></span>
+    <button class="btn cyan" id="reloadB">刷新</button>
+  </div>
+</div>
+
+<footer class="footer">
+  <span class="brand-name" style="font-size:15px;letter-spacing:4px">破妄</span>
+  <span class="muted">四分类由锚定集检索式模型判定 · 二次审查可修正</span>
+  <span style="flex:1"></span>
+  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span><span class="d4"></span></div>
+</footer>
+
+<script>
+const CATS = ["赞美", "贬低", "水军", "无意义"];
+let videos = [], curCat = "all", page = 1, total = 0, perPage = 50;
+
+async function api(url) { const r = await fetch(url); const d = await r.json(); if (!d.success) throw new Error(d.error); return d.data; }
+function esc(s){ return (s||"").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+function fmt(t){ return t ? new Date(t*1000).toLocaleDateString() : "-"; }
+function updPager() {
+  document.getElementById("prevB").disabled = page <= 1;
+  document.getElementById("nextB").disabled = page * perPage >= total;
+}
+
+async function init() {
+  const d = await api("/api/videos");
+  videos = d.videos;
+  const sel = document.getElementById("videoSel");
+  sel.innerHTML = videos.map(v => `<option value="${v.bvid}">${v.name} [${v.community||""}]</option>`).join("");
+  if (videos[0]) sel.value = videos[0].bvid;
+  sel.onchange = () => { page = 1; loadStrip(); load(); };
+  loadStrip();
+  load();
+}
+
+async function loadStrip() {
+  const bvid = document.getElementById("videoSel").value;
+  const strip = document.getElementById("catStrip");
+  try {
+    const a = await api(`/api/analysis/${bvid}`);
+    const cs = a.category_count || {}, total = a.total || 1;
+    strip.innerHTML = CATS.map(c => {
+      const n = cs[c]||0, p = ((n/total)*100).toFixed(1);
+      return `<div class="f-cat" data-c="${c}" style="cursor:pointer;opacity:.85"><span class="badge ${{"赞美":"praise","贬低":"blame","水军":"shui","无意义":"noise"}[c]}">${c}</span> <b class="mono">${n}</b> <span class="muted mono">${p}%</span></div>`;
+    }).join("") + `<div class="muted mono" style="align-self:center;padding:0 12px">总样本 ${total}</div>`;
+    strip.querySelectorAll(".f-cat").forEach(f => f.onclick = () => {
+      document.querySelectorAll(".filter-bar .f-cat").forEach(x => x.classList.remove("on"));
+      const tgt = document.querySelector(`.filter-bar .f-cat[data-c="${f.dataset.c}"]`);
+      if (tgt) tgt.classList.add("on");
+      curCat = f.dataset.c; page = 1; load();
+    });
+  } catch (e) {
+    strip.innerHTML = `<div class="muted">该视频尚未分析——先到「标注」页完成锚定集并触发分析。</div>`;
+  }
+}
+
+async function load() {
+  const bvid = document.getElementById("videoSel").value;
+  const q = document.getElementById("searchBox").value.trim();
+  const order = document.getElementById("orderSel").value;
+  const list = document.getElementById("list");
+  try {
+    const d = await api(`/api/comments?bvid=${bvid}&page=${page}&size=${perPage}&order=${order}`);
+    total = d.total;
+    let items = d.items || [];
+    if (curCat !== "all") items = items.filter(c => c.category === curCat);
+    if (q) items = items.filter(c => (c.text||"").includes(q));
+    document.getElementById("pageInfo").textContent = `PAGE ${page} / ${Math.max(1,Math.ceil(total/perPage))} · 共 ${total} 条`;
+    updPager();
+    if (!items.length) {
+      list.innerHTML = `<div class="card flat"><span class="muted">无匹配评论。${d.analyzed ? "" : "该视频尚未分析——请先到「标注」页完成锚定集并触发分析。"}</span></div>`;
+      return;
+    }
+    const CLS = { "赞美":"praise","贬低":"blame","水军":"shui","无意义":"noise" };
+    list.innerHTML = items.map(c => {
+      const cls = CLS[c.category] || "";
+      const badge = c.category
+        ? `<span class="badge ${cls}">${c.category}</span> <span class="muted mono">${((c.confidence||0)*100).toFixed(0)}%</span>`
+        : `<span class="badge noise" style="opacity:.5">未分类</span>`;
+      const slang = (c.slang_tags||[]).length ? `<div style="margin-top:6px">${(c.slang_tags||[]).slice(0,6).map(s=>`<span class="slang-chip">${esc(s)}</span>`).join("")}</div>` : "";
+      return `<article class="c-card ${cls}">
+        <div>${badge}</div>
+        <div class="c-text">${esc(c.text)}</div>
+        ${slang}
+        <div class="c-meta"><span><b>♥</b> ${c.like}</span><span><b>时间</b> ${fmt(c.ctime)}</span><span><b>用户</b> ${esc(c.uname||"")}</span>${c.reason?`<span><b>理由</b> ${esc(c.reason)}</span>`:""}</div>
+      </article>`;
+    }).join("");
+  } catch (e) { list.innerHTML = `<div class="card flat"><span style="color:var(--cat-blame)">加载失败: ${esc(e.message)}</span></div>`; updPager(); }
+}
+
+document.querySelectorAll(".f-cat").forEach(f => f.onclick = () => {
+  document.querySelectorAll(".f-cat").forEach(x => x.classList.remove("on"));
+  f.classList.add("on"); curCat = f.dataset.c; page = 1; load();
+});
+document.getElementById("searchBox").onkeydown = e => { if (e.key==="Enter"){ page=1; load(); } };
+document.getElementById("prevB").onclick = () => { if(page>1){page--;load();} };
+document.getElementById("nextB").onclick = () => { if(page*perPage<total){page++;load();} };
+document.getElementById("reloadB").onclick = () => load();
+document.getElementById("orderSel").onchange = () => { page=1; load(); };
+
+init();
+</script>
+</body>
+</html>
