@@ -1,0 +1,81 @@
+破妄 · 项目说明
+=================================
+基于微调大模型的对互联网社区的评论情感分析软件
+=================================
+
+一、项目概述
+  破妄是一款对B站社区评论进行四分类情感分析的软件。
+  四分类：赞美 / 贬低 / 水军 / 无意义。
+  核心：人工精标"锚定集"(少量)作为分类依赖模板 + 网络用语RAG知识库 + 大模型(智谱glm-4-flash/微调后模型) + LangChain Agent问答。
+  展示：包豪斯风格前端，含饭圈(演艺圈)/二游(游戏圈)双社区对比、词云、评论态度节点关系图。
+
+二、目录结构
+  comment_crawler.py       B站评论爬虫(多策略分层采样+反爬+断点续采)
+  sentiment_analyze.py     锚定集检索式分类引擎 + RAG注入 + 聚合/关系图生成
+  rag_knowledge.py         网络用语RAG知识库(含"砌墙"等梗)
+  agent_chat.py            LangChain洞察Agent(查统计/趋势/热词/对比/网络用语)
+  export_finetune.py       微调数据集导出(智谱JSONL格式)
+  app.py                   Flask后端(页面+数据/标注/审查/分析/问答API)
+  project_main.py          fire CLI 主入口(crawl/analyze/export/serve/stats)
+  front/                   包豪斯前端(landing/dashboard/comments/chat/label)
+  data/
+    crawled/               爬取的评论JSON(两视频)
+    analysis/              分析结果JSON(含逐条+聚合+关系图)
+    labels/anchors.json    锚定集(人工精标)
+    finetune/              微调数据集
+    slang_dict.json        网络用语词典(混合基础词典)
+    rag_knowledge.json     RAG知识库(词条+含义+示例)
+    config.json            API配置(APIKey/模型/视频，含饭圈/二游标签)
+    cookie.txt             登录Cookie(buvid3+SESSDATA，敏感勿提交)
+  requirements.txt         依赖清单
+  启动破妄.bat            一键启动脚本
+  分析与选型报告.md        技术选型+方法论(论文素材)
+  展示-破妄.txt            对外展示文案
+
+三、运行环境
+  Python 3.12 (需含 requests, flask, flask-cors, langchain>=1.0, langchain-openai, pydantic>=2, fire)
+  安装：pip install -r requirements.txt
+
+四、运行步骤
+  1) 配置 API Key：编辑 data/config.json 的 api_key 字段
+        (智谱GLM，免费模型 glm-4-flash)
+  2) 启动：双击"启动破妄.bat" 或 命令行 python app.py
+        → 浏览器打开 http://localhost:5000
+  3) 标注锚定集：进入"标注"页(/label)，切换视频(明日方舟PV/TF家族音乐会)，
+        逐条点击 赞美/贬低/水军/无意义 按钮标注，每视频至少100条，
+        可点"追加标注"随时扩充。
+  4) 触发分析：两视频各完成100条后，点"开始调用大模型分析"，后台分析全量评论。
+  5) 二次审查：分析完成后切到"二次审查"标签，对模型结果确认/修正(修正进锚定集)。
+  6) 看板：进入"看板"页(/dashboard)，切换单视频或"双社区对比"，查看
+        四分类占比/时间趋势/词云/态度关系图/代表性评论。
+  7) 问答：进入"问答"页(/chat)，向AI分析师提问。
+  8) CLI：python project_main.py --mode stats / crawl / analyze / export / dedup / serve
+        dedup 模式：对语料做近重复清洗(bigram-Jaccard>=0.7，保留簇内高赞代表)
+
+五、微调大模型(阶段二)
+  1) 确保已标注锚定集并完成一次分析
+  2) 运行：python project_main.py --mode export
+        → 生成 data/finetune/trainset.jsonl (智谱微调格式)
+  3) 登录智谱开放平台 https://open.bigmodel.cn
+        → "模型微调" → 新建微调任务 → 上传 trainset.jsonl
+        → 选择基础模型(如 glm-4-flash) → 提交训练(按平台计费,少量)
+  4) 训练完成获得"微调模型ID"
+  5) 在 data/config.json 的 fine_tuned_model 填入微调模型ID
+  6) 重新触发分析，即用微调后模型；对比前后结果看"微调增益"
+
+六、注意事项
+  * data/cookie.txt 和 data/config.json 含敏感信息，勿提交/勿外发，勿写入文档。
+  * 爬虫已做限速与风控规避；请勿高频调用，避免B站封禁登录Cookie。
+  * 若模型报429限流，系统自动降级备用模型(glm-4-flash-250414)。
+  * 分析全量(约2300条/视频)耗时约50分钟，可断点续跑(已分析的跳过)。
+  * 网络用语知识库 data/rag_knowledge.json 可不断补充新梗。
+
+七、待办/TODO
+  [x] 爬虫+两视频数据采集(去重后3241/2540条，合计5781条)
+  [x] 四分类引擎 + 锚定集检索 + RAG + Agent问答
+  [x] 包豪斯×构成主义前端(含对比/词云/关系图/标注/审查/夜间模式)
+  [x] 语料级近重复清洗(dedup模式) + 标注队列去重
+  [x] 分析与选型报告、展示文案、论文写作素材手册
+  [ ] 用户人工标注200条(每视频100)
+  [ ] 触发全量分析 + 回填实验报告数据
+  [ ] 微调模型提交 + 增益对比
