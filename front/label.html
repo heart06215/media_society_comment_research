@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>破妄 · 标注与二次审查</title>
+<script src="theme.js"></script>
+<link rel="stylesheet" href="base.css">
+<style>
+  .cat-pill { cursor:pointer; padding:10px 16px; border:2px solid var(--line); font-weight:900; font-size:13px; letter-spacing:2px; background:var(--surface); transition:transform .1s; }
+  .cat-pill:hover { transform:translate(-2px,-2px); box-shadow:3px 3px 0 var(--line); }
+  .cat-pill.sel.praise { background:var(--cat-praise); color:#fff; }
+  .cat-pill.sel.blame { background:var(--cat-blame); color:#fff; }
+  .cat-pill.sel.shui { background:var(--cat-shui); color:#0E1116; }
+  .cat-pill.sel.noise { background:var(--cat-noise); color:#fff; }
+  .comment-box { min-height:110px; padding:14px; border:2px solid var(--line); background:var(--paper);
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px); background-size:28px 28px;
+    font-size:15px; line-height:1.8; }
+  .mode-tabs { display:flex; gap:2px; margin:22px 0 18px; }
+  .mode-tab { padding:11px 20px; border:2px solid var(--line); font-weight:900; text-transform:uppercase; letter-spacing:2px; cursor:pointer; background:var(--surface); }
+  .mode-tab.active { background:var(--ink); color:var(--paper); }
+  html[data-theme="dark"] .mode-tab.active { color:#090B10; }
+  .kv { display:grid; grid-template-columns:auto 1fr; gap:4px 14px; font-size:12px; }
+  .kv b { font-weight:900; }
+  .review-reason { font-size:12px; color:var(--muted); border-left:5px solid var(--cyan); padding:6px 12px; margin-top:8px; background:var(--paper); }
+  .toast { position:fixed; top:72px; left:50%; transform:translateX(-50%) translateY(-20px); z-index:200;
+    background:var(--ink); color:var(--paper); padding:10px 20px; font-weight:900; letter-spacing:1px; font-size:13px;
+    border:2px solid var(--cyan); opacity:0; transition:opacity .2s, transform .2s; pointer-events:none; }
+  html[data-theme="dark"] .toast { color:#090B10; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="/">
+    <span class="logo"><span class="ring"></span><span class="core"></span><span class="cut"></span></span>
+    <span><span class="brand-name">破妄</span></span>
+  </a>
+  <nav class="nav">
+    <a href="/">首页</a>
+    <a href="/dashboard">看板</a>
+    <a href="/comments">评论</a>
+    <a href="/chat">问答</a>
+    <a href="/label" class="active">标注</a>
+    <button class="theme-toggle" data-theme-toggle><span class="ico"></span><span class="txt">夜间</span></button>
+  </nav>
+</header>
+
+<div class="wrap">
+  <div class="kicker">Anchor Set &amp; Human Review</div>
+  <h1 class="display" style="font-size:44px;margin-bottom:8px">标注与<span class="stroke">二次审查</span></h1>
+  <p class="muted mb-2">人工精标样本构成「锚定集」——所有评论分类的依赖模板。标注越多分类越准；对大模型结果的修正会自动回流锚定集。</p>
+
+  <!-- 视频选择 + 进度 -->
+  <div class="card accent mb-2">
+    <span class="corner"></span>
+    <div class="flex-between" style="flex-wrap:wrap">
+      <div class="flex" style="flex-wrap:wrap">
+        <select id="videoSel" style="min-width:250px"></select>
+        <button class="btn yellow" id="btnMore">追加标注 +50</button>
+        <span class="muted mono" id="progText"></span>
+      </div>
+      <div class="flex">
+        <button class="btn primary" id="btnAnalyze" disabled>▶ 开始调用大模型分析</button>
+        <span class="muted" id="analyzeHint" style="max-width:220px"></span>
+      </div>
+    </div>
+    <div class="progress mt"><i id="progFill" style="width:0%"></i></div>
+    <div class="flex-between mt small" style="flex-wrap:wrap">
+      <span class="muted">两视频各完成 <b class="mono" id="goalTxt">100</b> 条后可触发分析 · 当前锚定集总数 <b class="mono" id="nAll">0</b> 条</span>
+      <span class="flex" style="gap:10px">
+        <span id="saveStatus" class="muted mono" style="opacity:.7">本地文件: data/labels/anchors.json</span>
+        <button class="btn ghost" id="btnBackup" style="padding:6px 12px;font-size:11px">导出备份</button>
+      </span>
+    </div>
+  </div>
+
+  <!-- 模式切换 -->
+  <div class="mode-tabs">
+    <div class="mode-tab active" data-mode="label">① 人工标注</div>
+    <div class="mode-tab" data-mode="review">② 二次审查（大模型结果）</div>
+  </div>
+
+  <!-- 标注模式 -->
+  <section id="modeLabel">
+    <div class="grid-2" style="grid-template-columns:1fr auto">
+      <div class="card accent flat mb">
+        <div class="flex-between mb">
+          <span class="badge praise" id="qPos">0 / 0</span>
+          <span class="muted mono" id="qMeta"></span>
+        </div>
+        <div class="comment-box" id="qText">点击右上角「追加标注」载入待标队列</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px; justify-content:center; min-width:230px">
+        <div class="cat-pill praise" data-cat="赞美">赞 美 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[1]</span></div>
+        <div class="cat-pill blame" data-cat="贬低">贬 低 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[2]</span></div>
+        <div class="cat-pill shui" data-cat="水军">水 军 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[3]</span></div>
+        <div class="cat-pill noise" data-cat="无意义">无意义 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[4]</span></div>
+        <div class="mt flex" style="gap:8px">
+          <button class="btn ghost" id="btnSkip">跳过 →</button>
+          <button class="btn primary" id="btnSubmit" disabled>提交 ✓</button>
+        </div>
+      </div>
+    </div>
+    <div class="muted small">快捷键：1/2/3/4 选择分类，↵ 提交。分类定义见首页。本次已标 <b class="mono" id="sessionCount">0</b> 条。</div>
+  </section>
+
+  <!-- 审查模式 -->
+  <section id="modeReview" style="display:none">
+    <div class="flex mb" style="flex-wrap:wrap">
+      <select id="revCatSel">
+        <option value="">全部类别</option><option value="赞美">赞美</option><option value="贬低">贬低</option>
+        <option value="水军">水军</option><option value="无意义">无意义</option>
+      </select>
+      <button class="btn cyan" id="btnRevLoad">加载审查队列</button>
+      <span class="muted" id="revInfo"></span>
+    </div>
+    <div class="card accent violet flat" id="revBox"><span class="muted">分析完成后，此处载入大模型判定结果供确认/修正。</span></div>
+  </section>
+</div>
+
+<footer class="footer">
+  <span class="brand-name" style="font-size:15px;letter-spacing:4px">破妄</span>
+  <span class="muted">锚定集 = 分类依赖模板 · 修正即学习 · 越用越准</span>
+  <span style="flex:1"></span>
+  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span><span class="d4"></span></div>
+</footer>
+<div id="toast" class="toast"></div>
+
+<script>
+let videos = [], queue = [], idx = 0, curCat = "";
+let revQueue = [], revIdx = 0;
+
+async function api(url, opts) { const r = await fetch(url, opts); const d = await r.json(); if (!d.success) throw new Error(d.error||"请求失败"); return d.data; }
+function esc(s){ return (s||"").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => t.classList.remove("show"), 1800);
+}
+
+// 备份下载锚定集
+document.getElementById("btnBackup").onclick = async () => {
+  try {
+    const d = await api("/api/anchors");
+    const blob = new Blob([JSON.stringify(d, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "anchors_backup_" + new Date().toISOString().slice(0,10) + ".json";
+    a.click();
+    toast("已导出备份到下载文件夹");
+  } catch (e) { toast("导出失败: " + e.message); }
+};
+
+async function loadVideos() {
+  const d = await api("/api/videos");
+  videos = d.videos;
+  const sel = document.getElementById("videoSel");
+  sel.innerHTML = videos.map(v => `<option value="${v.bvid}">${v.name} [${v.community||""}] ${esc(v.title||"")}</option>`).join("");
+  if (videos[0]) sel.value = videos[0].bvid;
+  sel.onchange = loadQueue;
+}
+
+async function loadAnchorsInfo() {
+  const d = await api("/api/anchors");
+  const by = d.count_per_video || {};
+  const bvid = document.getElementById("videoSel").value;
+  const nCur = by[bvid] || 0;
+  document.getElementById("nAll").textContent = d.count;
+  document.getElementById("progText").textContent = `本视频已标 ${nCur}/100`;
+  document.getElementById("progFill").style.width = Math.min(100, (nCur/100)*100) + "%";
+  const ready = videos.every(v => (by[v.bvid]||0) >= 100);
+  document.getElementById("btnAnalyze").disabled = !ready;
+  document.getElementById("analyzeHint").textContent = ready ? "两视频均已达标，可开始分析" : "未达标：每视频需100条";
+}
+
+async function loadQueue() {
+  await loadAnchorsInfo();
+  const bvid = document.getElementById("videoSel").value;
+  const d = await api(`/api/label/queue?bvid=${bvid}&size=100`);
+  queue = d.items; idx = 0; curCat = "";
+  renderQueue();
+}
+
+function renderQueue() {
+  const box = document.getElementById("qText");
+  document.getElementById("qPos").textContent = `${idx+1} / ${queue.length}`;
+  if (!queue.length) {
+    box.textContent = "队列为空——点「追加标注 +50」或已完成本视频目标。";
+    document.getElementById("btnSubmit").disabled = true;
+    return;
+  }
+  const it = queue[idx];
+  box.textContent = it.text;
+  document.getElementById("qMeta").textContent = `♥${it.like} · ${new Date(it.ctime*1000).toLocaleDateString()}`;
+  document.querySelectorAll(".cat-pill").forEach(p => p.classList.toggle("sel", p.dataset.cat === curCat));
+  document.getElementById("btnSubmit").disabled = !curCat;
+}
+
+document.querySelectorAll("#modeLabel .cat-pill").forEach(p => p.onclick = () => { curCat = p.dataset.cat; renderQueue(); });
+document.getElementById("btnSubmit").onclick = async () => {
+  if (!queue.length || !curCat) return;
+  const it = queue[idx];
+  await api("/api/anchors", { method:"POST", headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ item:{ rpid:it.rpid, bvid:it.bvid, text:it.text, category:curCat } }) });
+  toast("✓ 已保存到本地 anchors.json");
+  curCat = ""; queue.splice(idx,1); if (idx >= queue.length) idx = 0;
+  const sc = document.getElementById("sessionCount");
+  sc.textContent = (parseInt(sc.textContent,10)||0) + 1;
+  loadQueue();
+};
+document.getElementById("btnSkip").onclick = () => { idx = Math.min(idx+1, Math.max(0,queue.length-1)); renderQueue(); };
+document.getElementById("btnMore").onclick = async () => {
+  const bvid = document.getElementById("videoSel").value;
+  const d = await api(`/api/label/queue?bvid=${bvid}&size=150`);
+  queue = d.items; idx = 0; renderQueue();
+};
+document.addEventListener("keydown", e => {
+  if (document.getElementById("modeLabel").style.display === "none") return;
+  const map = { "1":"赞美","2":"贬低","3":"水军","4":"无意义" };
+  if (map[e.key]) { curCat = map[e.key]; renderQueue(); }
+  else if (e.key === "Enter" && curCat) document.getElementById("btnSubmit").click();
+});
+
+/* 模式切换 */
+document.querySelectorAll(".mode-tab").forEach(t => t.onclick = () => {
+  document.querySelectorAll(".mode-tab").forEach(x => x.classList.remove("active"));
+  t.classList.add("active");
+  document.getElementById("modeLabel").style.display = t.dataset.mode==="label" ? "" : "none";
+  document.getElementById("modeReview").style.display = t.dataset.mode==="review" ? "" : "none";
+});
+
+/* 二次审查 */
+document.getElementById("btnRevLoad").onclick = loadReview;
+async function loadReview() {
+  const bvid = document.getElementById("videoSel").value;
+  const cat = document.getElementById("revCatSel").value;
+  try {
+    const d = await api(`/api/review/queue?bvid=${bvid}&category=${cat}&size=50`);
+    revQueue = d.items; revIdx = 0;
+    document.getElementById("revInfo").textContent = `待审 ${d.total} 条，本次载入 ${revQueue.length}`;
+    renderReview();
+  } catch (e) {
+    document.getElementById("revBox").innerHTML = `<span style="color:var(--cat-blame)">${esc(e.message)}</span>`;
+  }
+}
+function renderReview() {
+  const box = document.getElementById("revBox");
+  if (!revQueue.length) { box.innerHTML = '<span class="muted">审查队列为空（可能尚未分析或已审完）。</span>'; return; }
+  const it = revQueue[revIdx];
+  const CLS = { "赞美":"praise","贬低":"blame","水军":"shui","无意义":"noise" };
+  box.innerHTML = `
+    <div class="flex-between mb" style="flex-wrap:wrap">
+      <span class="muted mono">${revIdx+1} / ${revQueue.length}</span>
+      <span>模型判定 <span class="badge ${CLS[it.model_category]}">${it.model_category}</span>
+      <span class="muted mono">置信 ${(it.confidence*100).toFixed(0)}%</span></span>
+    </div>
+    <div class="comment-box">${esc(it.text)}</div>
+    <div class="review-reason">模型理由：${esc(it.reason)}</div>
+    <div class="flex mt" style="gap:8px; flex-wrap:wrap">
+      <div class="cat-pill praise" data-r="赞美">赞美</div>
+      <div class="cat-pill blame" data-r="贬低">贬低</div>
+      <div class="cat-pill shui" data-r="水军">水军</div>
+      <div class="cat-pill noise" data-r="无意义">无意义</div>
+      <span class="muted small" style="align-self:center">不选则视为确认模型判定</span>
+    </div>
+    <div class="flex mt-2">
+      <button class="btn ghost" id="revNext">下一跳 →</button>
+      <button class="btn primary" id="revSubmit">确认 / 提交修正 ✓</button>
+    </div>`;
+  let selCat = "";
+  box.querySelectorAll(".cat-pill").forEach(p => p.onclick = () => {
+    box.querySelectorAll(".cat-pill").forEach(x => x.classList.remove("sel"));
+    p.classList.add("sel"); selCat = p.dataset.r;
+  });
+  document.getElementById("revNext").onclick = () => { revIdx = Math.min(revIdx+1, revQueue.length-1); renderReview(); };
+  document.getElementById("revSubmit").onclick = async () => {
+    const final = selCat || it.model_category;
+    await api("/api/review", { method:"POST", headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ item:{ rpid:it.rpid, bvid:document.getElementById("videoSel").value, text:it.text,
+        model_category:it.model_category, final_category:final } }) });
+    toast("✓ 审查结果已保存到本地 anchors.json");
+    revQueue.splice(revIdx,1); if (revIdx >= revQueue.length) revIdx = 0;
+    loadAnchorsInfo(); renderReview();
+  };
+}
+
+/* 触发分析 */
+document.getElementById("btnAnalyze").onclick = async () => {
+  const bvid = document.getElementById("videoSel").value;
+  const btn = document.getElementById("btnAnalyze");
+  btn.disabled = true; btn.textContent = "⏳ 分析中...";
+  document.getElementById("analyzeHint").textContent = "后台分析全量评论中，可离开此页";
+  try {
+    await api("/api/analyze", { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ bvid }) });
+    poll(bvid, btn);
+  } catch (e) { alert("触发失败：" + e.message); btn.disabled=false; btn.textContent="▶ 开始调用大模型分析"; }
+};
+function poll(bvid, btn) {
+  const t = setInterval(async () => {
+    try {
+      const d = await api(`/api/analyze/status?bvid=${bvid}`);
+      if (d.status === "done") {
+        clearInterval(t);
+        btn.disabled = false; btn.textContent = "▶ 开始调用大模型分析";
+        document.getElementById("analyzeHint").textContent = `完成！共${d.total}条`;
+        loadAnchorsInfo();
+      } else if (d.status === "running") {
+        const pct = d.total ? Math.round(100 * (d.done || 0) / d.total) : 0;
+        document.getElementById("analyzeHint").textContent = `分析中 ${d.done || 0}/${d.total || "?"} 条 (${pct}%)，可离开此页`;
+      } else if (d.status === "error") {
+        clearInterval(t);
+        btn.disabled = false; btn.textContent = "▶ 开始调用大模型分析";
+        document.getElementById("analyzeHint").textContent = "分析失败：" + (d.error || "未知错误");
+      }
+    } catch(e){}
+  }, 3000);
+}
+
+loadVideos().then(loadQueue);
+</script>
+</body>
+</html>

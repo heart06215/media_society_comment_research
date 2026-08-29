@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>破妄 · 基于微调大模型的互联网社区评论情感分析软件</title>
+<script src="theme.js"></script>
+<link rel="stylesheet" href="base.css">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts-wordcloud@2/dist/echarts-wordcloud.min.js"></script>
+<style>
+  .hero { position:relative; overflow:hidden; border-bottom:3px solid var(--line); }
+  .hero-inner { max-width:1280px; margin:0 auto; padding:76px 24px 96px; position:relative; z-index:2; }
+  .hero .geo.ring { width:190px; height:190px; right:8%; top:52px; }
+  .hero .geo.tri { width:120px; height:110px; right:20%; bottom:-24px; transform:rotate(14deg); }
+  .hero .geo.diamond { width:44px; height:44px; right:34%; top:96px; }
+  .hero .geo.quarter { width:130px; height:130px; left:-40px; top:-40px; }
+  .hero .diag { position:absolute; right:-70px; top:38%; width:340px; height:26px; transform:rotate(-24deg); background:repeating-linear-gradient(-45deg,var(--pink) 0 16px,transparent 16px 32px); }
+
+  /* ===== 电竞/竞技风装饰层 ===== */
+  .fx { position:absolute; pointer-events:none; z-index:1; }
+  /* 速度线组 */
+  .fx.speed i { display:block; height:5px; background:var(--cyan); opacity:.55; transform:skewX(-30deg); margin-bottom:9px; }
+  .fx.speed.a { left:-30px; bottom:70px; }
+  .fx.speed.a i:nth-child(1){width:150px} .fx.speed.a i:nth-child(2){width:220px;background:var(--blue)}
+  .fx.speed.a i:nth-child(3){width:90px} .fx.speed.a i:nth-child(4){width:180px;background:var(--violet)}
+  /* 六边形 */
+  .hex { clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%); }
+  .fx.hexline { border:none; background:transparent; }
+  .fx.hex-o { border:3px solid var(--violet); opacity:.4; background:transparent !important; clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%); box-shadow:inset 0 0 0 6px var(--paper), inset 0 0 0 8px var(--violet); }
+  .fx.hex-f { background:var(--cyan); opacity:.28; }
+  @supports not (background: paint(x)) { .fx.hex-o { border:3px solid var(--violet); } }
+  /* 准星 */
+  .fx.target { border:3px solid var(--pink); border-radius:50%; opacity:.5; animation:pulse 2.6s ease-in-out infinite; }
+  .fx.target::before, .fx.target::after { content:""; position:absolute; background:var(--pink); }
+  .fx.target::before { left:50%; top:-14px; bottom:-14px; width:3px; transform:translateX(-50%); }
+  .fx.target::after { top:50%; left:-14px; right:-14px; height:3px; transform:translateY(-50%); }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+  /* HUD 角括号 */
+  .hud { position:relative; }
+  .hud::before, .hud::after, .hud b::before, .hud b::after {
+    content:""; position:absolute; width:34px; height:34px; border:4px solid var(--cyan); z-index:3;
+  }
+  .hud::before { left:-14px; top:-14px; border-right:none; border-bottom:none; }
+  .hud::after { right:-14px; top:-14px; border-left:none; border-bottom:none; border-color:var(--pink); }
+  .hud b::before { left:-14px; bottom:-14px; border-right:none; border-top:none; border-color:var(--yellow); }
+  .hud b::after { right:-14px; bottom:-14px; border-left:none; border-top:none; }
+  /* 能量条 */
+  .hp-strip { position:absolute; left:24px; right:24px; bottom:16px; height:12px; display:flex; gap:5px; z-index:1; }
+  .hp-strip i { flex:1; background:var(--grid); }
+  .hp-strip i.on { background:linear-gradient(90deg,var(--cyan),var(--blue)); }
+  .hp-strip i.hot { background:repeating-linear-gradient(-45deg,var(--pink) 0 8px,var(--yellow) 8px 16px); }
+  /* 故障错位块 */
+  .glitch { position:absolute; background:var(--blue); opacity:.85; z-index:1; }
+  .glitch.p { background:var(--pink); }
+  .glitch.c { background:var(--cyan); }
+  /* 网格点阵 */
+  .dotgrid { position:absolute; background-image:radial-gradient(var(--muted) 1.6px, transparent 1.6px); background-size:18px 18px; opacity:.35; z-index:1; }
+
+  .hero-meta { display:flex; gap:10px; flex-wrap:wrap; margin-top:30px; }
+  .meta-chip { border:2px solid var(--line); padding:6px 12px; font-size:11px; font-weight:900; letter-spacing:2px; text-transform:uppercase; background:var(--surface); }
+  .cta-row { display:flex; gap:12px; margin-top:34px; flex-wrap:wrap; }
+  .mission { display:grid; grid-template-columns:230px 1fr; gap:26px; max-width:1280px; margin:0 auto; padding:46px 24px; }
+  .mission-label { font-size:13px; font-weight:900; letter-spacing:4px; text-transform:uppercase; border-left:6px solid var(--violet); padding-left:14px; align-self:start; line-height:1.9; }
+  .marquee { border-bottom:3px solid var(--line); background:var(--blue); color:#fff; overflow:hidden; white-space:nowrap; font-weight:900; letter-spacing:3px; text-transform:uppercase; font-size:13px; padding:9px 0; }
+  .marquee span { display:inline-block; animation:mq 22s linear infinite; }
+  @keyframes mq { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  .cat-card { padding:22px; position:relative; overflow:hidden; min-height:170px; }
+  .cat-card .idx { position:absolute; right:10px; top:2px; font-size:56px; font-weight:900; opacity:.1; }
+  .cat-card h3 { font-size:18px; letter-spacing:3px; margin-bottom:8px; }
+  .step { padding:20px; position:relative; }
+  .step .num { font-size:34px; font-weight:900; color:transparent; -webkit-text-stroke:1.6px var(--ink); }
+  html[data-theme="dark"] .step .num { -webkit-text-stroke-color:#fff; }
+  .chart-mini { height:210px; margin-top:12px; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="/">
+    <span class="logo"><span class="ring"></span><span class="core"></span><span class="cut"></span></span>
+    <span>
+      <span class="brand-name">破妄</span><br>
+      <span class="brand-sub">PoWang · Sentiment Radar</span>
+    </span>
+  </a>
+  <nav class="nav">
+    <a href="/" class="active">首页</a>
+    <a href="/dashboard">看板</a>
+    <a href="/comments">评论</a>
+    <a href="/chat">问答</a>
+    <a href="/label">标注</a>
+    <button class="theme-toggle" data-theme-toggle><span class="ico"></span><span class="txt">夜间</span></button>
+  </nav>
+</header>
+
+<div class="marquee"><span>破除水军迷障 · 直见评论真实 · 锚定集检索式分类 · 网络用语RAG · 大模型微调增益 · 双社区对比洞察 · 破除水军迷障 · 直见评论真实 · 锚定集检索式分类 · 网络用语RAG · 大模型微调增益 · 双社区对比洞察&nbsp;</span></div>
+
+<section class="hero blueprint">
+  <span class="geo ring"></span>
+  <span class="geo tri"></span>
+  <span class="geo diamond"></span>
+  <span class="geo quarter"></span>
+  <span class="diag"></span>
+
+  <!-- 电竞装饰层 -->
+  <span class="fx speed a"><i></i><i></i><i></i><i></i></span>
+  <span class="fx speed a" style="left:auto;right:-20px;top:40px;transform:scaleX(-1)"><i></i><i></i><i></i><i></i></span>
+  <span class="fx hex-f hex" style="width:90px;height:80px;left:38%;bottom:30px"></span>
+  <span class="fx hex-o hex" style="width:150px;height:132px;right:4%;bottom:-34px"></span>
+  <span class="fx hex-o hex" style="width:74px;height:66px;right:27%;top:24px;border-width:2px"></span>
+  <span class="fx target" style="width:64px;height:64px;left:46%;top:52px"></span>
+  <span class="fx dotgrid" style="width:220px;height:120px;left:30%;top:14px"></span>
+  <span class="glitch" style="width:26px;height:12px;left:12px;top:118px"></span>
+  <span class="glitch p" style="width:16px;height:16px;left:44px;top:96px"></span>
+  <span class="glitch c" style="width:38px;height:9px;right:36%;top:210px"></span>
+  <div class="hp-strip"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="hot"></i><i></i><i></i></div>
+
+  <div class="hero-inner">
+    <div class="hud"><b></b>
+    <div class="kicker">LLM Fine-tuned · Four-Class Sentiment Analysis</div>
+    <h1 class="display">破妄<br><span class="stroke">穿透迷雾·直见真实</span></h1></div>
+    <p style="max-width:600px;margin-top:22px;font-size:15px">
+      基于微调大模型，把社区评论精确切分为<b style="color:var(--cat-praise)">赞美</b>、<b style="color:var(--cat-blame)">贬低</b>、<b style="color:var(--cat-shui)">水军</b>、<b style="color:var(--cat-noise)">无意义</b>四类。
+      以人工精标锚定集为分类依赖模板，网络用语RAG知识库加持，饭圈×二游双社区对照，看清操纵与真声。
+    </p>
+    <div class="hero-meta">
+      <span class="meta-chip" style="background:var(--yellow)">锚定集检索式分类</span>
+      <span class="meta-chip" style="background:var(--cyan)">网络用语RAG</span>
+      <span class="meta-chip" style="color:#fff;background:var(--pink)">大模型微调</span>
+      <span class="meta-chip">LangChain Agent</span>
+    </div>
+    <div class="cta-row">
+      <a class="btn primary" href="/dashboard">进入洞察看板 →</a>
+      <a class="btn cyan" href="/label">标注与审查</a>
+      <a class="btn ghost" href="/chat">AI 问答</a>
+    </div>
+  </div>
+</section>
+
+<div class="mission">
+  <div class="mission-label">Mission<br>项目使命</div>
+  <p style="font-size:15px">
+    热门视频评论动辄数百万条：灌水盖楼、控评刷屏、营销水军混杂在真实声浪里。
+    传统正负二分类只能给情绪打分，看不清<b>"谁在说话、为什么说"</b>。
+    破妄用四分类切开操纵与情感，让运营者与研究者第一次看见社区的完整态度结构。
+  </p>
+</div>
+
+<div class="wrap" style="padding-top:0">
+  <!-- 数据条 -->
+  <div class="stat-grid grid-4 mb-2">
+    <div class="stat-cell"><div class="n" style="color:var(--blue)" id="s1">--</div><div class="l">采样评论</div><div class="wm">01</div></div>
+    <div class="stat-cell"><div class="n" style="color:var(--violet)" id="s2">--</div><div class="l">目标视频</div><div class="wm">02</div></div>
+    <div class="stat-cell"><div class="n" style="color:var(--pink)" id="s3">--</div><div class="l">锚定样本</div><div class="wm">03</div></div>
+    <div class="stat-cell"><div class="n" id="s4">4</div><div class="l">情感分类</div><div class="wm">04</div></div>
+  </div>
+
+  <!-- 四分类 -->
+  <div class="sec-head"><span class="sec-num">01</span><span class="sec-title">四分类体系</span><span class="sec-rule"></span></div>
+  <div class="grid-4">
+    <div class="card accent cat-card"><span class="corner"></span><span class="idx">赞</span><h3 style="color:var(--cat-praise)">赞美</h3><p class="muted">喜爱、支持、夸赞、感动——真实的正面声浪。</p></div>
+    <div class="card accent pink cat-card"><span class="corner"></span><span class="idx">贬</span><h3 style="color:var(--cat-blame)">贬低</h3><p class="muted">批评、嘲讽、质疑——"假唱""修音""唐""孝"。</p></div>
+    <div class="card accent violet cat-card"><span class="corner"></span><span class="idx">水</span><h3 style="color:var(--violet)">水军</h3><p class="muted">被购买的评论——伪装真实用户的付费夸赞/付费差评、组织化控评。</p></div>
+    <div class="card accent cyan cat-card"><span class="corner"></span><span class="idx">空</span><h3 style="color:var(--cyan)">无意义</h3><p class="muted">灌水占楼、纯表情玩梗、显性引流广告——"前排""当砌则砌""关注我领福利"。</p></div>
+  </div>
+
+  <!-- 双社区 -->
+  <div class="sec-head"><span class="sec-num">02</span><span class="sec-title">双社区洞察目标</span><span class="sec-rule"></span></div>
+  <div class="grid-2">
+    <div class="card accent" style="border-left-color:var(--blue)">
+      <div class="flex-between mb"><h3 style="letter-spacing:3px;color:var(--blue)">二游 <span class="muted">游戏圈</span></h3><span class="badge praise">明日方舟PV</span></div>
+      <p class="small muted">玩梗盖楼（"砌墙""修墙"）、限定策划争议、真实游戏热爱——水军与玩梗灌水并存。</p>
+      <div id="cloudA" class="chart-mini"></div>
+    </div>
+    <div class="card accent pink" style="border-left-color:var(--pink)">
+      <div class="flex-between mb"><h3 style="letter-spacing:3px;color:var(--cat-blame)">饭圈 <span class="muted">演艺圈</span></h3><span class="badge blame">TF家族音乐会</span></div>
+      <p class="small muted">控评刷屏、"假唱/修音"质疑、粉丝护主（"孝""典"）——水军与真实夸赞交织。</p>
+      <div id="cloudB" class="chart-mini"></div>
+    </div>
+  </div>
+
+  <!-- 方法论 -->
+  <div class="sec-head"><span class="sec-num">03</span><span class="sec-title">方法论流水线</span><span class="sec-rule"></span></div>
+  <div class="grid-4">
+    <div class="card flat step"><span class="num">01</span><h3 class="mt">数据采集</h3><p class="muted small mt">B站评论多策略分层采样：时间正序×热度×子评论，覆盖全时间线。</p></div>
+    <div class="card flat step"><span class="num">02</span><h3 class="mt">锚定集</h3><p class="muted small mt">人工精标200条作分类依赖模板，二次审查自动扩充。</p></div>
+    <div class="card flat step"><span class="num">03</span><h3 class="mt">RAG+微调</h3><p class="muted small mt">网络用语知识检索注入；金标+预标导出微调，量化增益。</p></div>
+    <div class="card flat step"><span class="num">04</span><h3 class="mt">洞察看板</h3><p class="muted small mt">四分类占比、趋势、词云、态度关系图，双社区并读。</p></div>
+  </div>
+</div>
+
+<footer class="footer">
+  <span class="brand-name" style="font-size:15px;letter-spacing:4px">破妄</span>
+  <span class="muted">基于微调大模型的对互联网社区的评论情感分析软件 · 人工智能应用创新大赛</span>
+  <span style="flex:1"></span>
+  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span><span class="d4"></span></div>
+</footer>
+
+<script>
+const CC = ThemeKit.chartColors();
+let cloudCharts = [];
+
+function drawCloud(el, words, base) {
+  const dom = document.getElementById(el);
+  if (!dom) return;
+  const c = echarts.init(dom);
+  const palette = [base, CC.cyan, CC.violet, CC.pink, CC.blue];
+  c.setOption({ series: [{
+    type: "wordCloud", shape: "circle", sizeRange: [13, 44], rotationRange: [-45, 45],
+    gridSize: 5, width: "100%", height: "100%",
+    textStyle: { fontFamily: "sans-serif", fontWeight: "bold",
+      color: () => palette[Math.floor(Math.random() * palette.length)] },
+    data: words.map((w, i) => ({ name: w.t, value: w.v }))
+  }]});
+  cloudCharts.push(c);
+}
+
+// 未分析时的演示词云；分析完成后 loadClouds() 会用真实 top_slang 覆盖
+const DEMO_CLOUD_A = [{t:"砌墙",v:100},{t:"修墙",v:72},{t:"当修即修",v:60},{t:"偷砖",v:48},{t:"基建",v:40},{t:"多索雷斯",v:34},{t:"awsl",v:28},{t:"yyds",v:24},{t:"唐",v:18},{t:"崩坏",v:14}];
+const DEMO_CLOUD_B = [{t:"全开麦",v:100},{t:"塌房",v:74},{t:"皇族",v:58},{t:"毒唯",v:50},{t:"撕番位",v:42},{t:"修音",v:36},{t:"对嘴",v:30},{t:"控评",v:26},{t:"唯粉",v:20},{t:"出道",v:16}];
+let realClouds = null;
+
+function renderClouds() {
+  cloudCharts.forEach(c => { try { c.dispose(); } catch(e){} });
+  cloudCharts = [];
+  drawCloud("cloudA", (realClouds && realClouds.a) || DEMO_CLOUD_A, CC.blue);
+  drawCloud("cloudB", (realClouds && realClouds.b) || DEMO_CLOUD_B, CC.pink);
+}
+
+async function loadClouds() {
+  try {
+    const r = await fetch("/api/videos");
+    const d = await r.json();
+    if (!d.success) return;
+    const v = d.data.videos;
+    const toWords = arr => (arr || []).slice(0, 12).map(x => ({ t: x.term, v: x.count }));
+    const a = toWords(v[0] && v[0].top_slang);
+    const b = toWords(v[1] && v[1].top_slang);
+    if (a.length || b.length) {
+      realClouds = { a: a.length ? a : null, b: b.length ? b : null };
+      renderClouds();
+    }
+  } catch (e) {}
+}
+
+async function loadStats() {
+  try {
+    const r = await fetch("/api/videos");
+    const d = await r.json();
+    if (!d.success) return;
+    const v = d.data.videos;
+    let total = 0, anchors = 0;
+    v.forEach(x => { total += x.corpus_count || 0; anchors += x.anchor_count || 0; });
+    document.getElementById("s1").textContent = total.toLocaleString();
+    document.getElementById("s2").textContent = v.length;
+    document.getElementById("s3").textContent = anchors;
+  } catch (e) {}
+}
+
+renderClouds();
+loadStats();
+loadClouds();
+window.addEventListener("themechange", renderClouds);
+window.addEventListener("resize", () => cloudCharts.forEach(c => c.resize()));
+document.querySelectorAll("[data-theme-toggle] .txt").forEach(t => {
+  const upd = () => t.textContent = window.ThemeKit.current() === "dark" ? "日间" : "夜间";
+  document.addEventListener("DOMContentLoaded", upd);
+  window.addEventListener("themechange", upd);
+});
+</script>
+</body>
+</html>
