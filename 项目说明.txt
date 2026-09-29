@@ -70,7 +70,8 @@
         (词典基线 --methods dict 不消耗API；--selftest=true 可先自检分类器)
 
 六、注意事项
-  * data/cookie.txt 和 data/config.json 含敏感信息，勿提交/勿外发，勿写入文档。
+  * data/cookie.txt 和 data/config.json 含敏感信息，勿提交/勿外发，勿写入文档
+    （完整脱敏与公网部署清单见第八节，git提交前必读）。
   * 爬虫已做限速与风控规避；请勿高频调用，避免B站封禁登录Cookie。
   * 若模型报429限流，系统自动降级备用模型(glm-4-flash-250414)。
   * 分析全量(约2300条/视频)耗时约50分钟，可断点续跑(已分析的跳过)。
@@ -86,3 +87,22 @@
   [ ] 用户人工标注200条(每视频100)
   [ ] 触发全量分析 + 回填实验报告数据
   [ ] 微调模型提交 + 增益对比
+
+八、脱敏与开源/公网部署清单(报名传智杯前必读)
+  1) 永不入库、永不外发的文件(已列入 .gitignore)：
+     - data/config.json   真实智谱API Key
+     - data/cookie.txt    B站登录态(buvid3+SESSDATA)
+     首次运行：复制 data/config.example.json 为 data/config.json 再填Key；
+     cookie.txt 自行放置(勿向任何人提供)。
+  2) 代码与文档：任何源码/README/论文/截图/演示视频不得出现Key与Cookie明文；
+     若曾在代码里硬编码过Key，立即到智谱平台作废重发，并重建git历史
+     (或废弃旧仓库重开)，防止历史提交里残留。
+  3) 公网部署(大模型赛项要求可公开访问的在线演示地址)：
+     - API Key 改用环境变量注入，服务器上不落盘、不进镜像；
+     - 反向代理与访问日志不要记录含Cookie的请求头；
+     - 演示环境关闭或严格限速爬虫入口，避免公网触发B站风控连累账号。
+  4) 数据合规：crawled评论为平台公开数据；论文与演示中用户昵称/UID
+     展示时打码；不向第三方二次分发原始语料。
+  5) git push 前自查：git grep -n "SESSDATA" 应无命中，
+     并人工检查涉及 config 的diff确认无真实Key；仓库必须保留
+     data/config.example.json 模板以便评委复现。
