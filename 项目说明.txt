@@ -17,6 +17,7 @@
   export_finetune.py       微调数据集导出(智谱JSONL格式)
   app.py                   Flask后端(页面+数据/标注/审查/分析/问答API)
   project_main.py          fire CLI 主入口(crawl/analyze/export/serve/stats)
+  benchmark_methods.py     表4对照实验(词典基线/零样本/检索式RAG/微调 对锚定集评测)
   front/                   包豪斯前端(landing/dashboard/comments/chat/label)
   data/
     crawled/               爬取的评论JSON(两视频)
@@ -62,6 +63,11 @@
   4) 训练完成获得"微调模型ID"
   5) 在 data/config.json 的 fine_tuned_model 填入微调模型ID
   6) 重新触发分析，即用微调后模型；对比前后结果看"微调增益"
+  7) 论文表4指标：python benchmark_methods.py
+        对锚定集自动评测 词典基线/零样本LLM/检索式+RAG/微调 四种模式，
+        产出 Accuracy/Macro-F1/水军Recall 与混淆矩阵，
+        结果写入 data/analysis/benchmark_report.json(含表4可直接粘贴的Markdown行)
+        (词典基线 --methods dict 不消耗API；--selftest=true 可先自检分类器)
 
 六、注意事项
   * data/cookie.txt 和 data/config.json 含敏感信息，勿提交/勿外发，勿写入文档。
@@ -76,6 +82,7 @@
   [x] 包豪斯×构成主义前端(含对比/词云/关系图/标注/审查/夜间模式)
   [x] 语料级近重复清洗(dedup模式) + 标注队列去重
   [x] 分析与选型报告、展示文案、论文写作素材手册
+  [x] 表4对照实验脚本 benchmark_methods.py(补齐论文4.2节四方法协议的实现)
   [ ] 用户人工标注200条(每视频100)
   [ ] 触发全量分析 + 回填实验报告数据
   [ ] 微调模型提交 + 增益对比
