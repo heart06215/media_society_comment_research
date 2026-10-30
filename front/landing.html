@@ -1,272 +1,61 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>破妄 · 基于微调大模型的互联网社区评论情感分析软件</title>
-<script src="theme.js"></script>
-<link rel="stylesheet" href="base.css">
-<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/echarts-wordcloud@2/dist/echarts-wordcloud.min.js"></script>
-<style>
-  .hero { position:relative; overflow:hidden; border-bottom:3px solid var(--line); }
-  .hero-inner { max-width:1280px; margin:0 auto; padding:76px 24px 96px; position:relative; z-index:2; }
-  .hero .geo.ring { width:190px; height:190px; right:8%; top:52px; }
-  .hero .geo.tri { width:120px; height:110px; right:20%; bottom:-24px; transform:rotate(14deg); }
-  .hero .geo.diamond { width:44px; height:44px; right:34%; top:96px; }
-  .hero .geo.quarter { width:130px; height:130px; left:-40px; top:-40px; }
-  .hero .diag { position:absolute; right:-70px; top:38%; width:340px; height:26px; transform:rotate(-24deg); background:repeating-linear-gradient(-45deg,var(--pink) 0 16px,transparent 16px 32px); }
-
-  /* ===== 电竞/竞技风装饰层 ===== */
-  .fx { position:absolute; pointer-events:none; z-index:1; }
-  /* 速度线组 */
-  .fx.speed i { display:block; height:5px; background:var(--cyan); opacity:.55; transform:skewX(-30deg); margin-bottom:9px; }
-  .fx.speed.a { left:-30px; bottom:70px; }
-  .fx.speed.a i:nth-child(1){width:150px} .fx.speed.a i:nth-child(2){width:220px;background:var(--blue)}
-  .fx.speed.a i:nth-child(3){width:90px} .fx.speed.a i:nth-child(4){width:180px;background:var(--violet)}
-  /* 六边形 */
-  .hex { clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%); }
-  .fx.hexline { border:none; background:transparent; }
-  .fx.hex-o { border:3px solid var(--violet); opacity:.4; background:transparent !important; clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%); box-shadow:inset 0 0 0 6px var(--paper), inset 0 0 0 8px var(--violet); }
-  .fx.hex-f { background:var(--cyan); opacity:.28; }
-  @supports not (background: paint(x)) { .fx.hex-o { border:3px solid var(--violet); } }
-  /* 准星 */
-  .fx.target { border:3px solid var(--pink); border-radius:50%; opacity:.5; animation:pulse 2.6s ease-in-out infinite; }
-  .fx.target::before, .fx.target::after { content:""; position:absolute; background:var(--pink); }
-  .fx.target::before { left:50%; top:-14px; bottom:-14px; width:3px; transform:translateX(-50%); }
-  .fx.target::after { top:50%; left:-14px; right:-14px; height:3px; transform:translateY(-50%); }
-  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
-  /* HUD 角括号 */
-  .hud { position:relative; }
-  .hud::before, .hud::after, .hud b::before, .hud b::after {
-    content:""; position:absolute; width:34px; height:34px; border:4px solid var(--cyan); z-index:3;
-  }
-  .hud::before { left:-14px; top:-14px; border-right:none; border-bottom:none; }
-  .hud::after { right:-14px; top:-14px; border-left:none; border-bottom:none; border-color:var(--pink); }
-  .hud b::before { left:-14px; bottom:-14px; border-right:none; border-top:none; border-color:var(--yellow); }
-  .hud b::after { right:-14px; bottom:-14px; border-left:none; border-top:none; }
-  /* 能量条 */
-  .hp-strip { position:absolute; left:24px; right:24px; bottom:16px; height:12px; display:flex; gap:5px; z-index:1; }
-  .hp-strip i { flex:1; background:var(--grid); }
-  .hp-strip i.on { background:linear-gradient(90deg,var(--cyan),var(--blue)); }
-  .hp-strip i.hot { background:repeating-linear-gradient(-45deg,var(--pink) 0 8px,var(--yellow) 8px 16px); }
-  /* 故障错位块 */
-  .glitch { position:absolute; background:var(--blue); opacity:.85; z-index:1; }
-  .glitch.p { background:var(--pink); }
-  .glitch.c { background:var(--cyan); }
-  /* 网格点阵 */
-  .dotgrid { position:absolute; background-image:radial-gradient(var(--muted) 1.6px, transparent 1.6px); background-size:18px 18px; opacity:.35; z-index:1; }
-
-  .hero-meta { display:flex; gap:10px; flex-wrap:wrap; margin-top:30px; }
-  .meta-chip { border:2px solid var(--line); padding:6px 12px; font-size:11px; font-weight:900; letter-spacing:2px; text-transform:uppercase; background:var(--surface); }
-  .cta-row { display:flex; gap:12px; margin-top:34px; flex-wrap:wrap; }
-  .mission { display:grid; grid-template-columns:230px 1fr; gap:26px; max-width:1280px; margin:0 auto; padding:46px 24px; }
-  .mission-label { font-size:13px; font-weight:900; letter-spacing:4px; text-transform:uppercase; border-left:6px solid var(--violet); padding-left:14px; align-self:start; line-height:1.9; }
-  .marquee { border-bottom:3px solid var(--line); background:var(--blue); color:#fff; overflow:hidden; white-space:nowrap; font-weight:900; letter-spacing:3px; text-transform:uppercase; font-size:13px; padding:9px 0; }
-  .marquee span { display:inline-block; animation:mq 22s linear infinite; }
-  @keyframes mq { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-  .cat-card { padding:22px; position:relative; overflow:hidden; min-height:170px; }
-  .cat-card .idx { position:absolute; right:10px; top:2px; font-size:56px; font-weight:900; opacity:.1; }
-  .cat-card h3 { font-size:18px; letter-spacing:3px; margin-bottom:8px; }
-  .step { padding:20px; position:relative; }
-  .step .num { font-size:34px; font-weight:900; color:transparent; -webkit-text-stroke:1.6px var(--ink); }
-  html[data-theme="dark"] .step .num { -webkit-text-stroke-color:#fff; }
-  .chart-mini { height:210px; margin-top:12px; }
-</style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="破妄：以评论语境分析、人工复核与可追溯证据，支持网络生态治理和网络立法研究。">
+<title>破妄 · 网络生态治理与立法研究平台</title>
+<link rel="icon" href="/mark.svg" type="image/svg+xml">
+<script src="/theme.js"></script><link rel="stylesheet" href="/base.css"><link rel="stylesheet" href="/governance.css">
+<script src="/workspace.js" defer></script><script src="/governance-data.js" defer></script><script src="/governance.js" defer></script>
 </head>
-<body>
-<header class="topbar">
-  <a class="brand" href="/">
-    <span class="logo"><span class="ring"></span><span class="core"></span><span class="cut"></span></span>
-    <span>
-      <span class="brand-name">破妄</span><br>
-      <span class="brand-sub">PoWang · Sentiment Radar</span>
-    </span>
-  </a>
-  <nav class="nav">
-    <a href="/" class="active">首页</a>
-    <a href="/dashboard">看板</a>
-    <a href="/comments">评论</a>
-    <a href="/chat">问答</a>
-    <a href="/label">标注</a>
-    <button class="theme-toggle" data-theme-toggle><span class="ico"></span><span class="txt">夜间</span></button>
-  </nav>
-</header>
-
-<div class="marquee"><span>破除水军迷障 · 直见评论真实 · 锚定集检索式分类 · 网络用语RAG · 大模型微调增益 · 双社区对比洞察 · 破除水军迷障 · 直见评论真实 · 锚定集检索式分类 · 网络用语RAG · 大模型微调增益 · 双社区对比洞察&nbsp;</span></div>
-
-<section class="hero blueprint">
-  <span class="geo ring"></span>
-  <span class="geo tri"></span>
-  <span class="geo diamond"></span>
-  <span class="geo quarter"></span>
-  <span class="diag"></span>
-
-  <!-- 电竞装饰层 -->
-  <span class="fx speed a"><i></i><i></i><i></i><i></i></span>
-  <span class="fx speed a" style="left:auto;right:-20px;top:40px;transform:scaleX(-1)"><i></i><i></i><i></i><i></i></span>
-  <span class="fx hex-f hex" style="width:90px;height:80px;left:38%;bottom:30px"></span>
-  <span class="fx hex-o hex" style="width:150px;height:132px;right:4%;bottom:-34px"></span>
-  <span class="fx hex-o hex" style="width:74px;height:66px;right:27%;top:24px;border-width:2px"></span>
-  <span class="fx target" style="width:64px;height:64px;left:46%;top:52px"></span>
-  <span class="fx dotgrid" style="width:220px;height:120px;left:30%;top:14px"></span>
-  <span class="glitch" style="width:26px;height:12px;left:12px;top:118px"></span>
-  <span class="glitch p" style="width:16px;height:16px;left:44px;top:96px"></span>
-  <span class="glitch c" style="width:38px;height:9px;right:36%;top:210px"></span>
-  <div class="hp-strip"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="hot"></i><i></i><i></i></div>
-
-  <div class="hero-inner">
-    <div class="hud"><b></b>
-    <div class="kicker">LLM Fine-tuned · Four-Class Sentiment Analysis</div>
-    <h1 class="display">破妄<br><span class="stroke">穿透迷雾·直见真实</span></h1></div>
-    <p style="max-width:600px;margin-top:22px;font-size:15px">
-      基于微调大模型，把社区评论精确切分为<b style="color:var(--cat-praise)">赞美</b>、<b style="color:var(--cat-blame)">贬低</b>、<b style="color:var(--cat-shui)">水军</b>、<b style="color:var(--cat-noise)">无意义</b>四类。
-      以人工精标锚定集为分类依赖模板，网络用语RAG知识库加持，饭圈×二游双社区对照，看清操纵与真声。
-    </p>
-    <div class="hero-meta">
-      <span class="meta-chip" style="background:var(--yellow)">锚定集检索式分类</span>
-      <span class="meta-chip" style="background:var(--cyan)">网络用语RAG</span>
-      <span class="meta-chip" style="color:#fff;background:var(--pink)">大模型微调</span>
-      <span class="meta-chip">LangChain Agent</span>
-    </div>
-    <div class="cta-row">
-      <a class="btn primary" href="/dashboard">进入洞察看板 →</a>
-      <a class="btn cyan" href="/label">标注与审查</a>
-      <a class="btn ghost" href="/chat">AI 问答</a>
-    </div>
-  </div>
+<body class="governance-app workspace-page">
+<a class="skip-link" href="#main">跳至主要内容</a>
+<svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 3v17h17M8 14l4-5 4 2 5-7"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v5c0 5 8 10 8 10s8-5 8-10V6Z"/><path d="m8 11 3 3 5-6"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5v16M3 4c4-1 6-1 9 1 3-2 5-2 9-1v15c-4-1-6-1-9 1-3-2-5-2-9-1Z"/></symbol>
+<symbol id="i-message" viewBox="0 0 24 24"><path d="M21 11a9 9 0 0 1-9 9H4l-2 2V11a9 9 0 0 1 19 0Z"/><path d="M7 9h10M7 13h6"/></symbol>
+<symbol id="i-network" viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="18" r="3"/><circle cx="19" cy="18" r="3"/><path d="m10 8-4 7m8-7 4 7M8 18h8"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="m8 11 3 3 5-6"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+</svg>
+<div id="workspaceNav"></div><div class="app-workspace"><header class="app-topbar" id="workspaceTopbar"></header>
+<main class="app-main" id="main">
+<section id="overview" class="overview-section">
+<div class="page-heading"><div><div class="eyebrow">NETWORK GOVERNANCE OBSERVATORY</div><h1>网络生态治理总览</h1><p>读懂评论背后的信号，为清朗网络空间提供研究支撑。</p></div><button class="action secondary" id="exportReport"><svg><use href="#i-download"/></svg>导出研究摘要</button></div>
+<div class="mission-banner"><div class="mission-copy"><span class="banner-kicker"><span></span>数字中国 · 依法治网 · 协同共治</span><h2>洞察网络情绪，<br>让治理<span>有据可依。</span></h2><p>从社区评论到治理线索，从语境理解到规则研究。<br>以微调大模型与人工复核，连接真实表达与网络善治。</p><div class="banner-actions"><a class="action light" href="#governance">开始生态研判 <svg><use href="#i-arrow"/></svg></a><a class="banner-link" href="#policy">探索立法研究路径 ↗</a></div></div>
+<div class="evidence-orbit" aria-label="研究路径：评论采集、语境识别、人工复核、研究输出"><div class="orbit-ring ring-one"></div><div class="orbit-ring ring-two"></div><svg class="orbit-lines" viewBox="0 0 400 250" aria-hidden="true"><path d="M65 65 200 125 330 55M200 125 325 205M200 125 65 205"/><circle cx="65" cy="65" r="4"/><circle cx="330" cy="55" r="4"/><circle cx="325" cy="205" r="4"/><circle cx="65" cy="205" r="4"/></svg><div class="orbit-center"><svg><use href="#i-shield"/></svg><strong>可信治理</strong><small>EVIDENCE FIRST</small></div><div class="orbit-node node-one"><svg><use href="#i-message"/></svg><span>评论采集</span></div><div class="orbit-node node-two"><svg><use href="#i-network"/></svg><span>语境识别</span></div><div class="orbit-node node-three"><svg><use href="#i-check"/></svg><span>人工复核</span></div><div class="orbit-node node-four"><svg><use href="#i-book"/></svg><span>研究输出</span></div><span class="orbit-caption">从数据证据出发，向治理价值延伸</span></div></div>
+<div class="metric-grid" aria-label="本地研究样本概况" aria-live="polite">
+<article class="metric-card"><div class="metric-label">已采集评论样本<svg><use href="#i-message"/></svg></div><div class="metric-value" id="sampleCount">—</div><div class="metric-foot"><span class="status-dot"></span>本地语料库 <span>条</span></div></article>
+<article class="metric-card"><div class="metric-label">已分类评论<svg><use href="#i-chart"/></svg></div><div class="metric-value" id="analyzedCount">—</div><div class="metric-foot" id="analysisCoverage">等待分析数据</div></article>
+<article class="metric-card"><div class="metric-label">人工锚定样本<svg><use href="#i-check"/></svg></div><div class="metric-value" id="anchorCount">—</div><div class="metric-foot">人工精标与复核 <span>条</span></div></article>
+<article class="metric-card"><div class="metric-label">研究社区<svg><use href="#i-network"/></svg></div><div class="metric-value" id="communityCount">—</div><div class="metric-foot" id="communityNames">基于已配置研究样本</div></article></div>
+<div class="inline-error" id="dataError" role="alert" hidden><span id="dataErrorText"></span><button class="text-button" id="retryData">重新连接</button></div>
 </section>
-
-<div class="mission">
-  <div class="mission-label">Mission<br>项目使命</div>
-  <p style="font-size:15px">
-    热门视频评论动辄数百万条：灌水盖楼、控评刷屏、营销水军混杂在真实声浪里。
-    传统正负二分类只能给情绪打分，看不清<b>"谁在说话、为什么说"</b>。
-    破妄用四分类切开操纵与情感，让运营者与研究者第一次看见社区的完整态度结构。
-  </p>
-</div>
-
-<div class="wrap" style="padding-top:0">
-  <!-- 数据条 -->
-  <div class="stat-grid grid-4 mb-2">
-    <div class="stat-cell"><div class="n" style="color:var(--blue)" id="s1">--</div><div class="l">采样评论</div><div class="wm">01</div></div>
-    <div class="stat-cell"><div class="n" style="color:var(--violet)" id="s2">--</div><div class="l">目标视频</div><div class="wm">02</div></div>
-    <div class="stat-cell"><div class="n" style="color:var(--pink)" id="s3">--</div><div class="l">锚定样本</div><div class="wm">03</div></div>
-    <div class="stat-cell"><div class="n" id="s4">4</div><div class="l">情感分类</div><div class="wm">04</div></div>
-  </div>
-
-  <!-- 四分类 -->
-  <div class="sec-head"><span class="sec-num">01</span><span class="sec-title">四分类体系</span><span class="sec-rule"></span></div>
-  <div class="grid-4">
-    <div class="card accent cat-card"><span class="corner"></span><span class="idx">赞</span><h3 style="color:var(--cat-praise)">赞美</h3><p class="muted">喜爱、支持、夸赞、感动——真实的正面声浪。</p></div>
-    <div class="card accent pink cat-card"><span class="corner"></span><span class="idx">贬</span><h3 style="color:var(--cat-blame)">贬低</h3><p class="muted">批评、嘲讽、质疑——"假唱""修音""唐""孝"。</p></div>
-    <div class="card accent violet cat-card"><span class="corner"></span><span class="idx">水</span><h3 style="color:var(--violet)">水军</h3><p class="muted">被购买的评论——伪装真实用户的付费夸赞/付费差评、组织化控评。</p></div>
-    <div class="card accent cyan cat-card"><span class="corner"></span><span class="idx">空</span><h3 style="color:var(--cyan)">无意义</h3><p class="muted">灌水占楼、纯表情玩梗、显性引流广告——"前排""当砌则砌""关注我领福利"。</p></div>
-  </div>
-
-  <!-- 双社区 -->
-  <div class="sec-head"><span class="sec-num">02</span><span class="sec-title">双社区洞察目标</span><span class="sec-rule"></span></div>
-  <div class="grid-2">
-    <div class="card accent" style="border-left-color:var(--blue)">
-      <div class="flex-between mb"><h3 style="letter-spacing:3px;color:var(--blue)">二游 <span class="muted">游戏圈</span></h3><span class="badge praise">明日方舟PV</span></div>
-      <p class="small muted">玩梗盖楼（"砌墙""修墙"）、限定策划争议、真实游戏热爱——水军与玩梗灌水并存。</p>
-      <div id="cloudA" class="chart-mini"></div>
-    </div>
-    <div class="card accent pink" style="border-left-color:var(--pink)">
-      <div class="flex-between mb"><h3 style="letter-spacing:3px;color:var(--cat-blame)">饭圈 <span class="muted">演艺圈</span></h3><span class="badge blame">TF家族音乐会</span></div>
-      <p class="small muted">控评刷屏、"假唱/修音"质疑、粉丝护主（"孝""典"）——水军与真实夸赞交织。</p>
-      <div id="cloudB" class="chart-mini"></div>
-    </div>
-  </div>
-
-  <!-- 方法论 -->
-  <div class="sec-head"><span class="sec-num">03</span><span class="sec-title">方法论流水线</span><span class="sec-rule"></span></div>
-  <div class="grid-4">
-    <div class="card flat step"><span class="num">01</span><h3 class="mt">数据采集</h3><p class="muted small mt">B站评论多策略分层采样：时间正序×热度×子评论，覆盖全时间线。</p></div>
-    <div class="card flat step"><span class="num">02</span><h3 class="mt">锚定集</h3><p class="muted small mt">人工精标200条作分类依赖模板，二次审查自动扩充。</p></div>
-    <div class="card flat step"><span class="num">03</span><h3 class="mt">RAG+微调</h3><p class="muted small mt">网络用语知识检索注入；金标+预标导出微调，量化增益。</p></div>
-    <div class="card flat step"><span class="num">04</span><h3 class="mt">洞察看板</h3><p class="muted small mt">四分类占比、趋势、词云、态度关系图，双社区并读。</p></div>
-  </div>
-</div>
-
-<footer class="footer">
-  <span class="brand-name" style="font-size:15px;letter-spacing:4px">破妄</span>
-  <span class="muted">基于微调大模型的对互联网社区的评论情感分析软件 · 人工智能应用创新大赛</span>
-  <span style="flex:1"></span>
-  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span><span class="d4"></span></div>
-</footer>
-
-<script>
-const CC = ThemeKit.chartColors();
-let cloudCharts = [];
-
-function drawCloud(el, words, base) {
-  const dom = document.getElementById(el);
-  if (!dom) return;
-  const c = echarts.init(dom);
-  const palette = [base, CC.cyan, CC.violet, CC.pink, CC.blue];
-  c.setOption({ series: [{
-    type: "wordCloud", shape: "circle", sizeRange: [13, 44], rotationRange: [-45, 45],
-    gridSize: 5, width: "100%", height: "100%",
-    textStyle: { fontFamily: "sans-serif", fontWeight: "bold",
-      color: () => palette[Math.floor(Math.random() * palette.length)] },
-    data: words.map((w, i) => ({ name: w.t, value: w.v }))
-  }]});
-  cloudCharts.push(c);
-}
-
-// 未分析时的演示词云；分析完成后 loadClouds() 会用真实 top_slang 覆盖
-const DEMO_CLOUD_A = [{t:"砌墙",v:100},{t:"修墙",v:72},{t:"当修即修",v:60},{t:"偷砖",v:48},{t:"基建",v:40},{t:"多索雷斯",v:34},{t:"awsl",v:28},{t:"yyds",v:24},{t:"唐",v:18},{t:"崩坏",v:14}];
-const DEMO_CLOUD_B = [{t:"全开麦",v:100},{t:"塌房",v:74},{t:"皇族",v:58},{t:"毒唯",v:50},{t:"撕番位",v:42},{t:"修音",v:36},{t:"对嘴",v:30},{t:"控评",v:26},{t:"唯粉",v:20},{t:"出道",v:16}];
-let realClouds = null;
-
-function renderClouds() {
-  cloudCharts.forEach(c => { try { c.dispose(); } catch(e){} });
-  cloudCharts = [];
-  drawCloud("cloudA", (realClouds && realClouds.a) || DEMO_CLOUD_A, CC.blue);
-  drawCloud("cloudB", (realClouds && realClouds.b) || DEMO_CLOUD_B, CC.pink);
-}
-
-async function loadClouds() {
-  try {
-    const r = await fetch("/api/videos");
-    const d = await r.json();
-    if (!d.success) return;
-    const v = d.data.videos;
-    const toWords = arr => (arr || []).slice(0, 12).map(x => ({ t: x.term, v: x.count }));
-    const a = toWords(v[0] && v[0].top_slang);
-    const b = toWords(v[1] && v[1].top_slang);
-    if (a.length || b.length) {
-      realClouds = { a: a.length ? a : null, b: b.length ? b : null };
-      renderClouds();
-    }
-  } catch (e) {}
-}
-
-async function loadStats() {
-  try {
-    const r = await fetch("/api/videos");
-    const d = await r.json();
-    if (!d.success) return;
-    const v = d.data.videos;
-    let total = 0, anchors = 0;
-    v.forEach(x => { total += x.corpus_count || 0; anchors += x.anchor_count || 0; });
-    document.getElementById("s1").textContent = total.toLocaleString();
-    document.getElementById("s2").textContent = v.length;
-    document.getElementById("s3").textContent = anchors;
-  } catch (e) {}
-}
-
-renderClouds();
-loadStats();
-loadClouds();
-window.addEventListener("themechange", renderClouds);
-window.addEventListener("resize", () => cloudCharts.forEach(c => c.resize()));
-document.querySelectorAll("[data-theme-toggle] .txt").forEach(t => {
-  const upd = () => t.textContent = window.ThemeKit.current() === "dark" ? "日间" : "夜间";
-  document.addEventListener("DOMContentLoaded", upd);
-  window.addEventListener("themechange", upd);
-});
-</script>
-</body>
-</html>
+<section id="economy" class="content-section">
+<div class="section-heading"><div><div class="section-index">01 <span>DEVELOPMENT & GOVERNANCE</span></div><h2>数字经济的增长，需要清朗的网络生态</h2><p>以公开权威数据理解发展背景，以社区研究回应治理需求。</p></div><label class="year-control">数据年度 <select id="economyYear" aria-label="数字经济数据年度"><option value="2020">2020 年</option><option value="2021">2021 年</option><option value="2022">2022 年</option><option value="2023">2023 年</option><option value="2024" selected>2024 年</option></select></label></div>
+<div class="economy-grid">
+<article class="panel economy-share"><div class="panel-title"><h3>数字经济占 GDP 比重</h3><span class="tag">信通院测算口径</span></div><div class="donut-layout"><div class="gdp-donut" id="gdpDonut" role="img" aria-label="2024年数字经济占GDP的43.8%"><svg viewBox="0 0 200 200" aria-hidden="true"><circle class="donut-track" cx="100" cy="100" r="79"/><circle class="donut-fill" id="donutFill" cx="100" cy="100" r="79" pathLength="100" stroke-dasharray="43.8 100"/></svg><div class="donut-center"><span>GDP 占比</span><strong id="gdpShare">43.8<span>%</span></strong><small id="donutYear">2024 年</small></div></div><div class="donut-legend"><div><span class="legend-dot accent"></span><span>数字经济</span><strong id="digitalLegend">43.8%</strong></div><div><span class="legend-dot rest"></span><span>其他经济</span><strong id="otherLegend">56.2%</strong></div></div></div><div class="economy-bottom"><div><span>数字经济规模</span><strong><span id="economyScale">59.2</span><small> 万亿元</small></strong></div><div><span>较上年占比变化</span><strong class="accent-text" id="shareChange">+1.0<small> 个百分点</small></strong></div></div><a class="source-link" id="shareSource" href="https://www.caict.ac.cn/kxyj/qwfb/bps/202603/P020260323736507370748.pdf" target="_blank" rel="noopener noreferrer">来源：中国信通院《数字经济发展研究报告（2025年）》 ↗</a></article>
+<article class="panel economy-growth"><div class="panel-title"><div><h3>中国数字经济增长轨迹</h3><p class="panel-subtitle">2020—2024 年 · 历年公开发布值</p></div><div class="segmented" role="group" aria-label="趋势指标"><button class="selected" data-trend="scale" aria-pressed="true">经济规模</button><button data-trend="share" aria-pressed="false">GDP 占比</button></div></div><div class="growth-headline"><strong id="growthValue">59.2<small> 万亿元</small></strong><span id="growthDescription">2024 年数字经济规模</span><span class="growth-badge" id="growthBadge">较 2020 年 +51.0%</span></div><div class="growth-chart" id="growthChart" role="img" aria-label="中国数字经济规模从2020年39.2万亿元增长至2024年59.2万亿元"></div><div class="chart-foot"><span><i class="legend-dot accent"></i><span id="trendLegend">数字经济规模（万亿元）</span></span><a class="text-link" href="#dataSources">查看数据与口径 ↗</a></div></article></div>
+<div class="statistical-note"><svg><use href="#i-book"/></svg><p><strong>口径说明</strong> 上图为中国信通院数字经济测算，涵盖数字产业化与产业数字化。国家统计局公布的 <a href="https://www.stats.gov.cn/sj/zxfbhjd/202512/t20251230_1962177.html" target="_blank" rel="noopener noreferrer">2024 年数字经济核心产业</a> 增加值为 <strong>14.0891 万亿元</strong>，占 GDP 的 <strong>10.5%</strong>，两者统计范围不同。年度序列采用历年发布值，未作经济普查回溯调整。</p></div>
+</section>
+<section id="governance" class="content-section">
+<div class="section-heading"><div><div class="section-index">02 <span>COMMUNITY ECOLOGY</span></div><h2>让网络乱象可观察，让治理线索可追溯</h2><p>聚焦疑似刷评、群体对骂与信息噪声，保留正常批评和多元表达。</p></div><a class="text-link" href="/insight#insight">进入深度洞察 ↗</a></div>
+<div class="governance-grid"><article class="panel community-panel"><div class="panel-title"><h3>社区评论结构</h3><label><span class="sr-only">选择研究社区</span><select id="communitySelect"><option value="all">全部研究社区</option></select></label></div><p class="panel-subtitle" id="communitySummary">正在读取本地分析结果…</p><div class="category-bars" id="categoryBars" aria-live="polite"><div class="empty-state">正在加载评论分类统计…</div></div><div class="panel-footer"><span>六分类为模型分析标签，需结合语境复核。</span><a class="text-link" href="/comments">查看原始评论 ↗</a></div></article>
+<article class="panel research-focus"><div class="panel-title"><h3>本期治理观察</h3><span class="tag neutral">研究线索</span></div><div class="focus-total"><strong id="clueCount">—</strong><span>条研究线索</span><small>“水军”与“社区对骂”分类之和</small></div><div class="focus-row"><span class="focus-icon"><svg><use href="#i-network"/></svg></span><div><strong>识别疑似组织化刷评</strong><p>结合重复文本、关系图谱与语境交叉核验。</p></div></div><div class="focus-row"><span class="focus-icon"><svg><use href="#i-shield"/></svg></span><div><strong>关注对骂与人身攻击</strong><p>定位相互攻击线索，优先开展人工复核。</p></div></div><a class="action secondary full-width" href="/label">进入人工复核 <svg><use href="#i-arrow"/></svg></a><p class="boundary-note">模型标签不能独立证明违法、付费行为或账号身份。</p></article></div>
+<div class="evidence-heading"><h3>可追溯的评论证据</h3><span>已分析样本 · 可切换社区</span></div><div class="evidence-grid" id="evidenceCards" aria-live="polite"><div class="empty-state">正在读取代表性评论…</div></div>
+</section>
+<section id="policy" class="content-section">
+<div class="section-heading"><div><div class="section-index">03 <span>EVIDENCE TO POLICY</span></div><h2>从一条评论，走向有依据的规则研究</h2><p>连接问题发现、证据整理与规则评估，为网络立法研究提供可核验素材。</p></div><button class="text-button" id="exportPolicy">下载研究提纲 ↗</button></div>
+<div class="policy-path"><article><span class="path-number">01</span><h3>发现治理问题</h3><p>聚合异常表达与社区差异，界定可研究的问题。</p><span class="path-label">评论分类 / 趋势比较</span></article><article><span class="path-number">02</span><h3>形成证据材料</h3><p>追溯样本来源、语境与分类依据，引入人工复核。</p><span class="path-label">原始评论 / 锚定样本</span></article><article><span class="path-number">03</span><h3>关联现有规则</h3><p>对照公开规章，辨析平台责任与用户权益。</p><span class="path-label">法规原文 / 研究问题</span></article><article><span class="path-number">04</span><h3>支持立法研究</h3><p>整理规则适用难点，形成待论证的研究建议。</p><span class="path-label">问题清单 / 研究提纲</span></article></div>
+<div class="panel policy-library"><div class="panel-title"><h3>网络治理规则参考</h3><span class="panel-subtitle">官方原文可追溯 · 人工整理的研究关联</span></div><div class="law-list" id="lawList"></div><div class="panel-footer"><span>规则关联用于研究选题；具体适用需核对事实、现行文本与专业意见。</span></div></div>
+</section>
+<section id="assistant" class="content-section"><div class="assistant-grid"><div class="assistant-intro"><div class="section-index">04 <span>RESEARCH COPILOT</span></div><svg class="assistant-symbol"><use href="#i-message"/></svg><h2>把数据转化为<br>下一个研究问题。</h2><p>基于本地评论分析结果，辅助比较社区结构、解释网络用语、梳理治理线索。</p><span class="tag">微调大模型 · 语境知识检索</span><p class="boundary-note">回答依赖已配置的模型服务。法规原文请到上方规则参考核验。</p></div><div class="panel assistant-panel"><div class="panel-title"><h3>破妄 · AI 治理助手</h3><button class="text-button" id="clearChat">清空对话</button></div><div class="chat-messages" id="chatMessages" role="log" aria-label="AI研究问答" aria-live="polite"><div class="assistant-welcome">从一个具体问题开始，探索社区表达背后的治理线索。</div></div><div class="prompt-list"><button type="button" data-prompt="比较两个社区的水军和社区对骂分类数量，说明数据局限与需要人工核验的事项。">比较社区治理线索 ↗</button><button type="button" data-prompt="基于已分析评论，列出值得进一步研究的网络治理问题，并说明还缺少哪些证据。">梳理研究问题 ↗</button></div><form id="chatForm" class="assistant-form"><label class="sr-only" for="chatQuestion">向治理助手提问</label><textarea id="chatQuestion" rows="2" maxlength="2000" placeholder="输入研究问题，Enter 发送，Shift + Enter 换行" required></textarea><button class="action primary" id="sendQuestion" type="submit" aria-label="发送问题"><svg><use href="#i-arrow"/></svg></button><button class="text-button" id="stopQuestion" type="button" hidden>停止请求</button></form><div class="assistant-caption">AI 生成内容供研究参考；事实判断应回到原始证据。</div></div></div></section>
+<section id="dataSources" class="sources-section"><details id="sourceDetails"><summary><span><svg><use href="#i-book"/></svg>数据来源与研究说明</span><span class="summary-hint">展开核验 <span aria-hidden="true">＋</span></span></summary><div class="source-details"><p>资料核验日期：2026 年 10 月 30 日。经济数据为公开报告静态收录；社区数据来自本项目本地语料与分析结果，不代表全网。</p><div class="table-scroll"><table><caption>中国数字经济历年公开数据</caption><thead><tr><th scope="col">年度</th><th scope="col">规模（万亿元）</th><th scope="col">占 GDP 比重</th><th scope="col">资料来源</th></tr></thead><tbody id="economyTable"></tbody></table></div><p>年度增长折线显示规模变化；2024 年同比名义增长 9.69% 为信通院报告值，与由展示精度计算的增长率可能略有差异。</p><h3>设计研究参考 · 全国一等奖作品</h3><p>参考公开介绍中的场景定位、数据呈现与成果闭环。以下奖项均属于所列作品。</p><div class="reference-list" id="competitionReferences"></div></div></details></section>
+<footer class="app-footer"><span><strong>破妄 POWANG</strong><span class="footer-divider">/</span>让真实表达被理解，让网络治理有依据。</span><span>技术向善 · 依法治网 · 人机协同</span></footer>
+</main></div><div class="app-toast" id="appToast" role="status" hidden></div>
+</body></html>

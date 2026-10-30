@@ -47,7 +47,7 @@ def _all_analyses():
 
 @tool
 def get_video_stats(bvid: str) -> str:
-    """获取某个视频的四分类统计(赞美/贬低/水军/无意义数量与占比)。bvid 如 BV1fy4y1L7Rq。"""
+    """获取某个视频的六分类统计(赞美/贬低/水军/无意义/社区对骂/中立数量与占比)。bvid 如 BV1fy4y1L7Rq。"""
     a = _load_analysis(bvid)
     if not a:
         return f"视频 {bvid} 尚未分析"
@@ -75,7 +75,7 @@ def get_top_slang(bvid: str) -> str:
 
 @tool
 def get_representative(bvid: str, category: str) -> str:
-    """获取某视频指定分类(赞美/贬低/水军/无意义)的代表性评论原文。"""
+    """获取某视频指定分类(赞美/贬低/水军/无意义/社区对骂/中立)的代表性评论原文。"""
     a = _load_analysis(bvid)
     if not a:
         return f"视频 {bvid} 尚未分析"
@@ -109,7 +109,7 @@ def build_agent(model=None, api_key=None):
                      base_url=CFG.get("base_url", "https://open.bigmodel.cn/api/paas/v4/"),
                      temperature=0.2, request_timeout=90)
     tools = [get_video_stats, get_trend, get_top_slang, get_representative, compare_videos, search_slang]
-    sys_prompt = ("你是'破妄'评论情感分析系统的 AI 分析师。数据来源是 B 站评论四分类(赞美/贬低/水军/无意义)分析结果。"
+    sys_prompt = ("你是'破妄'评论情感分析系统的 AI 分析师。数据来源是 B 站评论六分类(赞美/贬低/水军/无意义/社区对骂/中立)分析结果。"
                   "回答用户关于评论情感的问题，用中文、简洁、给出关键数字。若数据缺失请如实说明。")
     return create_agent(model=llm, tools=tools, system_prompt=sys_prompt)
 

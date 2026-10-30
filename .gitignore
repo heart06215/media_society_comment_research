@@ -3,11 +3,17 @@ data/config.json
 data/cookie.txt
 .env
 *.env
+.env.*
+!.env.example
 
 # ===== 运行产物 / 构建缓存 =====
 __pycache__/
 *.pyc
 .docx_build/
 
-# ===== 本地工具会话 =====
-.zcode/
+# 本地日志、编辑器缓存和资料核对临时文件
+*.log
+.tmp-*
+.venv/
+.pytest_cache/
+.DS_Store

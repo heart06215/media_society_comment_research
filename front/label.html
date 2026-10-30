@@ -13,6 +13,8 @@
   .cat-pill.sel.blame { background:var(--cat-blame); color:#fff; }
   .cat-pill.sel.shui { background:var(--cat-shui); color:#0E1116; }
   .cat-pill.sel.noise { background:var(--cat-noise); color:#fff; }
+  .cat-pill.sel.feud { background:var(--cat-feud); color:#fff; }
+  .cat-pill.sel.neutral { background:var(--cat-neutral); color:#fff; }
   .comment-box { min-height:110px; padding:14px; border:2px solid var(--line); background:var(--paper);
     background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px); background-size:28px 28px;
     font-size:15px; line-height:1.8; }
@@ -29,34 +31,25 @@
   html[data-theme="dark"] .toast { color:#090B10; }
   .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 </style>
+<link rel="stylesheet" href="/governance.css">
+<link rel="stylesheet" href="/tools.css">
+<script src="/workspace.js" defer></script>
+<link rel="icon" href="/mark.svg" type="image/svg+xml">
 </head>
-<body>
-<header class="topbar">
-  <a class="brand" href="/">
-    <span class="logo"><span class="ring"></span><span class="core"></span><span class="cut"></span></span>
-    <span><span class="brand-name">破妄</span></span>
-  </a>
-  <nav class="nav">
-    <a href="/">首页</a>
-    <a href="/dashboard">看板</a>
-    <a href="/comments">评论</a>
-    <a href="/chat">问答</a>
-    <a href="/label" class="active">标注</a>
-    <button class="theme-toggle" data-theme-toggle><span class="ico"></span><span class="txt">夜间</span></button>
-  </nav>
-</header>
+<body class="tool-page workspace-page">
+<a class="skip-link" href="#main">跳至主要内容</a><div id="workspaceNav"></div><div class="app-workspace"><header class="app-topbar" id="workspaceTopbar"></header>
 
-<div class="wrap">
+<main class="wrap" id="main">
   <div class="kicker">Anchor Set &amp; Human Review</div>
   <h1 class="display" style="font-size:44px;margin-bottom:8px">标注与<span class="stroke">二次审查</span></h1>
-  <p class="muted mb-2">人工精标样本构成「锚定集」——所有评论分类的依赖模板。标注越多分类越准；对大模型结果的修正会自动回流锚定集。</p>
+  <p class="muted mb-2">以人工精标样本建立锚定集，复核模型分类及语境依据。保留正常批评和多元表达；对疑似刷评与相互攻击逐条核验，为治理研究提供可靠样本。</p>
 
   <!-- 视频选择 + 进度 -->
   <div class="card accent mb-2">
     <span class="corner"></span>
     <div class="flex-between" style="flex-wrap:wrap">
       <div class="flex" style="flex-wrap:wrap">
-        <select id="videoSel" style="min-width:250px"></select>
+        <select aria-label="选择研究视频" id="videoSel" style="min-width:250px"></select>
         <button class="btn yellow" id="btnMore">追加标注 +50</button>
         <span class="muted mono" id="progText"></span>
       </div>
@@ -67,7 +60,7 @@
     </div>
     <div class="progress mt"><i id="progFill" style="width:0%"></i></div>
     <div class="flex-between mt small" style="flex-wrap:wrap">
-      <span class="muted">两视频各完成 <b class="mono" id="goalTxt">100</b> 条后可触发分析 · 当前锚定集总数 <b class="mono" id="nAll">0</b> 条</span>
+      <span class="muted">两视频各完成 <b class="mono" id="goalTxt">50</b> 条后可触发分析（建议目标 100 条）· 当前锚定集总数 <b class="mono" id="nAll">0</b> 条</span>
       <span class="flex" style="gap:10px">
         <span id="saveStatus" class="muted mono" style="opacity:.7">本地文件: data/labels/anchors.json</span>
         <button class="btn ghost" id="btnBackup" style="padding:6px 12px;font-size:11px">导出备份</button>
@@ -77,8 +70,8 @@
 
   <!-- 模式切换 -->
   <div class="mode-tabs">
-    <div class="mode-tab active" data-mode="label">① 人工标注</div>
-    <div class="mode-tab" data-mode="review">② 二次审查（大模型结果）</div>
+    <button type="button" class="mode-tab active" data-mode="label" aria-pressed="true">① 人工标注</button>
+    <button type="button" class="mode-tab" data-mode="review" aria-pressed="false">② 二次审查（大模型结果）</button>
   </div>
 
   <!-- 标注模式 -->
@@ -92,36 +85,43 @@
         <div class="comment-box" id="qText">点击右上角「追加标注」载入待标队列</div>
       </div>
       <div style="display:flex; flex-direction:column; gap:10px; justify-content:center; min-width:230px">
-        <div class="cat-pill praise" data-cat="赞美">赞 美 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[1]</span></div>
-        <div class="cat-pill blame" data-cat="贬低">贬 低 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[2]</span></div>
-        <div class="cat-pill shui" data-cat="水军">水 军 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[3]</span></div>
-        <div class="cat-pill noise" data-cat="无意义">无意义 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[4]</span></div>
+        <button type="button" class="cat-pill praise" data-cat="赞美" aria-pressed="false">赞 美 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[1]</span></button>
+        <button type="button" class="cat-pill blame" data-cat="贬低" aria-pressed="false">贬 低 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[2]</span></button>
+        <button type="button" class="cat-pill shui" data-cat="水军" aria-pressed="false">水 军 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[3]</span></button>
+        <button type="button" class="cat-pill noise" data-cat="无意义" aria-pressed="false">无意义 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[4]</span></button>
+        <button type="button" class="cat-pill feud" data-cat="社区对骂" aria-pressed="false">社区对骂 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[5]</span></button>
+        <button type="button" class="cat-pill neutral" data-cat="中立" aria-pressed="false">中 立 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[6]</span></button>
         <div class="mt flex" style="gap:8px">
           <button class="btn ghost" id="btnSkip">跳过 →</button>
           <button class="btn primary" id="btnSubmit" disabled>提交 ✓</button>
         </div>
       </div>
     </div>
-    <div class="muted small">快捷键：1/2/3/4 选择分类，↵ 提交。分类定义见首页。本次已标 <b class="mono" id="sessionCount">0</b> 条。</div>
+    <div class="muted small">快捷键：1/2/3/4/5/6 选择分类，↵ 提交。分类定义见本页说明。本次已标 <b class="mono" id="sessionCount">0</b> 条。</div>
+    <div class="muted small mt" style="line-height:1.9;border-top:1px solid var(--grid);padding-top:8px">
+      <b style="color:var(--cat-feud)">社区对骂</b>：评论者互相攻击、拉踩、站队对线，矛头指向其他用户或群体。
+      <b style="color:var(--cat-neutral)">中立</b>：客观陈述、提问求证、补充信息，没有明确褒贬情绪。
+    </div>
   </section>
 
   <!-- 审查模式 -->
   <section id="modeReview" style="display:none">
     <div class="flex mb" style="flex-wrap:wrap">
-      <select id="revCatSel">
+      <select id="revCatSel" aria-label="筛选复核类别">
         <option value="">全部类别</option><option value="赞美">赞美</option><option value="贬低">贬低</option>
         <option value="水军">水军</option><option value="无意义">无意义</option>
+        <option value="社区对骂">社区对骂</option><option value="中立">中立</option>
       </select>
       <button class="btn cyan" id="btnRevLoad">加载审查队列</button>
       <span class="muted" id="revInfo"></span>
     </div>
     <div class="card accent violet flat" id="revBox"><span class="muted">分析完成后，此处载入大模型判定结果供确认/修正。</span></div>
   </section>
-</div>
+</main>
 
 <footer class="footer">
   <span class="brand-name" style="font-size:15px;letter-spacing:4px">破妄</span>
-  <span class="muted">锚定集 = 分类依赖模板 · 修正即学习 · 越用越准</span>
+  <span class="muted">保留分类依据 · 人工核验语境 · 记录复核意见</span>
   <span style="flex:1"></span>
   <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span><span class="d4"></span></div>
 </footer>
@@ -170,11 +170,11 @@ async function loadAnchorsInfo() {
   const bvid = document.getElementById("videoSel").value;
   const nCur = by[bvid] || 0;
   document.getElementById("nAll").textContent = d.count;
-  document.getElementById("progText").textContent = `本视频已标 ${nCur}/100`;
-  document.getElementById("progFill").style.width = Math.min(100, (nCur/100)*100) + "%";
-  const ready = videos.every(v => (by[v.bvid]||0) >= 100);
+  document.getElementById("progText").textContent = `本视频已标 ${nCur} 条（触发线 50 / 目标 100）`;
+  document.getElementById("progFill").style.width = Math.min(100, (nCur/50)*100) + "%";
+  const ready = videos.every(v => (by[v.bvid]||0) >= 50);
   document.getElementById("btnAnalyze").disabled = !ready;
-  document.getElementById("analyzeHint").textContent = ready ? "两视频均已达标，可开始分析" : "未达标：每视频需100条";
+  document.getElementById("analyzeHint").textContent = ready ? "两视频均已达标，可开始分析" : "未达标：每视频需50条";
 }
 
 async function loadQueue() {
@@ -196,7 +196,7 @@ function renderQueue() {
   const it = queue[idx];
   box.textContent = it.text;
   document.getElementById("qMeta").textContent = `♥${it.like} · ${new Date(it.ctime*1000).toLocaleDateString()}`;
-  document.querySelectorAll(".cat-pill").forEach(p => p.classList.toggle("sel", p.dataset.cat === curCat));
+  document.querySelectorAll("#modeLabel .cat-pill").forEach(p => { p.classList.toggle("sel", p.dataset.cat === curCat); p.setAttribute("aria-pressed", String(p.dataset.cat === curCat)); });
   document.getElementById("btnSubmit").disabled = !curCat;
 }
 
@@ -219,16 +219,16 @@ document.getElementById("btnMore").onclick = async () => {
   queue = d.items; idx = 0; renderQueue();
 };
 document.addEventListener("keydown", e => {
-  if (document.getElementById("modeLabel").style.display === "none") return;
-  const map = { "1":"赞美","2":"贬低","3":"水军","4":"无意义" };
+  if (document.getElementById("modeLabel").style.display === "none" || e.target.matches("input, textarea, select, button")) return;
+  const map = { "1":"赞美","2":"贬低","3":"水军","4":"无意义","5":"社区对骂","6":"中立" };
   if (map[e.key]) { curCat = map[e.key]; renderQueue(); }
   else if (e.key === "Enter" && curCat) document.getElementById("btnSubmit").click();
 });
 
 /* 模式切换 */
 document.querySelectorAll(".mode-tab").forEach(t => t.onclick = () => {
-  document.querySelectorAll(".mode-tab").forEach(x => x.classList.remove("active"));
-  t.classList.add("active");
+  document.querySelectorAll(".mode-tab").forEach(x => { x.classList.remove("active"); x.setAttribute("aria-pressed", "false"); });
+  t.classList.add("active"); t.setAttribute("aria-pressed", "true");
   document.getElementById("modeLabel").style.display = t.dataset.mode==="label" ? "" : "none";
   document.getElementById("modeReview").style.display = t.dataset.mode==="review" ? "" : "none";
 });
@@ -251,7 +251,7 @@ function renderReview() {
   const box = document.getElementById("revBox");
   if (!revQueue.length) { box.innerHTML = '<span class="muted">审查队列为空（可能尚未分析或已审完）。</span>'; return; }
   const it = revQueue[revIdx];
-  const CLS = { "赞美":"praise","贬低":"blame","水军":"shui","无意义":"noise" };
+  const CLS = { "赞美":"praise","贬低":"blame","水军":"shui","无意义":"noise","社区对骂":"feud","中立":"neutral" };
   box.innerHTML = `
     <div class="flex-between mb" style="flex-wrap:wrap">
       <span class="muted mono">${revIdx+1} / ${revQueue.length}</span>
@@ -261,10 +261,12 @@ function renderReview() {
     <div class="comment-box">${esc(it.text)}</div>
     <div class="review-reason">模型理由：${esc(it.reason)}</div>
     <div class="flex mt" style="gap:8px; flex-wrap:wrap">
-      <div class="cat-pill praise" data-r="赞美">赞美</div>
-      <div class="cat-pill blame" data-r="贬低">贬低</div>
-      <div class="cat-pill shui" data-r="水军">水军</div>
-      <div class="cat-pill noise" data-r="无意义">无意义</div>
+      <button type="button" class="cat-pill praise" data-r="赞美" aria-pressed="false">赞美</button>
+      <button type="button" class="cat-pill blame" data-r="贬低" aria-pressed="false">贬低</button>
+      <button type="button" class="cat-pill shui" data-r="水军" aria-pressed="false">水军</button>
+      <button type="button" class="cat-pill noise" data-r="无意义" aria-pressed="false">无意义</button>
+      <button type="button" class="cat-pill feud" data-r="社区对骂" aria-pressed="false">社区对骂</button>
+      <button type="button" class="cat-pill neutral" data-r="中立" aria-pressed="false">中立</button>
       <span class="muted small" style="align-self:center">不选则视为确认模型判定</span>
     </div>
     <div class="flex mt-2">
@@ -273,8 +275,8 @@ function renderReview() {
     </div>`;
   let selCat = "";
   box.querySelectorAll(".cat-pill").forEach(p => p.onclick = () => {
-    box.querySelectorAll(".cat-pill").forEach(x => x.classList.remove("sel"));
-    p.classList.add("sel"); selCat = p.dataset.r;
+    box.querySelectorAll(".cat-pill").forEach(x => { x.classList.remove("sel"); x.setAttribute("aria-pressed", "false"); });
+    p.classList.add("sel"); p.setAttribute("aria-pressed", "true"); selCat = p.dataset.r;
   });
   document.getElementById("revNext").onclick = () => { revIdx = Math.min(revIdx+1, revQueue.length-1); renderReview(); };
   document.getElementById("revSubmit").onclick = async () => {
@@ -322,5 +324,6 @@ function poll(bvid, btn) {
 
 loadVideos().then(loadQueue);
 </script>
+</div>
 </body>
 </html>

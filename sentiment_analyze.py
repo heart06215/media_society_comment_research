@@ -6,7 +6,7 @@
      让模型"参照模板"归类 -> 网络用语特化的可解释落地。
   3. LangChain + 智谱GLM(OpenAI兼容) 结构化输出：{category, confidence, reason, slang_tags}
   4. 断点续采(按批落盘) + 聚合统计。
-四分类：赞美 / 贬低 / 水军 / 无意义。网络用语词典来自 data/slang_dict.json。
+六分类：赞美 / 贬低 / 水军 / 无意义 / 社区对骂 / 中立。网络用语词典来自 data/slang_dict.json。
 默认模型 glm-4-flash(免费)，连续限流自动降级 glm-4-flash-250414。
 """
 import os
@@ -22,22 +22,30 @@ from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
 
-CATEGORIES = ["赞美", "贬低", "水军", "无意义"]
+CATEGORIES = ["赞美", "贬低", "水军", "无意义", "社区对骂", "中立"]
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def load_project_config():
-    """从 data/config.json 读取项目配置(API Key 等)，不进文档/不提交。utf-8-sig 兼容带BOM文件"""
-    p = os.path.join(BASE_DIR, "data", "config.json")
-    if os.path.exists(p):
-        with open(p, "r", encoding="utf-8-sig") as f:
-            return json.load(f)
-    return {}
+    """读取本地配置，缺省使用示例；进程环境变量中的密钥优先。"""
+    config = {}
+    for name in ("config.example.json", "config.json"):
+        path = os.path.join(BASE_DIR, "data", name)
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8-sig") as source:
+                values = json.load(source)
+            # 示例只提供公开参数，不将说明文字当作实际密钥。
+            if name == "config.example.json":
+                values.pop("api_key", None)
+            config.update(values)
+    if os.environ.get("ZHIPU_API_KEY"):
+        config["api_key"] = os.environ["ZHIPU_API_KEY"]
+    return config
 
 
 # ---------- 结构化输出模型 ----------
 class CommentLabel(BaseModel):
-    category: str = Field(description="四分类之一：赞美/贬低/水军/无意义")
+    category: str = Field(description="六分类之一：赞美/贬低/水军/无意义/社区对骂/中立")
     confidence: float = Field(description="置信度 0~1")
     reason: str = Field(description="一句话归因(中文,30字内)")
     slang_tags: list = Field(description="评论中出现的网络用语词列表，无则空数组")
@@ -86,19 +94,23 @@ def build_system_prompt(slang_dict):
         slang_lines.append(f"- {e['term']}: {e.get('meaning','')}(倾向:{e.get('sentiment','中性')})")
     slang_block = "\n".join(slang_lines[:80])
     return f"""你是一名资深的互联网社区评论情感分析专家，专精中文网络用语与B站饭圈/游戏社区文化。
-你的任务：把每条B站评论严格归入四类之一。
+你的任务：把每条B站评论严格归入六类之一。
 
-四分类定义：
+六分类定义：
 - 赞美：对视频内容/演唱者/游戏/作品表达明确喜爱、支持、肯定、夸赞、感动。
 - 贬低：对内容或主体表达不满、批评、嘲讽、贬低、质疑(如指责假唱/修音/质量差)。
 - 水军：被购买的评论——伪装成真实用户发布的付费夸赞或付费差评(组织化控评、模板化夸赞/抹黑话术及其复制粘贴变体)。
-- 无意义：纯表情、单字灌水(哈哈哈哈/前排/来了/沙发)、抢楼占位、与视频内容无关的闲聊，以及"关注我/加V领福利"式显性引流广告。
+- 无意义：纯表情、单字灌水(哈哈哈哈/前排/来了/沙发)、抢楼占位、无意义刷屏口号，以及"关注我/加V领福利"式显性引流广告。
+- 社区对骂：评论者之间的互相攻击、拉踩、站队对线、人身攻击、群体嘲讽；矛头指向其他用户或群体，而不是作品本身。
+- 中立：客观陈述事实、提问求证、补充信息、中性讨论，没有明确褒贬情绪，也不是灌水或广告。
 
 网络用语参考词典(部分)：
 {slang_block}
 
 注意：
-- 严格四分类，每条必属其一，不要输出四类之外。
+- 严格六分类，每条必属其一，不要输出六类之外。
+- 区分「贬低」与「社区对骂」：批评作品/主体归贬低，攻击其他评论者或群体归社区对骂。
+- 区分「无意义」与「中立」：灌水、复读、纯表情、广告归无意义；有信息量的客观表达归中立。
 - 无相近模板时若确实无法判断，选择最接近的一类并降低置信度。
 - 输出严格 JSON。"""
 
@@ -120,7 +132,7 @@ def build_user_prompt(text, refs, rag_lines=None):
 【待分类评论】：
 「{text}」
 
-请输出 JSON，格式：{{"category": "赞美|贬低|水军|无意义", "confidence": 0.0~1.0, "reason": "一句话归因", "slang_tags": ["出现的网络用语词"]}}"""
+请输出 JSON，格式：{{"category": "赞美|贬低|水军|无意义|社区对骂|中立", "confidence": 0.0~1.0, "reason": "一句话归因", "slang_tags": ["出现的网络用语词"]}}"""
 
 
 # ---------- 分类引擎 ----------
@@ -203,9 +215,9 @@ class SentimentAnalyzer:
                     for attempt in range(4):
                         try:
                             res = await self.chain.ainvoke({"input": user})
-                            cat = res.get("category", "无意义")
+                            cat = res.get("category", "中立")
                             if cat not in CATEGORIES:
-                                cat = "无意义"
+                                cat = "中立"
                             conf = float(res.get("confidence", 0.0) or 0.0)
                             conf = max(0.0, min(1.0, conf))
                             slang = res.get("slang_tags") or []
@@ -300,7 +312,6 @@ def aggregate(rows, video_meta=None):
         representative[c] = pool[:5]
     shui = [r for r in rows if r["category"] == "水军"]
     shui.sort(key=lambda r: r.get("confidence", 0), reverse=True)
-    graph = build_attitude_graph(rows, max_nodes=120)
     return {
         "meta": video_meta or {},
         "total": total,
@@ -311,75 +322,7 @@ def aggregate(rows, video_meta=None):
         "slang_by_category": {c: [{"term": t, "count": n} for t, n in slang_by_cat[c].most_common(15)] for c in CATEGORIES},
         "representative": {c: representative[c] for c in CATEGORIES},
         "shui_shu_highlights": shui[:10],
-        "attitude_graph": graph,
     }
-
-
-def build_attitude_graph(rows, max_nodes=140, max_edges=500):
-    """评论态度节点关系图 v2
-    节点：按 (点赞 + 含网络用语加成 + 置信度) 打分，四分类配额选取，近重复文本去重。
-    边：共享网络用语(权重2/个) 或 文本bigram相似>=0.45(sim*10)；跨类共享梗的边尤其有洞察价值。
-    节点字段附月份，供前端提示时间分布。
-    """
-    if not rows:
-        return {"nodes": [], "links": []}
-    from collections import defaultdict
-
-    def score(r):
-        return (r.get("like", 0) + (30 if r.get("slang_tags") else 0)
-                + r.get("confidence", 0) * 20)
-
-    by_cat = defaultdict(list)
-    for r in rows:
-        by_cat[r["category"]].append(r)
-    picked = []
-    per = max(1, max_nodes // 4)
-    for c in CATEGORIES:
-        pool = sorted(by_cat.get(c, []), key=score, reverse=True)
-        taken = 0
-        cat_sets = []
-        for r in pool:
-            if taken >= per:
-                break
-            bg = _ngrams(r.get("text", ""))
-            dup = any(_jaccard(bg, s) >= 0.6 for s in cat_sets[-120:])
-            if dup or not (r.get("text") or "").strip():
-                continue
-            cat_sets.append(bg)
-            picked.append(r)
-            taken += 1
-    picked = picked[:max_nodes]
-    nodes = []
-    for i, r in enumerate(picked):
-        month = ""
-        if r.get("ctime"):
-            month = datetime.fromtimestamp(r["ctime"]).strftime("%Y-%m")
-        nodes.append({
-            "id": str(i), "rpid": r["rpid"], "category": r.get("category"),
-            "value": r.get("like", 0) + 1, "confidence": round(r.get("confidence", 0), 2),
-            "text": (r.get("text") or "")[:60], "slang_tags": r.get("slang_tags", []),
-            "month": month,
-        })
-    # 边：共享网络用语 或 高文本相似
-    links = []
-    seen_edges = set()
-    ngs = [_ngrams(n["text"]) for n in nodes]
-    tags = [set(t for t in n["slang_tags"] if t) for n in nodes]
-    for i in range(len(nodes)):
-        for j in range(i + 1, len(nodes)):
-            if len(links) >= max_edges:
-                break
-            shared = len(tags[i] & tags[j])
-            sim = _jaccard(ngs[i], ngs[j])
-            weight = shared * 2 + sim * 10
-            if weight >= 0.45:
-                key = (nodes[i]["id"], nodes[j]["id"])
-                if key not in seen_edges:
-                    seen_edges.add(key)
-                    cross = nodes[i]["category"] != nodes[j]["category"]
-                    links.append({"source": nodes[i]["id"], "target": nodes[j]["id"],
-                                  "value": round(weight, 2), "cross": cross})
-    return {"nodes": nodes, "links": links}
 
 
 # ---------- CLI ----------

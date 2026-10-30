@@ -10,11 +10,13 @@
   --violet: #6E1EFF;  /* 紫电 */
   --pink:   #F22560;  /* 品红撞击 */
   --yellow: #FFD400;  /* 构成黄(仅点缀/水军) */
-  /* 四分类语义色 */
+  /* 六分类语义色 */
   --cat-praise: #2743FF;
   --cat-blame:  #F22560;
   --cat-shui:   #FFD400;
   --cat-noise:  #707A8E;
+  --cat-feud:   #6E1EFF;
+  --cat-neutral:#00A88F;
   /* 日间主题面 */
   --paper:  #F2F4F8;
   --surface:#FFFFFF;
@@ -167,6 +169,8 @@ input:focus,select:focus,textarea:focus { border-color:var(--blue); box-shadow:4
 .badge.blame { background:var(--cat-blame); color:#fff; }
 .badge.shui { background:var(--cat-shui); color:#0E1116; }
 .badge.noise { background:var(--cat-noise); color:#fff; }
+.badge.feud { background:var(--cat-feud); color:#fff; }
+.badge.neutral { background:var(--cat-neutral); color:#fff; }
 
 /* ---------- 统计块 ---------- */
 .stat-grid { display:grid; gap:2px; }
@@ -205,6 +209,7 @@ html[data-theme="dark"] .tab.active { color:#090B10; }
 .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
 .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; }
 .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; }
+.grid-6 { display:grid; grid-template-columns:repeat(6,1fr); gap:2px; }
 .flex { display:flex; gap:12px; align-items:center; }
 .flex-between { display:flex; justify-content:space-between; align-items:center; gap:12px; }
 .mt{margin-top:14px}.mt-2{margin-top:24px}.mb{margin-bottom:14px}.mb-2{margin-bottom:26px}
@@ -225,7 +230,21 @@ html[data-theme="dark"] .tab.active { color:#090B10; }
 .dots span { width:14px; height:14px; }
 .dots .d1{background:var(--blue)} .dots .d2{background:var(--cyan)} .dots .d3{background:var(--pink)} .dots .d4{background:var(--yellow)}
 
+@media (max-width:1100px){
+  .grid-6 { grid-template-columns:repeat(3,1fr); }
+}
 @media (max-width:920px){
-  .grid-2,.grid-4,.grid-3 { grid-template-columns:1fr; }
+  .grid-2,.grid-4,.grid-3,.grid-6 { grid-template-columns:1fr; }
   h1.display{font-size:42px}
+}
+
+/* Shared access and layout support, using the original v2 colors and shapes. */
+:root { --focus: var(--blue); --on-dark: #FFFFFF; --on-bright: #0E1116; }
+html[data-theme="dark"] { --focus: var(--cyan); }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.btn.pink, .badge.blame, .badge.neutral { color: var(--on-bright); }
+.tool-intro { margin-bottom: 24px; max-width: 860px; color: var(--muted); line-height: 1.9; font-size: 13px; }
+@media (max-width: 640px) { .wrap { padding-left: 16px; padding-right: 16px; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }

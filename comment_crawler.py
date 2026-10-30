@@ -22,7 +22,7 @@ API_REPLY_MAIN = "https://api.bilibili.com/x/v2/reply/main"
 API_REPLY_REPLY = "https://api.bilibili.com/x/v2/reply/reply"
 API_VIEW = "https://api.bilibili.com/x/web-interface/view"
 
-CATEGORIES = ["赞美", "贬低", "水军", "无意义"]
+CATEGORIES = ["赞美", "贬低", "水军", "无意义", "社区对骂", "中立"]
 
 
 class CommentCrawler:
@@ -40,6 +40,7 @@ class CommentCrawler:
         self.min_interval = min_interval
         self.max_interval = max_interval
         self.max_retry = max_retry
+        self._time_probe_dead = False  # B站限制主评论游标翻页时置位，避免每月份点空转二分
         self._load_cookie(cookie_path)
         self._bootstrap()
 
@@ -75,7 +76,7 @@ class CommentCrawler:
             lo, hi = base, base + 2
         time.sleep(random.uniform(lo, hi))
 
-    def _get(self, url, params):
+    def _get(self, url, params, no_retry_codes=()):
         for attempt in range(1, self.max_retry + 1):
             try:
                 r = self.session.get(url, params=params, timeout=20)
@@ -90,6 +91,9 @@ class CommentCrawler:
                 data = r.json()
                 if data.get("code") == 0:
                     return data
+                if data.get("code") in no_retry_codes:
+                    print(f"[api] code={data.get('code')} msg={data.get('message')} (终态，跳过重试)")
+                    return None
                 print(f"[api] code={data.get('code')} msg={data.get('message')} (尝试 {attempt})")
                 self._sleep(3)
             except requests.RequestException as e:
@@ -125,7 +129,7 @@ class CommentCrawler:
     def _fetch_reply(self, aid, root, page):
         d = self._get(API_REPLY_REPLY, {
             "type": 1, "oid": aid, "root": root, "ps": 20, "pn": page,
-        })
+        }, no_retry_codes=(12006,))  # 12006=评论不存在/已删除，终态无需重试
         if not d:
             return None
         return d["data"].get("replies") or []
@@ -213,12 +217,15 @@ class CommentCrawler:
     def _find_cursor_for_ts(self, aid, target_ts, lo, hi, depth=0):
         """在游标[lo,hi]间二分找 ctime 接近 target_ts 的游标。
         mode=2 语义：next 越大 -> 时间越新(单调)。
+        注意：B站已限制主评论游标翻页(任意数字next返回空)，探测失败即置位
+        _time_probe_dead，本次会话内不再对后续月份点做无效二分。
         """
         if depth > 18 or lo > hi:
             return None
         mid = (lo + hi) // 2
         ct = self._probe_time(aid, mid)
         if ct is None:
+            self._time_probe_dead = True
             return None
         if abs(ct - target_ts) < 3 * 86400:
             return mid
@@ -240,12 +247,13 @@ class CommentCrawler:
 
         if slices:
             cursors = slices
+        elif self._time_probe_dead:
+            print(f"[{bvid}] 时间层游标探测失效(B站限制主评论翻页)，仅从最新游标采样")
+            cursors = [0]
         else:
             if not month_points:
                 month_points = self._auto_months(info.get("pubdate") or 0, time.time(), step_months=3)
             print(f"[{bvid}] 目标月份: {month_points}")
-            pub = info.get("pubdate") or 0
-            now = time.time()
             cursors = [0]  # 最新入口
             for y, m in month_points:
                 target = datetime(y, m, 15).timestamp()
@@ -282,19 +290,21 @@ class CommentCrawler:
                 y += 1
         return months
 
-    def crawl_replies_for_main(self, bvid, main_rpids=None, max_replies=25, roots=8):
-        """对若干主楼抓子评论，弥合时间段"""
+    def crawl_replies_for_main(self, bvid, main_rpids=None, max_replies=60, roots=80, pages=5):
+        """对若干主楼抓子评论(pn分页，B站限制主评论翻页后的主要增量通道)。
+        roots 未指定时从已有语料挑子评论数最多的主楼，优先挖大热评楼。
+        """
         info = self.get_video_info(bvid)
         if not info:
             return
         aid = info["aid"]
-        # 若无指定主楼，从已有 jsonl 里挑高赞主楼
+        # 若无指定主楼，从已有 jsonl 里挑子评论数最多的主楼
         if not main_rpids:
             main_rpids = self._pick_roots(bvid, roots)
         total = 0
         for rpid in main_rpids:
             rows = []
-            for pn in range(1, 4):
+            for pn in range(1, pages + 1):
                 replies = self._fetch_reply(aid, rpid, pn)
                 if not replies:
                     break
@@ -304,9 +314,9 @@ class CommentCrawler:
                     break
             if rows:
                 total += self._save(bvid, rows)
-        print(f"[{bvid}] 子评论层: 新增{total}条")
+        print(f"[{bvid}] 子评论层: 新增{total}条", flush=True)
 
-    def _pick_roots(self, bvid, n):
+    def _pick_roots(self, bvid, n, min_rcount=2):
         path = os.path.join(self.out_dir, f"{bvid}.jsonl")
         roots = []
         if os.path.exists(path):
@@ -317,11 +327,12 @@ class CommentCrawler:
                         continue
                     try:
                         r = json.loads(line)
-                        if r.get("rcount", 0) >= 5 and r.get("root") == 0:
-                            roots.append(r["rpid"])
+                        if r.get("rcount", 0) >= min_rcount and r.get("root") == 0:
+                            roots.append((r.get("rcount", 0), r["rpid"]))
                     except Exception:
                         continue
-        return roots[:n]
+        roots.sort(reverse=True)  # 子评论数多的主楼优先，单位请求产出更高
+        return [rp for _, rp in roots[:n]]
 
     def to_json(self, bvid):
         path = os.path.join(self.out_dir, f"{bvid}.jsonl")
@@ -360,7 +371,8 @@ def crawl_video(crawler, bvid, target_count=5000, slices=None, month_points=None
     print(f"===== 开始爬取 {bvid}: {info['title']} =====")
     crawler.crawl_time_slices(bvid, slices=slices, per_slice=3, month_points=month_points)
     crawler.crawl_hot(bvid, pages=hot_pages)
-    crawler.crawl_replies_for_main(bvid, roots=15, max_replies=25)
+    # 主评论翻页已被B站限制(仅最新/热度各3条可达)，子评论层为增量主力
+    crawler.crawl_replies_for_main(bvid, roots=80, max_replies=60, pages=5)
     crawler.to_json(bvid)
     print(f"[{bvid}] 当前累计: {crawler._count_existing(bvid)}条")
 

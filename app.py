@@ -18,6 +18,7 @@ from flask_cors import CORS
 
 import sentiment_analyze as sa
 import agent_chat
+import comment_graph as cg
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 FRONT_DIR = os.path.join(BASE_DIR, "front")
@@ -47,7 +48,8 @@ CORS(app)
 
 CFG = sa.load_project_config()
 CATEGORIES = sa.CATEGORIES
-CAT_COLORS = {"赞美": "#1B3B6F", "贬低": "#BE1E2D", "水军": "#F5C518", "无意义": "#8C8780"}
+CAT_COLORS = {"赞美": "#2743FF", "贬低": "#F22560", "水军": "#FFD400", "无意义": "#707A8E",
+              "社区对骂": "#6E1EFF", "中立": "#00A88F"}
 
 
 # ---------- 基础工具 ----------
@@ -101,19 +103,15 @@ def page_landing():
     return _page("landing.html")
 
 
-@app.route("/dashboard")
-def page_dashboard():
-    return _page("dashboard.html")
-
-
 @app.route("/comments")
 def page_comments():
     return _page("comments.html")
 
 
-@app.route("/chat")
-def page_chat():
-    return _page("chat.html")
+@app.route("/insight")
+@app.route("/insight.html")
+def page_insight():
+    return _page("insight.html")
 
 
 @app.route("/label")
@@ -155,6 +153,59 @@ def health():
 
 
 # ---------- 数据 API ----------
+# 语料热词缓存：bvid -> (语料文件mtime, 结果)
+_TOPSLANG_CACHE = {}
+
+
+def _load_lexicon_terms():
+    """合并网络用语词典与RAG知识库的 词条+别名(去重保序)，供语料词频统计"""
+    terms = []
+    for name in ("slang_dict.json", "rag_knowledge.json"):
+        d = _read_json(os.path.join(DATA_DIR, name), {})
+        for e in d.get("entries", []):
+            t = (e.get("term") or "").strip()
+            if t:
+                terms.append(t)
+            for a in e.get("aliases") or []:
+                a = (a or "").strip()
+                if a:
+                    terms.append(a)
+    seen, out = set(), []
+    for t in terms:
+        k = t.lower()
+        if k not in seen:
+            seen.add(k)
+            out.append(t)
+    return out
+
+
+def _corpus_top_slang(bvid, k=60):
+    """未分析时的热词数据源：对爬取语料按词典命中频次统计热词(带mtime缓存)"""
+    corpus_path = os.path.join(CRAWLED_DIR, f"{bvid}.json")
+    try:
+        mtime = os.path.getmtime(corpus_path)
+    except OSError:
+        return []
+    hit = _TOPSLANG_CACHE.get(bvid)
+    if hit and hit[0] == mtime:
+        return hit[1]
+    terms = _load_lexicon_terms()
+    texts = [c.get("text") or "" for c in _corpus(bvid).get("comments", [])]
+    # 大小写无关合并计数(yyds/YYDS 视为同一词)，展示名取先出现者
+    scores, display = {}, {}
+    for t in terms:
+        key = t.lower()
+        display.setdefault(key, t)
+        n = sum(text.count(t) for text in texts)
+        if n:
+            scores[key] = scores.get(key, 0) + n
+    counts = [{"term": display[key], "count": n} for key, n in scores.items() if n >= 1]
+    counts.sort(key=lambda x: x["count"], reverse=True)
+    top = counts[:k]
+    _TOPSLANG_CACHE[bvid] = (mtime, top)
+    return top
+
+
 @app.route("/api/videos")
 def api_videos():
     result = []
@@ -171,8 +222,7 @@ def api_videos():
             "anchor_count": sum(1 for a in _load_anchors() if a.get("bvid") == v["bvid"]),
             "analyzed": bool(analyzed),
             "analysis": analyzed.get("category_count") if analyzed else None,
-            "graph": analyzed.get("attitude_graph") if analyzed else None,
-            "top_slang": analyzed.get("top_slang", []) if analyzed else [],
+            "top_slang": (analyzed or {}).get("top_slang") or _corpus_top_slang(v["bvid"]),
             "trend": analyzed.get("trend", []) if analyzed else [],
             "representative": analyzed.get("representative", {}) if analyzed else {},
         })
@@ -230,8 +280,9 @@ def api_agent_chat():
 
 @app.route("/api/comments")
 def api_comments():
-    """带分类的评论列表。query: bvid, page,size,order=ctime|like
-    合并原始语料与分析结果(逐条分类)。
+    """带分类的评论列表。query: bvid, page,size,order=ctime|like,category,q
+    合并原始语料与分析结果(逐条分类)；分类/关键词筛选在分页前完成，
+    因此 total 始终是筛选后的总数，供无限下拉判断是否还有下一页。
     """
     bvid = request.args.get("bvid")
     corpus = _corpus(bvid)
@@ -246,17 +297,34 @@ def api_comments():
         comments.sort(key=lambda c: c.get("like", 0), reverse=True)
     else:
         comments.sort(key=lambda c: c.get("ctime", 0), reverse=True)
-    page = int(request.args.get("page", 1))
-    size = min(int(request.args.get("size", 50)), 200)
-    start = (page - 1) * size
-    items = []
-    for c in comments[start:start + size]:
+
+    category = (request.args.get("category") or "").strip()
+    if category in ("all", "全部"):
+        category = ""
+    q = (request.args.get("q") or "").strip().lower()
+
+    merged = []
+    for c in comments:
         a = by_rpid.get(c.get("rpid"), {})
-        items.append({**c, "category": a.get("category", ""), "confidence": a.get("confidence", 0),
-                      "reason": a.get("reason", "")})
+        cat = a.get("category", "")
+        if category and cat != category:
+            continue
+        if q and q not in (c.get("text") or "").lower():
+            continue
+        merged.append({
+            **c,
+            "category": cat,
+            "confidence": a.get("confidence", 0),
+            "reason": a.get("reason", ""),
+            "slang_tags": a.get("slang_tags") or [],
+        })
+
+    page = max(1, int(request.args.get("page", 1)))
+    size = min(max(1, int(request.args.get("size", 50))), 200)
+    start = (page - 1) * size
     return ok({
-        "meta": corpus.get("meta", {}), "total": len(comments),
-        "page": page, "size": size, "items": items,
+        "meta": corpus.get("meta", {}), "total": len(merged),
+        "page": page, "size": size, "items": merged[start:start + size],
         "analyzed": bool(analyzed),
     })
 
@@ -557,6 +625,221 @@ def api_analyze_status():
 @app.route("/api/categories")
 def api_categories():
     return ok({"categories": CATEGORIES, "colors": CAT_COLORS})
+
+
+# ---------- 关系图谱 ----------
+_GRAPH_TERM_LIMIT = 24
+_GRAPH_COMMENT_DEFAULT = 520
+_GRAPH_COMMENT_MAX = 1400
+_GRAPH_SIM_THRESHOLD = 0.35
+_GRAPH_CACHE = {}
+
+
+def _analyzed_comment_categories(bvid):
+    """读取模型逐条分类的断点文件(data/analysis/{bvid}_analyzed.jsonl)，供评论节点着色。"""
+    path = os.path.join(ANALYSIS_DIR, f"{bvid}_analyzed.jsonl")
+    out = {}
+    if not os.path.exists(path):
+        return out
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    row = json.loads(line)
+                except ValueError:
+                    continue
+                if row.get("category") in CATEGORIES and row.get("rpid") is not None:
+                    out[str(row["rpid"])] = row["category"]
+    except OSError:
+        return out
+    return out
+
+
+def _term_node_index(idx, by_id):
+    """词条/别名 -> 图谱词条节点。未进入图谱的词典词条仍保留情感，用于评论归类投票。"""
+    out = {}
+    for key, rec in idx.items():
+        node_id = f"term:{key}" if f"term:{key}" in by_id else ""
+        info = {"term": rec.get("term") or key, "sentiment": rec.get("sentiment") or "",
+                "node_id": node_id}
+        for name in [rec.get("term") or ""] + list(rec.get("aliases") or []):
+            name = (name or "").strip().lower()
+            if name:
+                out.setdefault(name, info)
+    return out
+
+
+def _graph_cache_key(limit):
+    paths = [os.path.join(CRAWLED_DIR, f"{v['bvid']}.json") for v in _videos()]
+    paths += [os.path.join(ANALYSIS_DIR, f"{v['bvid']}_analyzed.jsonl") for v in _videos()]
+    paths += [os.path.join(DATA_DIR, n) for n in ("slang_dict.json", "rag_knowledge.json")]
+    stamp = []
+    for p in paths:
+        try:
+            stamp.append(os.path.getmtime(p))
+        except OSError:
+            stamp.append(0)
+    return (limit, tuple(stamp))
+
+
+def _slang_index():
+    """合并网络用语词典与RAG知识库：小写词条 -> 情感/释义/别名/示例"""
+    idx = {}
+    for name in ("slang_dict.json", "rag_knowledge.json"):
+        for e in _read_json(os.path.join(DATA_DIR, name), {}).get("entries", []):
+            term = (e.get("term") or "").strip()
+            if not term:
+                continue
+            rec = idx.setdefault(term.lower(), {"term": term, "sentiment": "", "meaning": "",
+                                                "note": "", "aliases": [], "examples": []})
+            rec["sentiment"] = rec["sentiment"] or (e.get("sentiment") or "")
+            rec["meaning"] = rec["meaning"] or (e.get("meaning") or "")
+            rec["note"] = rec["note"] or (e.get("note") or "")
+            for a in e.get("aliases") or []:
+                if a and a not in rec["aliases"]:
+                    rec["aliases"].append(a)
+            for x in e.get("examples") or []:
+                if x and x not in rec["examples"]:
+                    rec["examples"].append(x)
+    return idx
+
+
+@app.route("/api/graph")
+def api_graph():
+    """首页关系图谱：视频 → 网络用语 → 评论，两个视频作为左右总节点。
+
+    query.comments: 每个视频注入的评论节点上限(0 关闭评论层)，默认 520。
+    评论层边：视频→评论(归属)、评论→词条(提及)、评论↔评论(字符 bigram Jaccard 相似)。
+    情感类别/社区不再作为大节点出现，只保留为评论颜色与筛选依据。
+    """
+    try:
+        limit = int(request.args.get("comments", _GRAPH_COMMENT_DEFAULT))
+    except ValueError:
+        limit = _GRAPH_COMMENT_DEFAULT
+    limit = max(0, min(limit, _GRAPH_COMMENT_MAX))
+
+    cache_key = _graph_cache_key(limit)
+    if cache_key in _GRAPH_CACHE:
+        return ok(_GRAPH_CACHE[cache_key])
+
+    idx = _slang_index()
+    nodes, by_id, edges = [], {}, []
+
+    def add(nid, label, kind, weight, extra=None):
+        n = by_id.get(nid)
+        if n is None:
+            n = {"id": nid, "label": label, "kind": kind, "weight": 0, "degree": 0}
+            if extra:
+                n.update(extra)
+            by_id[nid] = n
+            nodes.append(n)
+        n["weight"] += max(0, weight or 0)
+        return n
+
+    term_recs = {}
+    video_ctx = []
+    for v in _videos():
+        bvid = v["bvid"]
+        corpus = _corpus(bvid)
+        meta = corpus.get("meta", {})
+        analyzed = _analyzed(bvid) or {}
+        count = corpus.get("count") or len(corpus.get("comments", []))
+        vid_id = f"vid:{bvid}"
+        add(vid_id, v.get("name") or bvid, "video", count, {
+            "bvid": bvid, "community": v["community"], "community_full": v.get("community_full", ""),
+            "color": v.get("color", ""),
+            "title": meta.get("title", ""), "owner": meta.get("owner", ""),
+            "reply_count": meta.get("reply_count", 0),
+            "anchor_count": sum(1 for a in _load_anchors() if a.get("bvid") == bvid),
+            "analyzed": bool(analyzed),
+        })
+
+        for w in (analyzed.get("top_slang") or _corpus_top_slang(bvid))[:_GRAPH_TERM_LIMIT]:
+            term = (w.get("term") or "").strip()
+            if not term:
+                continue
+            key, n = term.lower(), int(w.get("count") or 0)
+            rec = idx.get(key, {})
+            t = term_recs.setdefault(key, {
+                "label": rec.get("term") or term,
+                "sentiment": rec.get("sentiment") or "未收录",
+                "meaning": rec.get("meaning") or "",
+                "note": rec.get("note") or "",
+                "aliases": rec.get("aliases") or [],
+                "examples": (rec.get("examples") or [])[:2],
+                "count": 0, "videos": [],
+            })
+            t["count"] += n
+            if v.get("name") and v["name"] not in t["videos"]:
+                t["videos"].append(v["name"])
+            add(f"term:{key}", t["label"], "term", n)
+            edges.append({"source": vid_id, "target": f"term:{key}", "relation": "出现", "weight": n, "pending": False})
+
+        video_ctx.append((v, vid_id, corpus, analyzed))
+
+    for key, t in term_recs.items():
+        by_id[f"term:{key}"].update({
+            "sentiment": t["sentiment"], "meaning": t["meaning"], "note": t["note"],
+            "aliases": t["aliases"], "examples": t["examples"],
+            "videos": t["videos"], "count": t["count"]})
+
+    # ---- 评论层：把爬取语料中的真实评论注入图谱 ----
+    comment_stats = {"comments": 0, "sim_edges": 0, "mention_edges": 0,
+                     "near_dup_nodes": 0, "corpus_near_dup": 0, "corpus_unique": 0,
+                     "avg_sim": 0, "max_sim": 0,
+                     "comment_corpus": 0, "threshold": _GRAPH_SIM_THRESHOLD}
+    if limit:
+        term_index = _term_node_index(idx, by_id)
+        sim_sum, sim_n, max_sum = 0.0, 0, 0.0
+        for v, vid_id, corpus, analyzed in video_ctx:
+            bvid = v["bvid"]
+            layer = cg.build_comment_layer(
+                corpus.get("comments", []), video_id=vid_id, bvid=bvid,
+                community=v["community"], color=v.get("color", ""),
+                term_index=term_index, quota=limit,
+                threshold=_GRAPH_SIM_THRESHOLD,
+                analyzed_categories=_analyzed_comment_categories(bvid),
+                rng_seed=20261022 + sum(ord(ch) for ch in bvid))
+            for n in layer["nodes"]:
+                n.setdefault("degree", 0)
+                by_id[n["id"]] = n
+                nodes.append(n)
+            edges.extend(layer["edges"])
+            s = layer["stats"]
+            comment_stats["comments"] += s["sampled"]
+            comment_stats["sim_edges"] += s["sim_edges"]
+            comment_stats["mention_edges"] += s.get("mention_edges", 0)
+            comment_stats["near_dup_nodes"] += s["linked"]
+            comment_stats["corpus_near_dup"] += s.get("corpus_linked", 0)
+            comment_stats["corpus_unique"] += s.get("unique", 0)
+            comment_stats["comment_corpus"] += s["raw"]
+            sim_sum += s["avg_sim"] * s["sim_edges"]
+            sim_n += s["sim_edges"]
+            max_sum = max(max_sum, s["max_sim"])
+        comment_stats["avg_sim"] = round(sim_sum / max(1, sim_n), 3)
+        comment_stats["max_sim"] = round(max_sum, 3)
+
+    for e in edges:
+        by_id[e["source"]]["degree"] += 1
+        by_id[e["target"]]["degree"] += 1
+
+    payload = {
+        "nodes": nodes,
+        "edges": edges,
+        "stats": {
+            "nodes": len(nodes), "edges": len(edges), "terms": len(term_recs),
+            "videos": len(video_ctx), "corpus": sum(n["weight"] for n in nodes if n["kind"] == "video"),
+            "analyzed": sum(1 for n in nodes if n["kind"] == "video" and n.get("analyzed")),
+            **comment_stats,
+        },
+    }
+    _GRAPH_CACHE[cache_key] = payload
+    while len(_GRAPH_CACHE) > 4:
+        _GRAPH_CACHE.pop(next(iter(_GRAPH_CACHE)))
+    return ok(payload)
 
 
 @app.route("/api/rag/search")

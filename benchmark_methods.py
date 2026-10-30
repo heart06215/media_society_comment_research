@@ -30,18 +30,20 @@ CATEGORIES = sa.CATEGORIES
 ANCHORS_PATH = os.path.join(BASE_DIR, "data", "labels", "anchors.json")
 REPORT_PATH = os.path.join(BASE_DIR, "data", "analysis", "benchmark_report.json")
 
-# ---------- 零样本提示词(仅四分类定义，无词典/无参照/无RAG) ----------
+# ---------- 零样本提示词(仅六分类定义，无词典/无参照/无RAG) ----------
 ZS_SYSTEM = """你是一名资深的互联网社区评论情感分析专家。
-你的任务：把每条B站评论严格归入四类之一。
+你的任务：把每条B站评论严格归入六类之一。
 
-四分类定义：
+六分类定义：
 - 赞美：对视频内容/演唱者/游戏/作品表达明确喜爱、支持、肯定、夸赞、感动。
 - 贬低：对内容或主体表达不满、批评、嘲讽、贬低、质疑(如指责假唱/修音/质量差)。
 - 水军：被购买的评论——伪装成真实用户发布的付费夸赞或付费差评(组织化控评、模板化夸赞/抹黑话术及其复制粘贴变体)。
-- 无意义：纯表情、单字灌水(哈哈哈哈/前排/来了/沙发)、抢楼占位、与视频内容无关的闲聊，以及"关注我/加V领福利"式显性引流广告。
+- 无意义：纯表情、单字灌水(哈哈哈哈/前排/来了/沙发)、抢楼占位、无意义刷屏口号，以及"关注我/加V领福利"式显性引流广告。
+- 社区对骂：评论者之间的互相攻击、拉踩、站队对线、人身攻击、群体嘲讽；矛头指向其他用户或群体。
+- 中立：客观陈述事实、提问求证、补充信息、中性讨论，没有明确褒贬情绪，也不是灌水或广告。
 
 注意：
-- 严格四分类，每条必属其一，不要输出四类之外。
+- 严格六分类，每条必属其一，不要输出六类之外。
 - 输出严格 JSON。"""
 
 ZS_USER_TMPL = """请对下面这条B站评论进行分类。
@@ -49,7 +51,7 @@ ZS_USER_TMPL = """请对下面这条B站评论进行分类。
 【待分类评论】：
 「{text}」
 
-请输出 JSON，格式：{{"category": "赞美|贬低|水军|无意义", "confidence": 0.0~1.0, "reason": "一句话归因", "slang_tags": []}}"""
+请输出 JSON，格式：{{"category": "赞美|贬低|水军|无意义|社区对骂|中立", "confidence": 0.0~1.0, "reason": "一句话归因", "slang_tags": []}}"""
 
 # ---------- 基线-词典：网络用语词典 + 通用情感词表 打分 ----------
 AD_RE = re.compile(r"(关注我|点关注|加V|＋V|加微信|私信|主页领|领福利|粉丝群|接推广|接广告|代拍|代抽|出售|出租|扫码)")
@@ -157,9 +159,9 @@ async def _llm_rows(analyzer, retriever, items, concurrency, mode):
                     print(f"[err] {it['rpid']}: {str(e)[:120]}", flush=True)
                     break
             if res:
-                cat = res.get("category", "无意义")
+                cat = res.get("category", "中立")
                 if cat not in CATEGORIES:
-                    cat = "无意义"
+                    cat = "中立"
                 rows.append({"rpid": it["rpid"], "bvid": it["bvid"], "text": it["text"],
                              "gold": it["category"], "category": cat,
                              "confidence": float(res.get("confidence", 0) or 0)})
