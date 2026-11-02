@@ -18,9 +18,9 @@
   };
   const research = [
     ["overview", "治理总览", home ? "#overview" : "/"],
-    ["economy", "数字经济观察", home ? "#economy" : "/#economy"],
     ["governance", "社区生态研判", home ? "#governance" : "/#governance"],
     ["policy", "立法研究支持", home ? "#policy" : "/#policy"],
+    ["economy", "数字经济观察", home ? "#economy" : "/#economy"],
     ["assistant", "AI 治理助手", home ? "#assistant" : "/#assistant"]
   ];
   const tools = [
@@ -98,7 +98,7 @@
   mobile.addEventListener("change", () => setMenu(false));
   window.addEventListener("hashchange", () => { if (!home && page === "insight") markActive(location.hash === "#graphFull" ? "graph" : "insight"); });
   if (home) {
-    const sections = ["overview", "economy", "governance", "policy", "assistant"].map((id) => document.getElementById(id));
+    const sections = ["overview", "governance", "policy", "economy", "assistant"].map((id) => document.getElementById(id));
     let scheduled = false;
     /** @returns {void} */
     function trackSection() {

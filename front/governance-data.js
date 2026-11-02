@@ -14,8 +14,8 @@ window.GovernanceData = Object.freeze({
     { date: "2020.03.01", title: "网络信息内容生态治理规定", issuer: "国家互联网信息办公室", topic: "网络生态共治", articles: "第 9、21、24 条", description: "研究关联：平台治理、侵权表达与流量造假，形成待核查的问题清单。", url: "https://www.cac.gov.cn/2019-12/20/c_1578375159509309.htm" }
   ],
   competitions: [
-    { contest: "2024 · 中国大学生计算机设计大赛", title: "灵犀舆情——智能舆情预警分析可视化平台", award: "全国一等奖", takeaway: "借鉴方向：围绕具体治理场景组织数据可视化。", url: "https://www.nytdc.edu.cn/jsjgcxy/2024/0904/c961a41308/page.htm" },
-    { contest: "2025 · 第十四届中国软件杯", title: "面过 Mango——多模态模拟面试系统", award: "国家一等奖", takeaway: "借鉴方向：从真实需求到分析、反馈的完整服务流程。", url: "https://news.whu.edu.cn/info/2111/485447.htm" },
-    { contest: "2026 · 中国大学生服务外包创新创业大赛", title: "农芯智控——智慧农业智能控制与决策系统", award: "全国赛决赛一等奖", takeaway: "借鉴方向：把技术能力落到可演示的决策支持场景。", url: "https://xxgc.hnucm.edu.cn/info/1010/6490.htm" }
+    { contest: "2024 · 中国大学生计算机设计大赛", title: "灵犀舆情——智能舆情预警分析可视化平台", award: "全国一等奖", takeaway: "借鉴：用社区问题组织图表，把汇总数据带回具体证据。", url: "https://www.nytdc.edu.cn/jsjgcxy/2024/0904/c961a41308/page.htm" },
+    { contest: "2025 · 第十四届中国软件杯", title: "面过 Mango——多模态模拟面试系统", award: "国家一等奖", takeaway: "借鉴：从使用者的难题切入，展示分析、反馈与报告产出。", url: "https://news.whu.edu.cn/info/2111/485447.htm" },
+    { contest: "2026 · 中国大学生计算机设计大赛", title: "Sumisound：跨模态AI国画艺术视听基因解码与移动创作平台", award: "国家级一等奖", takeaway: "借鉴：先讲具体需求，再呈现处理流程与可落地的使用场景。", url: "https://hainan.cuc.edu.cn/2026/0903/c8811a273534/page.htm" }
   ]
 });

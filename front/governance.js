@@ -56,7 +56,8 @@
       : `较 2020 年 +${(current.share - first.share).toFixed(1)} 个百分点`;
     byId("trendLegend").textContent = isScale ? "数字经济规模（万亿元）" : "占 GDP 比重（%）";
     byId("growthChart").setAttribute("aria-label", data.economy.map((row) => `${row.year}年${row[state.trend]}${unit}`).join("；"));
-    const bounds = { left: 35, right: 590, top: 30, bottom: 188 };
+    const chartWidth = Math.max(220, Math.round(byId("growthChart").clientWidth));
+    const bounds = { left: 48, right: chartWidth - 28, top: 32, bottom: 212 };
     const minimum = isScale ? 30 : 35;
     const maximum = isScale ? 65 : 45;
     const axisValues = isScale ? [30, 40, 50, 60] : [35, 37.5, 40, 42.5, 45];
@@ -68,9 +69,12 @@
     const line = points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x},${point.y}`).join(" ");
     const grid = axisValues.map((value) => {
       const y = bounds.bottom - (value - minimum) / (maximum - minimum) * (bounds.bottom - bounds.top);
-      return `<line class="chart-grid" x1="${bounds.left}" y1="${y}" x2="${bounds.right}" y2="${y}"/><text class="chart-label" x="22" y="${y + 4}" text-anchor="end">${value}</text>`;
+      return `<line class="chart-grid" x1="${bounds.left}" y1="${y}" x2="${bounds.right}" y2="${y}"/><text class="chart-label" x="36" y="${y + 4}" text-anchor="end">${value}</text>`;
     }).join("");
-    byId("growthChart").innerHTML = `<svg viewBox="0 0 620 220" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${grid}<path class="chart-area" d="${line} L${bounds.right},${bounds.bottom} L${bounds.left},${bounds.bottom} Z"/><path class="chart-line" d="${line}"/>${points.map((point) => `<circle class="chart-point${point.year === state.year ? " active" : ""}" cx="${point.x}" cy="${point.y}" r="${point.year === state.year ? 5 : 3.5}"/><text class="chart-value" x="${point.x}" y="${point.y - 14}" text-anchor="middle">${point.value.toFixed(1)}${isScale ? "" : "%"}</text><text class="chart-label" x="${point.x}" y="213" text-anchor="middle">${point.year}</text>`).join("")}</svg>`;
+    byId("growthChart").innerHTML = `<svg viewBox="0 0 ${chartWidth} 250" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${grid}<path class="chart-area" d="${line} L${bounds.right},${bounds.bottom} L${bounds.left},${bounds.bottom} Z"/><path class="chart-line" d="${line}"/>${points.map((point, index) => {
+      const showValue = chartWidth >= 420 || index === 0 || index === points.length - 1 || point.year === state.year;
+      return `<circle class="chart-point${point.year === state.year ? " active" : ""}" cx="${point.x}" cy="${point.y}" r="${point.year === state.year ? 5 : 3.5}"/>${showValue ? `<text class="chart-value" x="${point.x}" y="${point.y - 14}" text-anchor="middle">${point.value.toFixed(1)}${isScale ? "" : "%"}</text>` : ""}<text class="chart-label" x="${point.x}" y="240" text-anchor="middle">${point.year}</text>`;
+    }).join("")}</svg>`;
   }
   /** @returns {void} */
   function renderSources() {
@@ -238,4 +242,5 @@
   }
   state.year = Number(byId("economyYear").value);
   renderEconomy(); renderSources(); bindEvents(); loadLocalData();
+  new ResizeObserver(renderGrowth).observe(byId("growthChart"));
 })();

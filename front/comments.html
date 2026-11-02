@@ -10,7 +10,7 @@
   .wrap { max-width:1920px; padding-top:20px; }
   .wrap > .kicker { margin-bottom:8px; }
   .filter-bar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px; }
-  .f-cat { padding:7px 12px; border:2px solid var(--line); font-weight:900; font-size:11px; letter-spacing:2px; text-transform:uppercase; cursor:pointer; background:var(--surface); }
+  .f-cat { padding:7px 12px; border:2px solid var(--line); font-weight:900; font-size:var(--type-small); letter-spacing:2px; text-transform:uppercase; cursor:pointer; background:var(--surface); }
   .f-cat:hover { background:var(--hover); }
   .f-cat.on.praise { background:var(--cat-praise); color:#fff; }
   .f-cat.on.blame { background:var(--cat-blame); color:#fff; }
@@ -20,11 +20,11 @@
   .f-cat.on.neutral { background:var(--cat-neutral); color:#fff; }
   .f-cat.on.all { background:var(--ink); color:var(--paper); }
   html[data-theme="dark"] .f-cat.on.all { color:#090B10; }
-  #videoSel, #searchBox, #orderSel { padding:7px 10px; font-size:12px; }
+  #videoSel, #searchBox, #orderSel { padding:7px 10px; font-size:var(--type-small); }
 
   /* 密密麻麻的评论方格墙 */
   .list-bar { display:flex; align-items:center; gap:10px; margin:0 0 8px; }
-  .list-bar .btn { padding:5px 12px; font-size:10px; letter-spacing:1.5px; }
+  .list-bar .btn { padding:5px 12px; font-size:var(--type-caption); letter-spacing:1.5px; }
   .c-grid {
     display:grid;
     grid-template-columns:repeat(auto-fill, minmax(170px, 1fr));
@@ -48,32 +48,32 @@
   .c-cell:hover { background:var(--hover); border-color:var(--blue); }
   .c-cell:focus-visible { outline:2px solid var(--blue); outline-offset:2px; }
   .c-top { display:flex; align-items:center; gap:4px; flex:none; }
-  .c-cell .badge { flex:none; min-width:28px; text-align:center; font-size:8px; line-height:1.4; padding:0 3px; letter-spacing:.2px; }
-  .c-conf { font-size:8px; color:var(--muted); letter-spacing:0; }
-  .c-chev { margin-left:auto; flex:none; width:10px; height:10px; display:flex; align-items:center; justify-content:center; border:1px solid var(--line); font-size:8px; font-weight:900; line-height:1; color:var(--ink); }
-  .c-text { flex:1; min-height:0; overflow:hidden; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; font-size:10.5px; line-height:1.45; word-break:break-word; }
-  .c-foot { display:flex; flex:none; justify-content:space-between; gap:4px; font-size:8.5px; color:var(--muted); white-space:nowrap; }
+  .c-cell .badge { flex:none; min-width:28px; text-align:center; font-size:var(--type-caption); line-height:1.4; padding:0 3px; letter-spacing:.2px; }
+  .c-conf { font-size:var(--type-caption); color:var(--muted); letter-spacing:0; }
+  .c-chev { margin-left:auto; flex:none; width:10px; height:10px; display:flex; align-items:center; justify-content:center; border:1px solid var(--line); font-size:var(--type-caption); font-weight:900; line-height:1; color:var(--ink); }
+  .c-text { flex:1; min-height:0; overflow:hidden; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; font-size:var(--type-caption); line-height:1.45; word-break:break-word; }
+  .c-foot { display:flex; flex:none; justify-content:space-between; gap:4px; font-size:var(--type-caption); color:var(--muted); white-space:nowrap; }
   .c-empty { grid-column:1 / -1; padding:40px 16px; text-align:center; border:2px solid var(--line); background:var(--surface); }
 
   /* 点击方块后的详情弹层 */
   .c-dialog { width:min(720px, calc(100vw - 32px)); max-height:82vh; margin:auto; padding:0; border:3px solid var(--line); background:var(--surface); color:var(--ink); }
   .c-dialog::backdrop { background:rgba(9,11,16,.58); }
   .c-dialog-head { display:flex; align-items:center; gap:8px; padding:9px 12px; border-bottom:2px solid var(--line); background:var(--hover); }
-  .dialog-meta { margin-left:auto; font-size:10.5px; color:var(--muted); }
-  .c-dialog-close { width:28px; height:28px; display:flex; align-items:center; justify-content:center; flex:none; border:2px solid var(--line); background:var(--surface); color:var(--ink); font-size:18px; font-weight:900; line-height:1; cursor:pointer; }
+  .dialog-meta { margin-left:auto; font-size:var(--type-caption); color:var(--muted); }
+  .c-dialog-close { width:28px; height:28px; display:flex; align-items:center; justify-content:center; flex:none; border:2px solid var(--line); background:var(--surface); color:var(--ink); font-size:var(--type-title); font-weight:900; line-height:1; cursor:pointer; }
   .c-dialog-close:hover { background:var(--pink); border-color:var(--pink); color:#fff; }
   .c-dialog-body { padding:14px 16px 18px; max-height:calc(82vh - 52px); overflow:auto; scrollbar-width:thin; }
-  .d-text { font-size:14px; line-height:1.85; white-space:pre-wrap; word-break:break-word; }
-  .d-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:6px 16px; margin-top:14px; padding-top:12px; border-top:1px solid var(--grid); font-size:11px; color:var(--muted); }
+  .d-text { font-size:var(--type-body); line-height:1.85; white-space:pre-wrap; word-break:break-word; }
+  .d-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:6px 16px; margin-top:14px; padding-top:12px; border-top:1px solid var(--grid); font-size:var(--type-small); color:var(--muted); }
   .d-grid b { color:var(--ink); font-weight:900; letter-spacing:.5px; margin-right:3px; }
   .d-grid .d-reason { grid-column:1 / -1; }
   .d-tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:12px; }
-  .slang-chip { display:inline-block; font-size:10.5px; padding:0 7px; border:1.5px solid var(--violet); color:var(--violet); font-weight:700; }
+  .slang-chip { display:inline-block; font-size:var(--type-caption); padding:0 7px; border:1.5px solid var(--violet); color:var(--violet); font-weight:700; }
 
   /* 无限下拉状态 */
   .sentinel { min-height:54px; display:flex; align-items:center; justify-content:center; padding:12px 0; }
-  .load-state { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:10px; font-size:11px; letter-spacing:1.5px; color:var(--muted); }
-  .load-state .btn { padding:5px 12px; font-size:10px; letter-spacing:1.5px; }
+  .load-state { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:10px; font-size:var(--type-small); letter-spacing:1.5px; color:var(--muted); }
+  .load-state .btn { padding:5px 12px; font-size:var(--type-caption); letter-spacing:1.5px; }
   .load-state .err { color:var(--cat-blame); }
   .spinner { width:12px; height:12px; border:2px solid var(--grid); border-top-color:var(--blue); border-radius:50%; animation:spin .7s linear infinite; }
   .end-line { width:36px; height:2px; background:var(--grid); }
@@ -81,7 +81,7 @@
 
   @media (max-width:640px) {
     .c-grid { grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); grid-auto-rows:80px; }
-    .c-text { -webkit-line-clamp:3; font-size:10px; }
+    .c-text { -webkit-line-clamp:3; font-size:var(--type-caption); }
     .dialog-meta { display:none; }
     .filter-bar select, .filter-bar input { min-width:0; }
   }
@@ -95,12 +95,13 @@
 <a class="skip-link" href="#main">跳至主要内容</a><div id="workspaceNav"></div><div class="app-workspace"><header class="app-topbar" id="workspaceTopbar"></header>
 
 <main class="wrap" id="main">
-  <div class="kicker">Comments Explorer</div>
-  <h1 class="display" style="font-size:34px;margin-bottom:4px">评论<span class="stroke">证据库</span></h1>
+  <div class="kicker">原文检索 · 人工核验</div>
+  <h1 class="display" style="font-size:var(--type-display);margin-bottom:4px">评论<span class="stroke">证据库</span></h1>
   <p class="muted mb">按类别与关键词追溯原始评论，查看模型依据；结论需结合上下文与人工复核。</p>
 
   <div class="filter-bar">
     <select aria-label="选择研究视频" id="videoSel" style="min-width:210px"></select>
+    <div class="category-filters" role="group" aria-label="按评论分类筛选">
     <button type="button" class="f-cat on all" data-c="all">全部</button>
     <button type="button" class="f-cat praise" data-c="赞美">赞美</button>
     <button type="button" class="f-cat blame" data-c="贬低">贬低</button>
@@ -108,16 +109,18 @@
     <button type="button" class="f-cat noise" data-c="无意义">无意义</button>
     <button type="button" class="f-cat feud" data-c="社区对骂">社区对骂</button>
     <button type="button" class="f-cat neutral" data-c="中立">中立</button>
+    </div>
     <input aria-label="搜索评论关键词" id="searchBox" placeholder="关键词搜索 ↵" style="flex:1;min-width:170px">
     <select aria-label="评论排序方式" id="orderSel"><option value="ctime">按时间</option><option value="like">按点赞</option></select>
   </div>
 
-  <!-- 六分类速览条 -->
-  <div id="catStrip" class="flex mb" style="gap:8px;flex-wrap:wrap"></div>
+  <details class="comment-distribution">
+    <summary>查看六分类数量与占比</summary>
+    <div id="catStrip" class="flex" style="gap:8px;flex-wrap:wrap"></div>
+  </details>
 
   <div class="list-bar">
     <span id="listInfo" class="muted mono">加载中…</span>
-    <span style="flex:1"></span>
     <button class="btn ghost" id="reloadB">刷新</button>
   </div>
 
@@ -137,7 +140,7 @@
 </dialog>
 
 <footer class="footer">
-  <span class="brand-name" style="font-size:15px;letter-spacing:4px">破妄</span>
+  <span class="brand-name" style="font-size:var(--type-lead);letter-spacing:4px">破妄</span>
   <span class="muted">六分类由锚定集检索式模型判定 · 二次审查可修正</span>
   <span style="flex:1"></span>
   <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span><span class="d4"></span></div>

@@ -7,7 +7,7 @@
 <script src="theme.js"></script>
 <link rel="stylesheet" href="base.css">
 <style>
-  .cat-pill { cursor:pointer; padding:10px 16px; border:2px solid var(--line); font-weight:900; font-size:13px; letter-spacing:2px; background:var(--surface); transition:transform .1s; }
+  .cat-pill { cursor:pointer; padding:10px 16px; border:2px solid var(--line); font-weight:900; font-size:var(--type-body); letter-spacing:2px; background:var(--surface); transition:transform .1s; }
   .cat-pill:hover { transform:translate(-2px,-2px); box-shadow:3px 3px 0 var(--line); }
   .cat-pill.sel.praise { background:var(--cat-praise); color:#fff; }
   .cat-pill.sel.blame { background:var(--cat-blame); color:#fff; }
@@ -17,16 +17,16 @@
   .cat-pill.sel.neutral { background:var(--cat-neutral); color:#fff; }
   .comment-box { min-height:110px; padding:14px; border:2px solid var(--line); background:var(--paper);
     background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px); background-size:28px 28px;
-    font-size:15px; line-height:1.8; }
+    font-size:var(--type-lead); line-height:1.8; }
   .mode-tabs { display:flex; gap:2px; margin:22px 0 18px; }
   .mode-tab { padding:11px 20px; border:2px solid var(--line); font-weight:900; text-transform:uppercase; letter-spacing:2px; cursor:pointer; background:var(--surface); }
   .mode-tab.active { background:var(--ink); color:var(--paper); }
   html[data-theme="dark"] .mode-tab.active { color:#090B10; }
-  .kv { display:grid; grid-template-columns:auto 1fr; gap:4px 14px; font-size:12px; }
+  .kv { display:grid; grid-template-columns:auto 1fr; gap:4px 14px; font-size:var(--type-small); }
   .kv b { font-weight:900; }
-  .review-reason { font-size:12px; color:var(--muted); border-left:5px solid var(--cyan); padding:6px 12px; margin-top:8px; background:var(--paper); }
+  .review-reason { font-size:var(--type-small); color:var(--muted); border-left:5px solid var(--cyan); padding:6px 12px; margin-top:8px; background:var(--paper); }
   .toast { position:fixed; top:72px; left:50%; transform:translateX(-50%) translateY(-20px); z-index:200;
-    background:var(--ink); color:var(--paper); padding:10px 20px; font-weight:900; letter-spacing:1px; font-size:13px;
+    background:var(--ink); color:var(--paper); padding:10px 20px; font-weight:900; letter-spacing:1px; font-size:var(--type-body);
     border:2px solid var(--cyan); opacity:0; transition:opacity .2s, transform .2s; pointer-events:none; }
   html[data-theme="dark"] .toast { color:#090B10; }
   .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
@@ -40,8 +40,8 @@
 <a class="skip-link" href="#main">跳至主要内容</a><div id="workspaceNav"></div><div class="app-workspace"><header class="app-topbar" id="workspaceTopbar"></header>
 
 <main class="wrap" id="main">
-  <div class="kicker">Anchor Set &amp; Human Review</div>
-  <h1 class="display" style="font-size:44px;margin-bottom:8px">标注与<span class="stroke">二次审查</span></h1>
+  <div class="kicker">人工标注 · 模型复核</div>
+  <h1 class="display" style="font-size:var(--type-metric);margin-bottom:8px">标注与<span class="stroke">二次审查</span></h1>
   <p class="muted mb-2">以人工精标样本建立锚定集，复核模型分类及语境依据。保留正常批评和多元表达；对疑似刷评与相互攻击逐条核验，为治理研究提供可靠样本。</p>
 
   <!-- 视频选择 + 进度 -->
@@ -63,7 +63,7 @@
       <span class="muted">两视频各完成 <b class="mono" id="goalTxt">50</b> 条后可触发分析（建议目标 100 条）· 当前锚定集总数 <b class="mono" id="nAll">0</b> 条</span>
       <span class="flex" style="gap:10px">
         <span id="saveStatus" class="muted mono" style="opacity:.7">本地文件: data/labels/anchors.json</span>
-        <button class="btn ghost" id="btnBackup" style="padding:6px 12px;font-size:11px">导出备份</button>
+        <button class="btn ghost" id="btnBackup" style="padding:6px 12px;font-size:var(--type-small)">导出备份</button>
       </span>
     </div>
   </div>
@@ -85,12 +85,12 @@
         <div class="comment-box" id="qText">点击右上角「追加标注」载入待标队列</div>
       </div>
       <div style="display:flex; flex-direction:column; gap:10px; justify-content:center; min-width:230px">
-        <button type="button" class="cat-pill praise" data-cat="赞美" aria-pressed="false">赞 美 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[1]</span></button>
-        <button type="button" class="cat-pill blame" data-cat="贬低" aria-pressed="false">贬 低 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[2]</span></button>
-        <button type="button" class="cat-pill shui" data-cat="水军" aria-pressed="false">水 军 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[3]</span></button>
-        <button type="button" class="cat-pill noise" data-cat="无意义" aria-pressed="false">无意义 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[4]</span></button>
-        <button type="button" class="cat-pill feud" data-cat="社区对骂" aria-pressed="false">社区对骂 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[5]</span></button>
-        <button type="button" class="cat-pill neutral" data-cat="中立" aria-pressed="false">中 立 <span style="font-size:10px;opacity:.6;margin-left:8px" class="mono">[6]</span></button>
+        <button type="button" class="cat-pill praise" data-cat="赞美" aria-pressed="false">赞 美 <span style="font-size:var(--type-caption);opacity:.6;margin-left:8px" class="mono">[1]</span></button>
+        <button type="button" class="cat-pill blame" data-cat="贬低" aria-pressed="false">贬 低 <span style="font-size:var(--type-caption);opacity:.6;margin-left:8px" class="mono">[2]</span></button>
+        <button type="button" class="cat-pill shui" data-cat="水军" aria-pressed="false">水 军 <span style="font-size:var(--type-caption);opacity:.6;margin-left:8px" class="mono">[3]</span></button>
+        <button type="button" class="cat-pill noise" data-cat="无意义" aria-pressed="false">无意义 <span style="font-size:var(--type-caption);opacity:.6;margin-left:8px" class="mono">[4]</span></button>
+        <button type="button" class="cat-pill feud" data-cat="社区对骂" aria-pressed="false">社区对骂 <span style="font-size:var(--type-caption);opacity:.6;margin-left:8px" class="mono">[5]</span></button>
+        <button type="button" class="cat-pill neutral" data-cat="中立" aria-pressed="false">中 立 <span style="font-size:var(--type-caption);opacity:.6;margin-left:8px" class="mono">[6]</span></button>
         <div class="mt flex" style="gap:8px">
           <button class="btn ghost" id="btnSkip">跳过 →</button>
           <button class="btn primary" id="btnSubmit" disabled>提交 ✓</button>
@@ -120,7 +120,7 @@
 </main>
 
 <footer class="footer">
-  <span class="brand-name" style="font-size:15px;letter-spacing:4px">破妄</span>
+  <span class="brand-name" style="font-size:var(--type-lead);letter-spacing:4px">破妄</span>
   <span class="muted">保留分类依据 · 人工核验语境 · 记录复核意见</span>
   <span style="flex:1"></span>
   <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span><span class="d4"></span></div>
