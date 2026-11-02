@@ -8,6 +8,7 @@
   const icons = {
     overview: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',
     economy: '<path d="M4 3v17h17M8 14l4-5 4 2 5-7"/>',
+    ambiguity: '<path d="M9 9a3 3 0 1 1 5 2c-2 1-2 2-2 3M12 18h.01"/><circle cx="12" cy="12" r="10"/>',
     governance: '<path d="M12 3 4 6v5c0 5 8 10 8 10s8-5 8-10V6Z"/><path d="m8 11 3 3 5-6"/>',
     policy: '<path d="M12 5v16M3 4c4-1 6-1 9 1 3-2 5-2 9-1v15c-4-1-6-1-9 1-3-2-5-2-9-1Z"/>',
     assistant: '<path d="M21 11a9 9 0 0 1-9 9H4l-2 2V11a9 9 0 0 1 19 0Z"/><path d="M7 9h10M7 13h6"/>',
@@ -18,8 +19,9 @@
   };
   const research = [
     ["overview", "治理总览", home ? "#overview" : "/"],
-    ["governance", "社区生态研判", home ? "#governance" : "/#governance"],
-    ["policy", "立法研究支持", home ? "#policy" : "/#policy"],
+    ["ambiguity", "评论为何难辨", home ? "#ambiguity" : "/#ambiguity"],
+    ["policy", "立法与规则缺口", home ? "#policy" : "/#policy"],
+    ["governance", "样本与复核证据", home ? "#governance" : "/#governance"],
     ["economy", "数字经济观察", home ? "#economy" : "/#economy"],
     ["assistant", "AI 治理助手", home ? "#assistant" : "/#assistant"]
   ];
@@ -98,7 +100,7 @@
   mobile.addEventListener("change", () => setMenu(false));
   window.addEventListener("hashchange", () => { if (!home && page === "insight") markActive(location.hash === "#graphFull" ? "graph" : "insight"); });
   if (home) {
-    const sections = ["overview", "governance", "policy", "economy", "assistant"].map((id) => document.getElementById(id));
+    const sections = ["overview", "ambiguity", "policy", "governance", "economy", "assistant"].map((id) => document.getElementById(id));
     let scheduled = false;
     /** @returns {void} */
     function trackSection() {

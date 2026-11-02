@@ -6,6 +6,8 @@
   const categoryClasses = ["praise", "blame", "shui", "noise", "feud", "neutral"];
   const state = { year: 2024, trend: "scale", videos: [], loaded: false, chatController: undefined, toastTimer: undefined };
 
+  const ambiguityState = { key: "irony", revealed: false };
+
   /** @param {string} id @returns {HTMLElement} */
   function byId(id) { return document.getElementById(id); }
   /** @param {unknown} value @returns {string} */
@@ -77,6 +79,22 @@
     }).join("")}</svg>`;
   }
   /** @returns {void} */
+  function renderAmbiguity() {
+    const example = data.ambiguityExamples.find((item) => item.key === ambiguityState.key);
+    byId("ambiguityQuote").textContent = example.quote;
+    byId("ambiguityQuestion").textContent = example.question;
+    document.querySelectorAll("[data-example]").forEach((button) => {
+      const selected = button.dataset.example === example.key;
+      button.classList.toggle("selected", selected);
+      button.setAttribute("aria-pressed", String(selected));
+    });
+    byId("ambiguityContext").hidden = !ambiguityState.revealed;
+    byId("ambiguityContext").innerHTML = example.contexts.map((context) => `<article><strong>${escapeHtml(context.title)}</strong><p>${escapeHtml(context.text)}</p></article>`).join("");
+    byId("revealContext").setAttribute("aria-expanded", String(ambiguityState.revealed));
+    byId("revealContext").textContent = ambiguityState.revealed ? "收起语境，回到单句 ↑" : "补充语境，再看一次 ↓";
+    byId("ambiguityVerdict").textContent = ambiguityState.revealed ? example.conclusion : "单凭这句话，无法确认真实意图。";
+  }
+  /** @returns {void} */
   function renderSources() {
     byId("economyTable").innerHTML = data.economy.map((row) => `<tr><th scope="row">${row.year}</th><td>${row.scale.toFixed(1)}</td><td>${row.share.toFixed(1)}%</td><td><a href="${row.url}" target="_blank" rel="noopener noreferrer">${escapeHtml(row.source)} ↗</a></td></tr>`).join("");
     byId("lawList").innerHTML = data.laws.map((law) => `<article class="law-row"><div class="law-date">${law.date}<small>施行日期</small></div><div><h4>${law.title}</h4><div class="law-meta"><span class="tag">${law.topic}</span><span>${law.issuer} · ${law.articles}</span></div><p>${law.description}</p></div><a class="text-link" href="${law.url}" target="_blank" rel="noopener noreferrer" aria-label="阅读${law.title}官方原文">官方原文 ↗</a></article>`).join("");
@@ -126,8 +144,8 @@
     byId("evidenceCards").innerHTML = candidates.slice(0, 3).map(({ video, comment, category }) => {
       const query = new URLSearchParams({ bvid: video.bvid, category, q: Array.from(comment.text).slice(0, 30).join("") });
       const confidence = Number(comment.confidence);
-      const confidenceLabel = Number.isFinite(confidence) ? `模型置信度 ${(confidence * 100).toFixed(0)}%` : "模型分类";
-      return `<article class="evidence-card"><div class="evidence-top"><span class="tag neutral">${escapeHtml(category)} · 待核验</span><span>${confidenceLabel}</span></div><blockquote>${escapeHtml(comment.text)}</blockquote><details><summary>查看全文与分类依据</summary><p>${escapeHtml(comment.text)}</p><p>模型依据：${escapeHtml(comment.reason || "该条未提供分类说明，请回到原始评论核验。")}</p><p>样本标识：${escapeHtml(comment.rpid || "未提供")} · ${escapeHtml(video.bvid)}</p></details><a class="evidence-link" href="/comments?${escapeHtml(query.toString())}"><span>${escapeHtml(video.community || "研究社区")} · ${escapeHtml(video.name)}</span><span>追溯样本 ↗</span></a></article>`;
+      const confidenceLabel = "标签不是最终结论";
+      return `<article class="evidence-card"><div class="evidence-top"><span class="tag neutral">${escapeHtml(category)} · 待核验</span><span>${confidenceLabel}</span></div><blockquote>${escapeHtml(comment.text)}</blockquote><details><summary>查看全文与分类依据</summary><p>${escapeHtml(comment.text)}</p><p>模型依据：${escapeHtml(comment.reason || "该条未提供分类说明，请回到原始评论核验。")}</p><p>模型自报置信度：${Number.isFinite(confidence) ? `${(confidence * 100).toFixed(0)}%` : "未提供"}，不代表经独立验证的正确率。单句之外的对话语境仍需补充。</p><p>样本标识：${escapeHtml(comment.rpid || "未提供")} · ${escapeHtml(video.bvid)}</p></details><a class="evidence-link" href="/comments?${escapeHtml(query.toString())}"><span>${escapeHtml(video.community || "研究社区")} · ${escapeHtml(video.name)}</span><span>追溯样本 ↗</span></a></article>`;
     }).join("") || '<div class="empty-state">该社区尚无代表性评论。<a href="/comments">查看完整评论证据库</a>。</div>';
   }
   /** @returns {Promise<void>} */
@@ -146,7 +164,7 @@
       byId("anchorCount").textContent = number(state.videos.reduce((sum, video) => sum + (Number(video.anchor_count) || 0), 0));
       byId("communityCount").textContent = number(new Set(state.videos.map((video) => video.community).filter(Boolean)).size);
       byId("communityNames").textContent = [...new Set(state.videos.map((video) => video.community).filter(Boolean))].join(" / ") || "尚未配置社区";
-      byId("analysisCoverage").textContent = sampleCount ? `采集样本覆盖率 ${(analyzed / sampleCount * 100).toFixed(1)}%` : "暂无采集样本";
+      byId("analysisCoverage").textContent = sampleCount ? `标签覆盖 ${(analyzed / sampleCount * 100).toFixed(1)}% · 不代表判对` : "暂无采集样本";
       byId("connectionState").innerHTML = '<span class="status-dot"></span>本地数据已连接';
       const previousSelection = byId("communitySelect").value;
       byId("communitySelect").innerHTML = '<option value="all">全部研究社区</option>' + state.videos.map((video) => `<option value="${escapeHtml(video.bvid)}">${escapeHtml(video.community || "社区")} · ${escapeHtml(video.name)}</option>`).join("");
@@ -175,13 +193,14 @@
   /** @param {boolean} policyOnly @returns {void} */
   function exportResearch(policyOnly) {
     const date = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Shanghai" }).format(new Date());
-    const lines = ["# 破妄 · 网络生态治理与立法研究", "", `导出日期：${date}（北京时间）`, "", "## 研究定位", "以社区评论的语境分类、证据追溯和人工复核，辅助发现网络生态治理问题，为规则评估与网络立法研究提供素材。", ""];
+    const lines = ["# 破妄 · 网络生态治理与立法研究", "", `导出日期：${date}（北京时间）`, "", "## 研究定位", "围绕反讽、圈层黑话与复读中的语境歧义，整理模型标签、原始评论与人工复核材料，支持我国网络治理规则细化与立法研究。", ""];
     if (!policyOnly) {
       lines.push("## 本地样本概况", state.loaded ? "数据来源：本项目本地语料与已保存的模型分析。" : "本地数据未成功加载，本次导出不包含样本统计。", "");
       if (state.loaded) for (const video of state.videos) lines.push(`- ${video.name}（${video.community || "研究社区"}，${video.bvid}）：采集 ${video.corpus_count || 0} 条；分类 ${Object.values(countsFor([video])).reduce((sum, value) => sum + value, 0)} 条；人工锚定 ${video.anchor_count || 0} 条。`, `  分类统计：${categories.map((category) => `${category} ${video.analysis?.[category] || 0}`).join("；")}。`);
       lines.push("", "## 数字经济背景", "中国信通院测算口径（数字产业化与产业数字化），历年公开发布值，未作经济普查回溯调整。", ...data.economy.map((row) => `- ${row.year} 年：规模 ${row.scale} 万亿元，占 GDP ${row.share}%。来源：${row.source} ${row.url}`), "", "国家统计局口径：2024 年数字经济核心产业增加值 14.0891 万亿元，占 GDP 10.5%，与上述统计范围不同。", "来源：https://www.stats.gov.cn/sj/zxfbhjd/202512/t20251230_1962177.html", "");
     }
-    lines.push("## 待论证的研究问题", "1. 如何结合语境与人工复核，区分正常批评、玩梗与人身攻击？", "2. 疑似刷评需要哪些文本之外的证据，才能验证是否存在组织化操纵？", "3. 平台如何建立有解释、可复核的评论治理流程，保护用户合法表达？", "4. 现有规则在隐晦攻击、跨社区传播和证据留存方面有哪些需要进一步调研的难点？", "", "## 证据整理提纲", "- 界定样本范围、采集时间与去重方法；记录样本代表性和选择偏差。", "- 留存评论标识、来源视频、上下文、分类理由、人工复核意见和修订记录。", "- 逐项关联现行规则，明确事实缺口，开展实证与规范论证。", "- 提出研究建议，并评估对合法表达、隐私保护和申诉救济的影响。", "", "## 官方规则参考", ...data.laws.map((law) => `- ${law.title}（${law.date} 施行，参考 ${law.articles}）：${law.url}`), "", "## 研究边界", "本项目目前研究已配置的视频社区样本，不代表全网。模型标签与置信度不是违法认定、付费刷评证明或准确率。规则关联由研究人员整理，不是自动法律裁决。研究提纲需要人工核查与后续论证。", "", `公开资料核验日期：${data.verifiedOn}。`);
+    lines.push("## 待论证的研究问题", "1. 如何结合语境与人工复核，区分正常批评、玩梗与人身攻击？", "2. 疑似刷评需要哪些文本之外的证据，才能验证是否存在组织化操纵？", "3. 平台如何建立有解释、可复核的评论治理流程，保护用户合法表达？", "4. 现有规则在隐晦攻击、跨社区传播和证据留存方面有哪些需要进一步调研的难点？", "", "## 证据整理提纲", "- 界定样本范围、采集时间与去重方法；记录样本代表性和选择偏差。", "- 留存评论标识、来源视频、上下文、分类理由、人工复核意见和修订记录。", "- 逐项关联现行规则，明确事实缺口，开展实证与规范论证。", "- 提出研究建议，并评估对合法表达、隐私保护和申诉救济的影响。", "", "## 官方规则参考", ...data.laws.map((law) => `- ${law.title}（${law.date} 施行，参考 ${law.articles}）：${law.url}`), "", "## 研究边界", "本项目目前研究已配置的视频社区样本，不代表全网。模型标签与置信度不是违法认定、付费刷评证明或准确率。规则关联由研究人员整理，不是自动法律裁决。研究提纲需要人工核查与后续论证。", "", `公开经济资料核验日期：${data.verifiedOn}。`);
+    lines.push("", "## 语境认定与制度细化", "迷惑性评论可能因反讽、圈层语义与上下文缺失而难以单句判读。当前没有独立测试结果支持识别准确率，不以标签覆盖率代替正确率。", "本项目提出的研究问题是认定尺度、证据要求和复核程序如何细化，不主张我国没有相关法律法规。", "", "## 立法进展资料（与现行规则区分）", `${data.legislation.title}：${data.legislation.date} 发布的${data.legislation.status}。${data.legislation.note}`, data.legislation.url, `法律资料核验：${data.legalVerifiedOn}。`, "构造语境示例仅作演示，不计入采集样本、分类统计或实验结果。");
     downloadText(`破妄-${policyOnly ? "立法研究提纲" : "治理研究摘要"}-${date}.md`, lines.join("\n"));
   }
   /** @param {string} role @param {string} message @returns {HTMLElement} */
@@ -222,6 +241,9 @@
   }
   /** @returns {void} */
   function bindEvents() {
+    document.querySelectorAll("[data-example]").forEach((button) => button.addEventListener("click", () => { ambiguityState.key = button.dataset.example; ambiguityState.revealed = false; renderAmbiguity(); }));
+    byId("revealContext").addEventListener("click", () => { ambiguityState.revealed = !ambiguityState.revealed; renderAmbiguity(); });
+    byId("exportGapResearch").addEventListener("click", () => exportResearch(true));
     byId("economyYear").addEventListener("change", (event) => { state.year = Number(event.target.value); renderEconomy(); });
     document.querySelectorAll("[data-trend]").forEach((button) => button.addEventListener("click", () => {
       state.trend = button.dataset.trend;
@@ -241,6 +263,6 @@
 
   }
   state.year = Number(byId("economyYear").value);
-  renderEconomy(); renderSources(); bindEvents(); loadLocalData();
+  renderAmbiguity(); renderEconomy(); renderSources(); bindEvents(); loadLocalData();
   new ResizeObserver(renderGrowth).observe(byId("growthChart"));
 })();
