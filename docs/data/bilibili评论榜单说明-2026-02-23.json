@@ -1,0 +1,13 @@
+{
+  "verifiedOn": "2026-11-03",
+  "source": "https://www.bilibili.com/video/BV1GAbUz2E9f/",
+  "metadataSource": "https://api.bilibili.com/x/web-interface/view?bvid=BV1GAbUz2E9f",
+  "owner": "卡猫kat",
+  "dataDate": "2026-02-23",
+  "scope": "UP 主整理，仅视频稿件，不含番剧、电影、动态、图文等",
+  "topTwo": [
+    "BV1fy4y1L7Rq",
+    "BV1h1kcBfEuJ"
+  ],
+  "limitation": "非官方实时排名；不将榜单整理日期与评论数快照日期混同。"
+}

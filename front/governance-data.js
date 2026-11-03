@@ -30,7 +30,15 @@ window.GovernanceData = Object.freeze({
       "videoUrl": "https://www.bilibili.com/video/BV1h1kcBfEuJ/",
       "countUrl": "https://api.bilibili.com/x/web-interface/view?bvid=BV1h1kcBfEuJ"
     }
-  ]
+  ],
+  "rankingReference": {
+    "title": "B站评论量最多视频总排行",
+    "owner": "卡猫kat",
+    "dataDate": "2026-02-23",
+    "url": "https://www.bilibili.com/video/BV1GAbUz2E9f/",
+    "scope": "仅视频稿件，不含番剧、电影、动态、图文等",
+    "note": "UP 主公开整理的榜单列这两条视频为前二，非平台官方实时排名。"
+  }
 },
   newsCases: [
   {
