@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>破妄 · 社区洞察与证据关系图谱</title>
 <link rel="icon" href="/mark.svg" type="image/svg+xml">
-<script src="theme.js"></script>
+<script src="theme.js"></script><script src="/count-format.js"></script>
 <link rel="stylesheet" href="base.css">
 <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 <style>
@@ -401,7 +401,7 @@ async function loadStats() {
     let total = 0;
     v.forEach(x => { total += x.corpus_count || 0; });
     const el = document.getElementById("s1");
-    if (el) el.textContent = total.toLocaleString();
+    if (el) el.textContent = window.ResearchNumbers.commentCount(total);
   } catch (e) {}
 }
 
@@ -482,7 +482,7 @@ function gfMetrics() {
   if (!box) return;
   const pct = s.corpus_unique ? (s.corpus_near_dup / s.corpus_unique * 100).toFixed(1) : "0.0";
   box.innerHTML =
-    `<div>抽样 <b>${s.comments}</b> / 全量 <b>${(s.comment_corpus || s.corpus).toLocaleString()}</b> 条评论</div>` +
+    `<div>抽样 <b>${window.ResearchNumbers.commentCount(s.comments)}</b> / 全量 <b>${window.ResearchNumbers.commentCount(s.comment_corpus || s.corpus)}</b> 条评论</div>` +
     `<div>全量有相似邻居 <b>${s.corpus_near_dup}</b> 条（${pct}%）· 抽样 <b>${s.near_dup_nodes}</b> 条</div>` +
     `<div>阈值 <b>J ≥ ${s.threshold}</b> · 相似边 <b>${s.sim_edges}</b></div>` +
     `<div>平均相似度 <b>${s.avg_sim}</b> · 最高 <b>${s.max_sim}</b></div>`;
@@ -913,7 +913,7 @@ function gfBody(n) {
   if (n.kind === "community") {
     const vids = gfData.nodes.filter(x => x.kind === "video" && x.community === n.label);
     return `<p style="font-size:var(--type-body);line-height:1.8">${gfEsc(n.community_full || "")}</p>` +
-      gfRow("语料条数", (n.weight || 0).toLocaleString()) +
+      gfRow("语料条数", window.ResearchNumbers.commentCount(n.weight || 0)) +
       gfRow("样本视频", vids.length + " 个") +
       `<div class="gf-linklist">${vids.map(v =>
         `<button type="button" data-node="${gfEsc(v.id)}">${gfEsc(v.label)}</button>`).join("")}</div>`;
@@ -927,7 +927,7 @@ function gfBody(n) {
       gfRow("归类", n.category ? gfBadge(n.category) : "未归类") +
       gfRow("归类依据", n.category ? gfEsc(n.category_source || "—") : "词典未命中，按社区底色显示") +
       gfRow("点赞", (n.like || 0).toLocaleString()) +
-      gfRow("回复", (n.rcount || 0).toLocaleString()) +
+      gfRow("回复", window.ResearchNumbers.commentCount(n.rcount || 0)) +
       gfRow("发布时间", gfEsc(n.month || "—")) +
       gfRow("相似度核对", n.sim_degree ? `${n.sim_degree} 条 · max ${(n.max_sim || 0).toFixed(3)}` : "无相似邻居") +
       (terms.length ? `<div style="margin-top:10px">${terms.map(t =>
@@ -942,8 +942,8 @@ function gfBody(n) {
   return gfRow("社区", gfEsc(n.community || "—")) +
     gfRow("BV 号", gfEsc(n.bvid || "—")) +
     gfRow("UP 主", gfEsc(n.owner || "—")) +
-    gfRow("语料条数", (n.weight || 0).toLocaleString()) +
-    gfRow("总评论数", (n.reply_count || 0).toLocaleString()) +
+    gfRow("语料条数", window.ResearchNumbers.commentCount(n.weight || 0)) +
+    gfRow("总评论数", window.ResearchNumbers.commentCount(n.reply_count || 0)) +
     gfRow("锚定样本", n.anchor_count || 0) +
     gfRow("模型分析", n.analyzed ? "已完成" : "未分析") +
     (n.title ? `<p style="font-size:var(--type-small);line-height:1.75;margin-top:10px">${gfEsc(n.title)}</p>` : "") +
@@ -1025,7 +1025,7 @@ function gfStat() {
   if (!gfData) return;
   const s = gfData.stats;
   document.getElementById("gfStat").textContent =
-    `NODES ${s.nodes} · EDGES ${s.edges} · 评论 ${s.comments} · 相似边 ${s.sim_edges} · 语料 ${s.corpus.toLocaleString()}`;
+    `NODES ${s.nodes} · EDGES ${s.edges} · 评论 ${window.ResearchNumbers.commentCount(s.comments)} · 相似边 ${s.sim_edges} · 语料 ${window.ResearchNumbers.commentCount(s.corpus)}`;
 }
 
 window.addEventListener("themechange", () => {
@@ -1112,7 +1112,7 @@ function dbRenderSummary(b) {
   }
   const v = dbVideos.find(x => x.bvid === b);
   if (!v) return;
-  s.innerHTML = `<span><b>视频</b> ${dbEsc(v.title || "")}</span><span><b>UP主</b> ${dbEsc(v.owner || "")}</span><span><b>全站评论</b> ${(v.reply_count / 10000).toFixed(1)}万</span><span><b>样本</b> ${v.corpus_count}条</span><span><b>社区</b> ${dbEsc(v.community_full || v.community || "")}</span>`;
+  s.innerHTML = `<span><b>视频</b> ${dbEsc(v.title || "")}</span><span><b>UP主</b> ${dbEsc(v.owner || "")}</span><span><b>全站评论</b> ${window.ResearchNumbers.commentCount(v.reply_count)}</span><span><b>样本</b> ${window.ResearchNumbers.commentCount(v.corpus_count)}条</span><span><b>社区</b> ${dbEsc(v.community_full || v.community || "")}</span>`;
 }
 
 /* ---------- 单视频 ---------- */
@@ -1133,7 +1133,7 @@ function dbRenderSingle(b) {
   const box = document.getElementById("overview");
   box.innerHTML = DB_CATS.map((c, i) => {
     const n = cs[c] || 0, p = ((n / total) * 100).toFixed(1);
-    return `<div class="stat-cell"><div class="n" style="color:${dbCatColor(c)}">${n.toLocaleString()}</div><div class="l">${c}</div><div class="muted mono" style="font-size:var(--type-small);margin-top:2px">${p}%</div><div class="wm">${String(i + 1).padStart(2, "0")}</div></div>`;
+    return `<div class="stat-cell"><div class="n" style="color:${dbCatColor(c)}">${window.ResearchNumbers.commentCount(n)}</div><div class="l">${c}</div><div class="muted mono" style="font-size:var(--type-small);margin-top:2px">${p}%</div><div class="wm">${String(i + 1).padStart(2, "0")}</div></div>`;
   }).join("");
   dbDrawPie(cs); dbDrawBar(cs);
   dbDrawTrend("trend1", (v.trend || []));

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>破妄 · 标注与二次审查</title>
-<script src="theme.js"></script>
+<script src="theme.js"></script><script src="/count-format.js"></script>
 <link rel="stylesheet" href="base.css">
 <style>
   .cat-pill { cursor:pointer; padding:10px 16px; border:2px solid var(--line); font-weight:900; font-size:var(--type-body); letter-spacing:2px; background:var(--surface); transition:transform .1s; }
@@ -169,8 +169,8 @@ async function loadAnchorsInfo() {
   const by = d.count_per_video || {};
   const bvid = document.getElementById("videoSel").value;
   const nCur = by[bvid] || 0;
-  document.getElementById("nAll").textContent = d.count;
-  document.getElementById("progText").textContent = `本视频已标 ${nCur} 条（触发线 50 / 目标 100）`;
+  document.getElementById("nAll").textContent = window.ResearchNumbers.commentCount(d.count);
+  document.getElementById("progText").textContent = `本视频已标 ${window.ResearchNumbers.commentCount(nCur)} 条（触发线 50 / 目标 100）`;
   document.getElementById("progFill").style.width = Math.min(100, (nCur/50)*100) + "%";
   const ready = videos.every(v => (by[v.bvid]||0) >= 50);
   document.getElementById("btnAnalyze").disabled = !ready;
@@ -241,7 +241,7 @@ async function loadReview() {
   try {
     const d = await api(`/api/review/queue?bvid=${bvid}&category=${cat}&size=50`);
     revQueue = d.items; revIdx = 0;
-    document.getElementById("revInfo").textContent = `待审 ${d.total} 条，本次载入 ${revQueue.length}`;
+    document.getElementById("revInfo").textContent = `待审 ${window.ResearchNumbers.commentCount(d.total)} 条，本次载入 ${window.ResearchNumbers.commentCount(revQueue.length)}`;
     renderReview();
   } catch (e) {
     document.getElementById("revBox").innerHTML = `<span style="color:var(--cat-blame)">${esc(e.message)}</span>`;
@@ -254,7 +254,7 @@ function renderReview() {
   const CLS = { "赞美":"praise","贬低":"blame","水军":"shui","无意义":"noise","社区对骂":"feud","中立":"neutral" };
   box.innerHTML = `
     <div class="flex-between mb" style="flex-wrap:wrap">
-      <span class="muted mono">${revIdx+1} / ${revQueue.length}</span>
+      <span class="muted mono">${revIdx+1} / ${window.ResearchNumbers.commentCount(revQueue.length)}</span>
       <span>模型判定 <span class="badge ${CLS[it.model_category]}">${it.model_category}</span>
       <span class="muted mono">置信 ${(it.confidence*100).toFixed(0)}%</span></span>
     </div>
@@ -308,11 +308,11 @@ function poll(bvid, btn) {
       if (d.status === "done") {
         clearInterval(t);
         btn.disabled = false; btn.textContent = "▶ 开始调用大模型分析";
-        document.getElementById("analyzeHint").textContent = `完成！共${d.total}条`;
+        document.getElementById("analyzeHint").textContent = `完成！共${window.ResearchNumbers.commentCount(d.total)}条`;
         loadAnchorsInfo();
       } else if (d.status === "running") {
         const pct = d.total ? Math.round(100 * (d.done || 0) / d.total) : 0;
-        document.getElementById("analyzeHint").textContent = `分析中 ${d.done || 0}/${d.total || "?"} 条 (${pct}%)，可离开此页`;
+        document.getElementById("analyzeHint").textContent = `分析中 ${window.ResearchNumbers.commentCount(d.done || 0)}/${d.total ? window.ResearchNumbers.commentCount(d.total) : "?"} 条 (${pct}%)，可离开此页`;
       } else if (d.status === "error") {
         clearInterval(t);
         btn.disabled = false; btn.textContent = "▶ 开始调用大模型分析";

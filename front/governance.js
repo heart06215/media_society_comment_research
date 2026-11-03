@@ -2,6 +2,7 @@
 (() => {
   "use strict";
   const data = window.GovernanceData;
+  const commentCount = window.ResearchNumbers.commentCount;
   const categories = ["赞美", "贬低", "水军", "无意义", "社区对骂", "中立"];
   const categoryClasses = ["praise", "blame", "shui", "noise", "feud", "neutral"];
   const state = { year: 2024, trend: "scale", videos: [], loaded: false, chatController: undefined, toastTimer: undefined };
@@ -94,9 +95,9 @@
     const count = config.videos.reduce((sum, video) => sum + video.onlineCount, 0);
     const baseline = calculateAnnotationBudget(count, config.secondsPerItem, 1, config.reviewRate, config.seedCount);
     byId("heroThroughput").textContent = number(baseline.throughput);
-    byId("heroOnlineCount").textContent = number(count);
-    byId("onlineScaleTotal").textContent = number(count);
-    byId("onlineVideoCounts").innerHTML = config.videos.map((video) => `<article class="online-video-count"><span>${escapeHtml(video.community)} · 线上评论数</span><h3><a href="${video.videoUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(video.name)} ↗</a></h3><div><strong>${number(video.onlineCount)}</strong><span>条</span></div><small>${escapeHtml(video.bvid)}</small></article>`).join("");
+    byId("heroOnlineCount").textContent = commentCount(count);
+    byId("onlineScaleTotal").textContent = commentCount(count);
+    byId("onlineVideoCounts").innerHTML = config.videos.map((video) => `<article class="online-video-count"><span>${escapeHtml(video.community)} · 线上评论数</span><h3><a href="${video.videoUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(video.name)} ↗</a></h3><div><strong>${commentCount(video.onlineCount)}</strong><span>条</span></div><small>${escapeHtml(video.bvid)}</small></article>`).join("");
     const ranking = config.rankingReference;
     byId("onlineRankingNote").textContent = `排名依据：UP 主${ranking.owner}公开榜单，数据日期 ${ranking.dataDate}，${ranking.scope}；非官方实时排名。评论计数另核对于 ${config.commentCountVerifiedAt}。`;
     byId("onlineRankingSource").href = ranking.url;
@@ -111,17 +112,17 @@
     byId("budgetManualCost").textContent = number(result.manualCost);
     byId("budgetManualDays").textContent = `元 · 1 人工作 ${number(result.manualDays)} 天`;
     byId("budgetAssistedCost").textContent = number(result.assistedCost);
-    byId("budgetAssistedDays").textContent = `元 · 1 人工作 ${number(result.assistedDays)} 天 · ${number(result.assistedLabels)} 条人工任务`;
-    byId("budgetScopeNote").textContent = `线上视频评论总数 ${number(count)} 条：${config.videos.map((video) => `${video.name} ${number(video.onlineCount)} 条`).join("；")}。核对时间：${config.commentCountVerifiedAt}。`;
+    byId("budgetAssistedDays").textContent = `元 · 1 人工作 ${number(result.assistedDays)} 天 · ${commentCount(result.assistedLabels)} 条人工任务`;
+    byId("budgetScopeNote").textContent = `线上视频评论总数 ${commentCount(count)} 条：${config.videos.map((video) => `${video.name} ${commentCount(video.onlineCount)} 条`).join("；")}。核对时间：${config.commentCountVerifiedAt}。`;
     byId("budgetCountSources").innerHTML = `计数来源：${config.videos.map((video) => `<a href="${video.countUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(video.name)} · 平台公开接口 ↗</a>`).join(" / ")}；字段 ${escapeHtml(config.commentCountField)}。`;
     const difference = result.manualCost - result.assistedCost;
     const percent = result.manualCost ? difference / result.manualCost * 100 : 0;
     byId("budgetDifference").textContent = `本情景的人工预算差额：${number(difference)} 元（${percent.toFixed(1)}%）。仅比较人工部分，模型费用与达到目标质量的复核投入另计。`;
     byId("budgetVideoRows").innerHTML = config.videos.map((video) => {
       const videoBudget = calculateAnnotationBudget(video.onlineCount, seconds, efficiency, reviewRate, 0);
-      return `<tr><th scope="row"><a href="${video.videoUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(video.name)}</a> / ${escapeHtml(video.community)}</th><td>${number(video.onlineCount)}</td><td>1 人工作 ${number(videoBudget.manualDays)} 天</td><td>${number(videoBudget.manualCost)}</td></tr>`;
+      return `<tr><th scope="row"><a href="${video.videoUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(video.name)}</a> / ${escapeHtml(video.community)}</th><td>${commentCount(video.onlineCount)}</td><td>1 人工作 ${number(videoBudget.manualDays)} 天</td><td>${number(videoBudget.manualCost)}</td></tr>`;
     }).join("");
-    byId("budgetFormula").textContent = `日通量 = 8 × 3,600 × ${(efficiency * 100).toFixed(0)}% ÷ ${seconds} = ${number(result.throughput)} 条。1 人所需工作天数 = 向上取整（${number(count)} ÷ ${number(result.throughput)}）。模型辅助的人工任务 = ${config.seedCount} 条示范 + 向上取整〔（${number(count)} − ${config.seedCount}）× ${(reviewRate * 100).toFixed(0)}%〕= ${number(result.assistedLabels)} 条；人工工资 = 1 人 × 工作天数 × 150 元 / 人 / 天。`;
+    byId("budgetFormula").textContent = `日通量 = 8 × 3,600 × ${(efficiency * 100).toFixed(0)}% ÷ ${seconds} = ${number(result.throughput)} 条。1 人所需工作天数 = 向上取整（${commentCount(count)} ÷ ${number(result.throughput)}）。模型辅助的人工任务 = ${config.seedCount} 条示范 + 向上取整〔（${commentCount(count)} − ${config.seedCount}）× ${(reviewRate * 100).toFixed(0)}%〕= ${commentCount(result.assistedLabels)} 条；人工工资 = 1 人 × 工作天数 × 150 元 / 人 / 天。`;
   }
   /** @returns {void} */
   function renderNews() {
@@ -148,8 +149,8 @@
     const counts = countsFor(videos);
     const total = Object.values(counts).reduce((sum, value) => sum + value, 0);
     const samples = videos.reduce((sum, video) => sum + (Number(video.corpus_count) || 0), 0);
-    byId("communitySummary").textContent = `${videos.map((video) => video.community || video.name).join(" / ") || "尚未配置社区"} · 已分类 ${number(total)} 条 / 采集 ${number(samples)} 条`;
-    byId("clueCount").textContent = total ? number(counts["水军"] + counts["社区对骂"]) : "—";
+    byId("communitySummary").textContent = `${videos.map((video) => video.community || video.name).join(" / ") || "尚未配置社区"} · 已分类 ${commentCount(total)} 条 / 采集 ${commentCount(samples)} 条`;
+    byId("clueCount").textContent = total ? commentCount(counts["水军"] + counts["社区对骂"]) : "—";
     if (!total) {
       byId("categoryBars").innerHTML = '<div class="empty-state">尚无分类结果。<a href="/label">前往人工标注与分析</a>，建立研究样本。</div>';
       byId("evidenceCards").innerHTML = '<div class="empty-state">分析完成后，这里将呈现来自原始语料的代表性评论与分类依据。</div>';
@@ -157,7 +158,7 @@
     }
     byId("categoryBars").innerHTML = categories.map((category, index) => {
       const percent = counts[category] / total * 100;
-      return `<div class="category-row category-${categoryClasses[index]}"><span>${category}</span><div class="category-track" aria-hidden="true"><div class="category-fill" style="width:${percent.toFixed(2)}%"></div></div><strong>${number(counts[category])}</strong><span>${percent.toFixed(1)}%</span></div>`;
+      return `<div class="category-row category-${categoryClasses[index]}"><span>${category}</span><div class="category-track" aria-hidden="true"><div class="category-fill" style="width:${percent.toFixed(2)}%"></div></div><strong>${commentCount(counts[category])}</strong><span>${percent.toFixed(1)}%</span></div>`;
     }).join("");
     renderEvidence(videos);
   }
@@ -192,9 +193,9 @@
       state.loaded = true;
       const sampleCount = state.videos.reduce((sum, video) => sum + (Number(video.corpus_count) || 0), 0);
       const analyzed = Object.values(countsFor(state.videos)).reduce((sum, value) => sum + value, 0);
-      byId("sampleCount").textContent = number(sampleCount);
-      byId("analyzedCount").textContent = number(analyzed);
-      byId("anchorCount").textContent = number(state.videos.reduce((sum, video) => sum + (Number(video.anchor_count) || 0), 0));
+      byId("sampleCount").textContent = commentCount(sampleCount);
+      byId("analyzedCount").textContent = commentCount(analyzed);
+      byId("anchorCount").textContent = commentCount(state.videos.reduce((sum, video) => sum + (Number(video.anchor_count) || 0), 0));
       byId("communityCount").textContent = number(new Set(state.videos.map((video) => video.community).filter(Boolean)).size);
       byId("communityNames").textContent = [...new Set(state.videos.map((video) => video.community).filter(Boolean))].join(" / ") || "尚未配置社区";
       byId("analysisCoverage").textContent = sampleCount ? `标签覆盖 ${(analyzed / sampleCount * 100).toFixed(1)}% · 不代表判对` : "暂无采集样本";
@@ -229,14 +230,14 @@
     const lines = ["# 破妄 · 网络生态治理与立法研究", "", `导出日期：${date}（北京时间）`, "", "## 研究定位", "围绕反讽、圈层黑话与复读中的语境歧义，整理模型标签、原始评论与人工复核材料，支持我国网络治理规则细化与立法研究。", ""];
     if (!policyOnly) {
       lines.push("## 本地样本概况", state.loaded ? "数据来源：本项目本地语料与已保存的模型分析。" : "本地数据未成功加载，本次导出不包含样本统计。", "");
-      if (state.loaded) for (const video of state.videos) lines.push(`- ${video.name}（${video.community || "研究社区"}，${video.bvid}）：采集 ${video.corpus_count || 0} 条；分类 ${Object.values(countsFor([video])).reduce((sum, value) => sum + value, 0)} 条；人工锚定 ${video.anchor_count || 0} 条。`, `  分类统计：${categories.map((category) => `${category} ${video.analysis?.[category] || 0}`).join("；")}。`);
+      if (state.loaded) for (const video of state.videos) lines.push(`- ${video.name}（${video.community || "研究社区"}，${video.bvid}）：采集 ${commentCount(video.corpus_count || 0)} 条；分类 ${commentCount(Object.values(countsFor([video])).reduce((sum, value) => sum + value, 0))} 条；人工锚定 ${commentCount(video.anchor_count || 0)} 条。`, `  分类统计：${categories.map((category) => `${category} ${commentCount(video.analysis?.[category] || 0)}`).join("；")}。`);
       lines.push("", "## 数字经济背景", "中国信通院测算口径（数字产业化与产业数字化），历年公开发布值，未作经济普查回溯调整。", ...data.economy.map((row) => `- ${row.year} 年：规模 ${row.scale} 万亿元，占 GDP ${row.share}%。来源：${row.source} ${row.url}`), "", "国家统计局口径：2024 年数字经济核心产业增加值 14.0891 万亿元，占 GDP 10.5%，与上述统计范围不同。", "来源：https://www.stats.gov.cn/sj/zxfbhjd/202512/t20251230_1962177.html", "");
     }
     lines.push("## 待论证的研究问题", "1. 如何结合语境与人工复核，区分正常批评、玩梗与人身攻击？", "2. 疑似刷评需要哪些文本之外的证据，才能验证是否存在组织化操纵？", "3. 平台如何建立有解释、可复核的评论治理流程，保护用户合法表达？", "4. 现有规则在隐晦攻击、跨社区传播和证据留存方面有哪些需要进一步调研的难点？", "", "## 证据整理提纲", "- 界定样本范围、采集时间与去重方法；记录样本代表性和选择偏差。", "- 留存评论标识、来源视频、上下文、分类理由、人工复核意见和修订记录。", "- 逐项关联现行规则，明确事实缺口，开展实证与规范论证。", "- 提出研究建议，并评估对合法表达、隐私保护和申诉救济的影响。", "", "## 官方规则参考", ...data.laws.map((law) => `- ${law.title}（${law.date} 施行，参考 ${law.articles}）：${law.url}`), "", "## 研究边界", "本项目目前研究已配置的视频社区样本，不代表全网。模型标签与置信度不是违法认定、付费刷评证明或准确率。规则关联由研究人员整理，不是自动法律裁决。研究提纲需要人工核查与后续论证。", "", `公开经济资料核验日期：${data.verifiedOn}。`);
     lines.push("", "## 语境认定与制度细化", "迷惑性评论可能因反讽、圈层语义与上下文缺失而难以单句判读。当前没有独立测试结果支持识别准确率，不以标签覆盖率代替正确率。", "本项目提出的研究问题是认定尺度、证据要求和复核程序如何细化，不主张我国没有相关法律法规。", "", "## 立法进展资料（与现行规则区分）", `${data.legislation.title}：${data.legislation.date} 发布的${data.legislation.status}。${data.legislation.note}`, data.legislation.url, `法律资料核验：${data.legalVerifiedOn}。`, "模型参照人工锚定示例分类；参数微调增益、识别准确率与实际总成本仍需独立对照评测。");
     if (!policyOnly && state.budget) {
       const budget = state.budget;
-      lines.push("", "## 人工标注预算（假设情景）", `数据范围：两个线上视频评论总数，${number(budget.count)} 条。核对时间：${data.annotationBudget.commentCountVerifiedAt}。`, ...data.annotationBudget.videos.map((video) => `- ${video.name}：${number(video.onlineCount)} 条。来源：${video.countUrl}，字段 ${data.annotationBudget.commentCountField}。`), `按 ${budget.seconds} 秒/条、每天 8 小时中 ${(budget.efficiency * 100).toFixed(0)}% 为有效标注、日薪 150 元计算：${number(budget.throughput)} 条 / 人 / 天。`, `全人工：1 人工作 ${number(budget.manualDays)} 天，${number(budget.manualCost)} 元。`, `107 条人工示范 + ${(budget.reviewRate * 100).toFixed(0)}% 剩余样本抽检情景：${number(budget.assistedLabels)} 条人工任务，1 人工作 ${number(budget.assistedDays)} 天，人工部分 ${number(budget.assistedCost)} 元。`, "费用按完整工作日向上取整。后续更多费用未纳入计算，包括标注后的数据整理、总结分析与研究论证；模型推理、招聘培训、术语维护、争议仲裁和额外质检也需要另行预算。抽检比例未经质量实测，人工差额不代表总成本节省。线上评论计数为公开接口返回的核对时快照，不等于本地采集量，实际可标注量还受删除、可访问性与去重影响。");
+      lines.push("", "## 人工标注预算（假设情景）", `数据范围：两个线上视频评论总数，${commentCount(budget.count)} 条。核对时间：${data.annotationBudget.commentCountVerifiedAt}。`, ...data.annotationBudget.videos.map((video) => `- ${video.name}：${commentCount(video.onlineCount)} 条。来源：${video.countUrl}，字段 ${data.annotationBudget.commentCountField}。`), `按 ${budget.seconds} 秒/条、每天 8 小时中 ${(budget.efficiency * 100).toFixed(0)}% 为有效标注、日薪 150 元计算：${number(budget.throughput)} 条 / 人 / 天。`, `全人工：1 人工作 ${number(budget.manualDays)} 天，${number(budget.manualCost)} 元。`, `107 条人工示范 + ${(budget.reviewRate * 100).toFixed(0)}% 剩余样本抽检情景：${commentCount(budget.assistedLabels)} 条人工任务，1 人工作 ${number(budget.assistedDays)} 天，人工部分 ${number(budget.assistedCost)} 元。`, "费用按完整工作日向上取整。后续更多预估立法评估用费用未纳入计算，包括标注后的数据整理、总结分析与研究论证；模型推理、招聘培训、术语维护、争议仲裁和额外质检也需要另行预算。抽检比例未经质量实测，人工差额不代表总成本节省。线上评论计数为公开接口返回的核对时快照，不等于本地采集量，实际可标注量还受删除、可访问性与去重影响。");
     }
     lines.push("", "## 样本在平台中的范围", `这只是 bilibili 一个视频平台的两个视频。UP 主${data.annotationBudget.rankingReference.owner}的公开榜单将其列为评论量前二，数据日期为 ${data.annotationBudget.rankingReference.dataDate}，非官方实时排名，且仅统计视频稿件。`, data.annotationBudget.rankingReference.url, "", "## 圈层知识与人才门槛", "圈内黑话、人物关系和事件沿革不是通用知识。标注人员需理解圈层语境并统一分类口径；研究人员还要兼具证据整理、数据分析、研究设计和治理规则知识，复合能力更难组织。模型方案旨在复用人工经验，减少全量逐条归类，把稀缺人力用于难例复核和研究论证。", "", "## 新闻案例与信息作用", ...data.newsCases.map((item) => `- ${item.date} ${item.title}（${item.source}）。${item.url}\n  适用性分析：${item.projectRole}`), "新闻资料未进入本项目训练或评测，不将模型标签作为线下行为预测或违法认定。");
     downloadText(`破妄-${policyOnly ? "立法研究提纲" : "治理研究摘要"}-${date}.md`, lines.join("\n"));

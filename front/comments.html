@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>破妄 · 评论浏览</title>
-<script src="theme.js"></script>
+<script src="theme.js"></script><script src="/count-format.js"></script>
 <link rel="stylesheet" href="base.css">
 <style>
   .wrap { max-width:1920px; padding-top:20px; }
@@ -242,20 +242,20 @@ function renderState() {
   }
   if (!hasMore) {
     stateEl.innerHTML = loaded
-      ? `<span class="end-line"></span><span>已加载全部 ${loaded} 条</span><span class="end-line"></span>`
+      ? `<span class="end-line"></span><span>已加载全部 ${window.ResearchNumbers.commentCount(loaded)} 条</span><span class="end-line"></span>`
       : `<span class="muted">—</span>`;
     return;
   }
-  stateEl.innerHTML = `<span>已加载 ${loaded} / ${total} 条 · 继续下滑自动加载</span>`;
+  stateEl.innerHTML = `<span>已加载 ${window.ResearchNumbers.commentCount(loaded)} / ${window.ResearchNumbers.commentCount(total)} 条 · 继续下滑自动加载</span>`;
 }
 
 function updateInfo() {
   if (!total && !loaded) {
     infoEl.textContent = loading ? "加载中…" : "暂无评论";
   } else if (loaded >= total) {
-    infoEl.textContent = `共 ${total} 条`;
+    infoEl.textContent = `共 ${window.ResearchNumbers.commentCount(total)} 条`;
   } else {
-    infoEl.textContent = `共 ${total} 条 · 已加载 ${loaded} 条`;
+    infoEl.textContent = `共 ${window.ResearchNumbers.commentCount(total)} 条 · 已加载 ${window.ResearchNumbers.commentCount(loaded)} 条`;
   }
 }
 
@@ -355,8 +355,8 @@ async function loadStrip() {
     const cs = a.category_count || {}, n = a.total || 0, denom = n || 1;
     strip.innerHTML = CATS.map(c => {
       const num = cs[c] || 0, p = ((num / denom) * 100).toFixed(1);
-      return `<div class="f-cat" data-c="${c}" style="cursor:pointer;opacity:.85" title="筛选${c}"><span class="badge ${CLS[c]}">${c}</span> <b class="mono">${num}</b> <span class="muted mono">${p}%</span></div>`;
-    }).join("") + `<div class="muted mono" style="align-self:center;padding:0 12px">总样本 ${n}</div>`;
+      return `<div class="f-cat" data-c="${c}" style="cursor:pointer;opacity:.85" title="筛选${c}"><span class="badge ${CLS[c]}">${c}</span> <b class="mono">${window.ResearchNumbers.commentCount(num)}</b> <span class="muted mono">${p}%</span></div>`;
+    }).join("") + `<div class="muted mono" style="align-self:center;padding:0 12px">总样本 ${window.ResearchNumbers.commentCount(n)}</div>`;
     strip.querySelectorAll(".f-cat").forEach(f => f.onclick = () => applyCat(f.dataset.c));
   } catch (e) {
     strip.innerHTML = `<div class="muted">该视频尚未分析——先到「标注」页完成锚定集并触发分析。</div>`;
