@@ -8,6 +8,8 @@
   const icons = {
     overview: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',
     economy: '<path d="M4 3v17h17M8 14l4-5 4 2 5-7"/>',
+    efficiency: '<rect x="4" y="3" width="16" height="18"/><path d="M8 7h8M8 11h2m4 0h2m-8 4h2m4 0h2"/>',
+    news: '<path d="M4 3h16v18H4ZM8 7h8M8 11h8M8 15h8"/>',
     ambiguity: '<path d="M9 9a3 3 0 1 1 5 2c-2 1-2 2-2 3M12 18h.01"/><circle cx="12" cy="12" r="10"/>',
     governance: '<path d="M12 3 4 6v5c0 5 8 10 8 10s8-5 8-10V6Z"/><path d="m8 11 3 3 5-6"/>',
     policy: '<path d="M12 5v16M3 4c4-1 6-1 9 1 3-2 5-2 9-1v15c-4-1-6-1-9 1-3-2-5-2-9-1Z"/>',
@@ -19,11 +21,13 @@
   };
   const research = [
     ["overview", "治理总览", home ? "#overview" : "/"],
-    ["ambiguity", "评论为何难辨", home ? "#ambiguity" : "/#ambiguity"],
+    ["ambiguity", "圈层语义难题", home ? "#ambiguity" : "/#ambiguity"],
     ["policy", "立法与规则缺口", home ? "#policy" : "/#policy"],
+    ["efficiency", "标注成本与模型方案", home ? "#efficiency" : "/#efficiency"],
     ["governance", "样本与复核证据", home ? "#governance" : "/#governance"],
     ["economy", "数字经济观察", home ? "#economy" : "/#economy"],
-    ["assistant", "AI 治理助手", home ? "#assistant" : "/#assistant"]
+    ["assistant", "AI 治理助手", home ? "#assistant" : "/#assistant"],
+    ["news", "典型事件与项目作用", home ? "#news" : "/#news"]
   ];
   const tools = [
     ["insight", "社区深度洞察", "/insight"],
@@ -100,7 +104,7 @@
   mobile.addEventListener("change", () => setMenu(false));
   window.addEventListener("hashchange", () => { if (!home && page === "insight") markActive(location.hash === "#graphFull" ? "graph" : "insight"); });
   if (home) {
-    const sections = ["overview", "ambiguity", "policy", "governance", "economy", "assistant"].map((id) => document.getElementById(id));
+    const sections = ["overview", "ambiguity", "policy", "efficiency", "governance", "economy", "assistant", "news"].map((id) => document.getElementById(id));
     let scheduled = false;
     /** @returns {void} */
     function trackSection() {

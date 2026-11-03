@@ -1,55 +1,67 @@
 /* 公开报告的静态收录值；来源、口径与年份一并保存，不使用估算补齐缺失年份。 */
 window.GovernanceData = Object.freeze({
   verifiedOn: "2026-10-30",
-  legalVerifiedOn: "2026-11-02",
-  ambiguityExamples: [
+  legalVerifiedOn: "2026-11-03",
+  annotationBudget: {
+  "verifiedOn": "2026-11-03",
+  "commentCountVerifiedAt": "2026-11-03 09:08（北京时间）",
+  "commentCountField": "data.stat.reply",
+  "dayWage": 150,
+  "hoursPerDay": 8,
+  "secondsPerItem": 60,
+  "seedCount": 107,
+  "reviewRate": 0.1,
+  "videos": [
+    {
+      "bvid": "BV1fy4y1L7Rq",
+      "name": "明日方舟 PV",
+      "community": "二游",
+      "sampleCount": 4267,
+      "onlineCount": 5588105,
+      "videoUrl": "https://www.bilibili.com/video/BV1fy4y1L7Rq/",
+      "countUrl": "https://api.bilibili.com/x/web-interface/view?bvid=BV1fy4y1L7Rq"
+    },
+    {
+      "bvid": "BV1h1kcBfEuJ",
+      "name": "TF 家族音乐会",
+      "community": "饭圈",
+      "sampleCount": 2932,
+      "onlineCount": 8809111,
+      "videoUrl": "https://www.bilibili.com/video/BV1h1kcBfEuJ/",
+      "countUrl": "https://api.bilibili.com/x/web-interface/view?bvid=BV1h1kcBfEuJ"
+    }
+  ]
+},
+  newsCases: [
   {
-    "key": "irony",
-    "quote": "“你可真专业。”",
-    "question": "是在认真夸赞，还是在表达不满？",
-    "contexts": [
-      {
-        "title": "可能的语境 A",
-        "text": "对方认真解答了问题，回复者表示感谢。字面可能与真实态度一致。"
-      },
-      {
-        "title": "可能的语境 B",
-        "text": "对方刚犯了明显错误，双方正在争论。同样的文字可能被用作反讽。"
-      }
-    ],
-    "conclusion": "补充情境会改变理解。仍需核对实际对话，不能替说话者确定动机。"
+    "date": "2024-06-06",
+    "kind": "媒体评论 · 国内",
+    "title": "白玉兰奖提名争议：评论区成为攻击现场",
+    "facts": "南方日报评论经新华网转载，描述《追风者》提名争议后，部分粉丝在导演、演员及出品方微博下抗议、谩骂。",
+    "researchNeed": "“番位”“偷奖”等圈层叙事怎样从观点争论转为攻击，需要结合对象和上下文辨析。",
+    "projectRole": "用领域词汇与六分类标签筛选相关评论，按来源检索原文，交由人工复核攻击对象和具体语境。",
+    "source": "南方日报 / 新华网转载",
+    "url": "https://www.news.cn/comments/20240606/655a38613e334dabb8881ea7b0017315/c.html"
   },
   {
-    "key": "slang",
-    "quote": "“这波是典。”",
-    "question": "是在引用共同熟悉的梗，还是在贴标签嘲弄？",
-    "contexts": [
-      {
-        "title": "可能的语境 A",
-        "text": "熟人讨论一段经典台词，用缩略表达回应共同的文化背景。"
-      },
-      {
-        "title": "可能的语境 B",
-        "text": "争议楼层里出现同一句短评，指向对象、引用内容和语气都不完整。"
-      }
-    ],
-    "conclusion": "查到一个梗的释义，只解决词义问题；它在本次对话中的立场仍需核验。"
+    "date": "2025-04-02",
+    "kind": "官方整治通报 · 国内",
+    "title": "体育饭圈整治：线上引战与线下聚集相互交织",
+    "facts": "国家网信办通报部分“粉头”账号侮辱谩骂、挑动对立，甚至组织扰乱公共秩序的线下聚集，并披露违法违规账号与群组处置情况。",
+    "researchNeed": "单条口号不能证明组织关系；分散在评论、群组与事件中的线索需要逐项核验。",
+    "projectRole": "汇总分类结构与时间变化，通过话术关联图和原文检索整理待核查线索，不以文本相似认定组织行为。",
+    "source": "国家互联网信息办公室",
+    "url": "https://www.cac.gov.cn/2025-04/02/c_1745298042333612.htm"
   },
   {
-    "key": "repeat",
-    "quote": "“支持，继续。”",
-    "question": "重复出现，是参与讨论，还是有组织的刷评？",
-    "contexts": [
-      {
-        "title": "可能的语境 A",
-        "text": "活动更新后，多位参与者各自表达鼓励，出现相似措辞。"
-      },
-      {
-        "title": "可能的语境 B",
-        "text": "多个楼层出现相同短句，但账号关联、发布动机与是否付费都未知。"
-      }
-    ],
-    "conclusion": "复读不等于刷评。文本相似不足以确认组织关系、付费行为或违法事实。"
+    "date": "2024-10-29",
+    "kind": "媒体报道 · 韩国线下抗议",
+    "title": "RIIZE 花圈抗议：线上号召延伸到线下表达",
+    "facts": "央视网转载环球时报报道，描述洪承汉复出争议中的社交媒体送花圈号召、公司周边抗议及当地部门应对。",
+    "researchNeed": "线上动员措辞与线下事件如何关联，需要可靠时间线、报道与原始信息，不能只靠情感标签推断。",
+    "projectRole": "可将相关文本按语境归类并组织检索，供研究者比较表达类型；行为性质及线下事实仍须由外部证据核验。",
+    "source": "环球时报 / 央视网转载",
+    "url": "https://news.cctv.cn/2024/10/29/ARTIlpz34tsJFbyVXY2tZkEU241029.shtml"
   }
 ],
   legislation: {

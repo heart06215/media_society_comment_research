@@ -1,0 +1,26 @@
+{
+  "verifiedAt": "2026-11-03 09:08（北京时间）",
+  "field": "data.stat.reply",
+  "total": 14397216,
+  "note": "哔哩哔哩公开视频接口返回的线上评论总计快照；计数会变化，不等于本地采集量。按此计数逐条标注作规模预算，不保证所有历史评论均可采集。",
+  "videos": [
+    {
+      "bvid": "BV1fy4y1L7Rq",
+      "name": "明日方舟 PV",
+      "community": "二游",
+      "sampleCount": 4267,
+      "onlineCount": 5588105,
+      "videoUrl": "https://www.bilibili.com/video/BV1fy4y1L7Rq/",
+      "countUrl": "https://api.bilibili.com/x/web-interface/view?bvid=BV1fy4y1L7Rq"
+    },
+    {
+      "bvid": "BV1h1kcBfEuJ",
+      "name": "TF 家族音乐会",
+      "community": "饭圈",
+      "sampleCount": 2932,
+      "onlineCount": 8809111,
+      "videoUrl": "https://www.bilibili.com/video/BV1h1kcBfEuJ/",
+      "countUrl": "https://api.bilibili.com/x/web-interface/view?bvid=BV1h1kcBfEuJ"
+    }
+  ]
+}

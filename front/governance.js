@@ -6,8 +6,6 @@
   const categoryClasses = ["praise", "blame", "shui", "noise", "feud", "neutral"];
   const state = { year: 2024, trend: "scale", videos: [], loaded: false, chatController: undefined, toastTimer: undefined };
 
-  const ambiguityState = { key: "irony", revealed: false };
-
   /** @param {string} id @returns {HTMLElement} */
   function byId(id) { return document.getElementById(id); }
   /** @param {unknown} value @returns {string} */
@@ -78,21 +76,51 @@
       return `<circle class="chart-point${point.year === state.year ? " active" : ""}" cx="${point.x}" cy="${point.y}" r="${point.year === state.year ? 5 : 3.5}"/>${showValue ? `<text class="chart-value" x="${point.x}" y="${point.y - 14}" text-anchor="middle">${point.value.toFixed(1)}${isScale ? "" : "%"}</text>` : ""}<text class="chart-label" x="${point.x}" y="240" text-anchor="middle">${point.year}</text>`;
     }).join("")}</svg>`;
   }
+  /** @param {number} count @param {number} seconds @param {number} efficiency @param {number} reviewRate @param {number} seedCount
+   * @returns {{throughput:number, manualDays:number, manualCost:number, assistedLabels:number, assistedDays:number, assistedCost:number}}
+   */
+  function calculateAnnotationBudget(count, seconds, efficiency, reviewRate, seedCount) {
+    const config = data.annotationBudget;
+    const throughput = Math.floor(config.hoursPerDay * 3600 * efficiency / seconds);
+    const seeds = Math.min(count, seedCount);
+    const assistedLabels = seeds + Math.ceil((count - seeds) * reviewRate);
+    const manualDays = Math.ceil(count / throughput);
+    const assistedDays = Math.ceil(assistedLabels / throughput);
+    return { throughput, manualDays, manualCost: manualDays * config.dayWage, assistedLabels, assistedDays, assistedCost: assistedDays * config.dayWage };
+  }
   /** @returns {void} */
-  function renderAmbiguity() {
-    const example = data.ambiguityExamples.find((item) => item.key === ambiguityState.key);
-    byId("ambiguityQuote").textContent = example.quote;
-    byId("ambiguityQuestion").textContent = example.question;
-    document.querySelectorAll("[data-example]").forEach((button) => {
-      const selected = button.dataset.example === example.key;
-      button.classList.toggle("selected", selected);
-      button.setAttribute("aria-pressed", String(selected));
-    });
-    byId("ambiguityContext").hidden = !ambiguityState.revealed;
-    byId("ambiguityContext").innerHTML = example.contexts.map((context) => `<article><strong>${escapeHtml(context.title)}</strong><p>${escapeHtml(context.text)}</p></article>`).join("");
-    byId("revealContext").setAttribute("aria-expanded", String(ambiguityState.revealed));
-    byId("revealContext").textContent = ambiguityState.revealed ? "收起语境，回到单句 ↑" : "补充语境，再看一次 ↓";
-    byId("ambiguityVerdict").textContent = ambiguityState.revealed ? example.conclusion : "单凭这句话，无法确认真实意图。";
+  function renderCosts() {
+    const config = data.annotationBudget;
+    const count = config.videos.reduce((sum, video) => sum + video.onlineCount, 0);
+    const baseline = calculateAnnotationBudget(count, config.secondsPerItem, 1, config.reviewRate, config.seedCount);
+    byId("heroThroughput").textContent = number(baseline.throughput);
+    byId("heroOnlineCount").textContent = `${number(count)} 条`;
+    byId("heroOnlineDays").textContent = `${number(baseline.manualDays)} 人天`;
+    byId("heroOnlineCost").textContent = (baseline.manualCost / 10000).toFixed(1);
+    const seconds = Number(byId("budgetSeconds").value);
+    const efficiency = Number(byId("budgetEfficiency").value);
+    const reviewRate = Number(byId("budgetReview").value);
+    const result = calculateAnnotationBudget(count, seconds, efficiency, reviewRate, config.seedCount);
+    state.budget = { ...result, count, seconds, efficiency, reviewRate };
+    byId("budgetThroughput").textContent = number(result.throughput);
+    byId("budgetManualCost").textContent = number(result.manualCost);
+    byId("budgetManualDays").textContent = `元 · ${number(result.manualDays)} 人天`;
+    byId("budgetAssistedCost").textContent = number(result.assistedCost);
+    byId("budgetAssistedDays").textContent = `元 · ${number(result.assistedDays)} 人天 · ${number(result.assistedLabels)} 条人工任务`;
+    byId("budgetScopeNote").textContent = `线上视频评论总数 ${number(count)} 条：${config.videos.map((video) => `${video.name} ${number(video.onlineCount)} 条`).join("；")}。核对时间：${config.commentCountVerifiedAt}。`;
+    byId("budgetCountSources").innerHTML = `计数来源：${config.videos.map((video) => `<a href="${video.countUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(video.name)} · 平台公开接口 ↗</a>`).join(" / ")}；字段 ${escapeHtml(config.commentCountField)}。`;
+    const difference = result.manualCost - result.assistedCost;
+    const percent = result.manualCost ? difference / result.manualCost * 100 : 0;
+    byId("budgetDifference").textContent = `本情景的人工预算差额：${number(difference)} 元（${percent.toFixed(1)}%）。仅比较人工部分，模型费用与达到目标质量的复核投入另计。`;
+    byId("budgetVideoRows").innerHTML = config.videos.map((video) => {
+      const videoBudget = calculateAnnotationBudget(video.onlineCount, seconds, efficiency, reviewRate, 0);
+      return `<tr><th scope="row"><a href="${video.videoUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(video.name)}</a> / ${escapeHtml(video.community)}</th><td>${number(video.onlineCount)}</td><td>${number(videoBudget.manualDays)}</td><td>${number(videoBudget.manualCost)}</td></tr>`;
+    }).join("");
+    byId("budgetFormula").textContent = `日通量 = 8 × 3,600 × ${(efficiency * 100).toFixed(0)}% ÷ ${seconds} = ${number(result.throughput)} 条。全人工人天 = 向上取整（${number(count)} ÷ ${number(result.throughput)}）。模型辅助的人工任务 = ${config.seedCount} 条示范 + 向上取整〔（${number(count)} − ${config.seedCount}）× ${(reviewRate * 100).toFixed(0)}%〕= ${number(result.assistedLabels)} 条；人工工资 = 人天 × 150 元。`;
+  }
+  /** @returns {void} */
+  function renderNews() {
+    byId("newsCases").innerHTML = data.newsCases.map((item) => `<article class="news-card"><header><span class="tag neutral">${escapeHtml(item.kind)}</span><time datetime="${item.date}">报道日期：${item.date}</time></header><h3>${escapeHtml(item.title)}</h3><div class="news-analysis"><div><strong>公开报道中的事实</strong><p>${escapeHtml(item.facts)}</p><a class="text-link" href="${item.url}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.source)} · 阅读原文 ↗</a></div><div><strong>信息难点与项目作用</strong><p>${escapeHtml(item.researchNeed)}</p><p class="news-project-role">${escapeHtml(item.projectRole)}</p></div></div></article>`).join("");
   }
   /** @returns {void} */
   function renderSources() {
@@ -200,7 +228,12 @@
       lines.push("", "## 数字经济背景", "中国信通院测算口径（数字产业化与产业数字化），历年公开发布值，未作经济普查回溯调整。", ...data.economy.map((row) => `- ${row.year} 年：规模 ${row.scale} 万亿元，占 GDP ${row.share}%。来源：${row.source} ${row.url}`), "", "国家统计局口径：2024 年数字经济核心产业增加值 14.0891 万亿元，占 GDP 10.5%，与上述统计范围不同。", "来源：https://www.stats.gov.cn/sj/zxfbhjd/202512/t20251230_1962177.html", "");
     }
     lines.push("## 待论证的研究问题", "1. 如何结合语境与人工复核，区分正常批评、玩梗与人身攻击？", "2. 疑似刷评需要哪些文本之外的证据，才能验证是否存在组织化操纵？", "3. 平台如何建立有解释、可复核的评论治理流程，保护用户合法表达？", "4. 现有规则在隐晦攻击、跨社区传播和证据留存方面有哪些需要进一步调研的难点？", "", "## 证据整理提纲", "- 界定样本范围、采集时间与去重方法；记录样本代表性和选择偏差。", "- 留存评论标识、来源视频、上下文、分类理由、人工复核意见和修订记录。", "- 逐项关联现行规则，明确事实缺口，开展实证与规范论证。", "- 提出研究建议，并评估对合法表达、隐私保护和申诉救济的影响。", "", "## 官方规则参考", ...data.laws.map((law) => `- ${law.title}（${law.date} 施行，参考 ${law.articles}）：${law.url}`), "", "## 研究边界", "本项目目前研究已配置的视频社区样本，不代表全网。模型标签与置信度不是违法认定、付费刷评证明或准确率。规则关联由研究人员整理，不是自动法律裁决。研究提纲需要人工核查与后续论证。", "", `公开经济资料核验日期：${data.verifiedOn}。`);
-    lines.push("", "## 语境认定与制度细化", "迷惑性评论可能因反讽、圈层语义与上下文缺失而难以单句判读。当前没有独立测试结果支持识别准确率，不以标签覆盖率代替正确率。", "本项目提出的研究问题是认定尺度、证据要求和复核程序如何细化，不主张我国没有相关法律法规。", "", "## 立法进展资料（与现行规则区分）", `${data.legislation.title}：${data.legislation.date} 发布的${data.legislation.status}。${data.legislation.note}`, data.legislation.url, `法律资料核验：${data.legalVerifiedOn}。`, "构造语境示例仅作演示，不计入采集样本、分类统计或实验结果。");
+    lines.push("", "## 语境认定与制度细化", "迷惑性评论可能因反讽、圈层语义与上下文缺失而难以单句判读。当前没有独立测试结果支持识别准确率，不以标签覆盖率代替正确率。", "本项目提出的研究问题是认定尺度、证据要求和复核程序如何细化，不主张我国没有相关法律法规。", "", "## 立法进展资料（与现行规则区分）", `${data.legislation.title}：${data.legislation.date} 发布的${data.legislation.status}。${data.legislation.note}`, data.legislation.url, `法律资料核验：${data.legalVerifiedOn}。`, "模型参照人工锚定示例分类；参数微调增益、识别准确率与实际总成本仍需独立对照评测。");
+    if (!policyOnly && state.budget) {
+      const budget = state.budget;
+      lines.push("", "## 人工标注预算（假设情景）", `数据范围：两个线上视频评论总数，${number(budget.count)} 条。核对时间：${data.annotationBudget.commentCountVerifiedAt}。`, ...data.annotationBudget.videos.map((video) => `- ${video.name}：${number(video.onlineCount)} 条。来源：${video.countUrl}，字段 ${data.annotationBudget.commentCountField}。`), `按 ${budget.seconds} 秒/条、每天 8 小时中 ${(budget.efficiency * 100).toFixed(0)}% 为有效标注、日薪 150 元计算：${number(budget.throughput)} 条/人天。`, `全人工：${number(budget.manualDays)} 人天，${number(budget.manualCost)} 元。`, `107 条人工示范 + ${(budget.reviewRate * 100).toFixed(0)}% 剩余样本抽检情景：${number(budget.assistedLabels)} 条人工任务，${number(budget.assistedDays)} 人天，人工部分 ${number(budget.assistedCost)} 元。`, "费用按整天向上取整，未含模型推理、招聘培训、术语维护、争议仲裁、额外质检，以及标注后的数据整理、总结分析与研究论证费用。抽检比例未经质量实测，人工差额不代表总成本节省。线上评论计数为公开接口返回的核对时快照，不等于本地采集量，实际可标注量还受删除、可访问性与去重影响。");
+    }
+    lines.push("", "## 圈层知识与人才门槛", "圈内黑话、人物关系和事件沿革不是通用知识。标注人员需理解圈层语境并统一分类口径；研究人员还要兼具证据整理、数据分析、研究设计和治理规则知识，复合能力更难组织。模型方案旨在复用人工经验，减少全量逐条归类，把稀缺人力用于难例复核和研究论证。", "", "## 新闻案例与信息作用", ...data.newsCases.map((item) => `- ${item.date} ${item.title}（${item.source}）。${item.url}\n  适用性分析：${item.projectRole}`), "新闻资料未进入本项目训练或评测，不将模型标签作为线下行为预测或违法认定。");
     downloadText(`破妄-${policyOnly ? "立法研究提纲" : "治理研究摘要"}-${date}.md`, lines.join("\n"));
   }
   /** @param {string} role @param {string} message @returns {HTMLElement} */
@@ -241,8 +274,7 @@
   }
   /** @returns {void} */
   function bindEvents() {
-    document.querySelectorAll("[data-example]").forEach((button) => button.addEventListener("click", () => { ambiguityState.key = button.dataset.example; ambiguityState.revealed = false; renderAmbiguity(); }));
-    byId("revealContext").addEventListener("click", () => { ambiguityState.revealed = !ambiguityState.revealed; renderAmbiguity(); });
+    ["budgetSeconds", "budgetEfficiency", "budgetReview"].forEach((id) => byId(id).addEventListener("change", renderCosts));
     byId("exportGapResearch").addEventListener("click", () => exportResearch(true));
     byId("economyYear").addEventListener("change", (event) => { state.year = Number(event.target.value); renderEconomy(); });
     document.querySelectorAll("[data-trend]").forEach((button) => button.addEventListener("click", () => {
@@ -263,6 +295,6 @@
 
   }
   state.year = Number(byId("economyYear").value);
-  renderAmbiguity(); renderEconomy(); renderSources(); bindEvents(); loadLocalData();
+  renderCosts(); renderNews(); renderEconomy(); renderSources(); bindEvents(); loadLocalData();
   new ResizeObserver(renderGrowth).observe(byId("growthChart"));
 })();
