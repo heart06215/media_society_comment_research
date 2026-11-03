@@ -72,6 +72,32 @@ window.GovernanceData = Object.freeze({
     "url": "https://news.cctv.cn/2024/10/29/ARTIlpz34tsJFbyVXY2tZkEU241029.shtml"
   }
 ],
+  officialLegalGaps: {
+  "publisher": "国家互联网信息办公室",
+  "document": "关于《中华人民共和国反网络暴力法（征求意见稿）》的说明",
+  "publishedOn": "2026-07-29",
+  "verifiedOn": "2026-11-03",
+  "locator": "一、起草背景 · 第三点",
+  "url": "https://www.cac.gov.cn/2026-07/29/c_1787072711938509.htm",
+  "documentType": "官方起草说明",
+  "items": [
+    {
+      "title": "规范体系仍较分散",
+      "quote": "相关立法还比较分散",
+      "explanation": "起草说明将分散规范的统合列为专门立法需要解决的制度问题。"
+    },
+    {
+      "title": "概念与平台责任界定不足",
+      "quote": "还不够明确",
+      "explanation": "这段表述指向基本概念和平台主体责任，明确提出进一步细化边界的需求。"
+    },
+    {
+      "title": "治理架构仍需完善",
+      "quote": "顶层设计还需完善",
+      "explanation": "起草说明将综合治理、源头治理的制度安排列为需要进一步健全的环节。"
+    }
+  ]
+},
   legislation: {
   "date": "2026-07-29",
   "verifiedOn": "2026-11-02",

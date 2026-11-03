@@ -561,3 +561,30 @@ html[data-theme="dark"] {
   .online-video-counts { grid-template-columns: 1fr; }
   .online-video-scale h2 { font-size: var(--type-title); }
 }
+
+/* Official drafting rationale anchors the legal research narrative. */
+.official-gap-evidence { border: 3px solid var(--line); background: var(--surface); padding: 24px; margin-bottom: 24px; }
+.official-gap-evidence > header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
+.official-gap-evidence time { font-size: var(--type-small); color: var(--muted); }
+.official-gap-evidence > h3 { font-size: var(--type-heading); line-height: 1.5; margin: 20px 0; }
+.official-gap-quotes { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
+.official-gap-quotes article { min-width: 0; border-top: 5px solid var(--blue); padding: 20px 0 0; }
+.official-gap-quotes article:nth-child(2) { border-top-color: var(--cyan); }
+.official-gap-quotes article:nth-child(3) { border-top-color: var(--pink); }
+.official-gap-index { font-size: var(--type-caption); font-weight: 900; color: var(--muted); }
+.official-gap-quotes h4 { font-size: var(--type-lead); line-height: 1.5; margin: 12px 0; }
+.official-gap-quotes blockquote { margin: 16px 0; border-left: 4px solid var(--gov-accent); padding-left: 12px; }
+.official-gap-quotes blockquote p { font-size: var(--type-title); line-height: 1.7; font-weight: 900; color: var(--gov-accent); }
+.official-gap-explanation { font-size: var(--type-body); line-height: 1.8; }
+.official-gap-source { border-top: 2px solid var(--line); padding-top: 20px; margin-top: 24px; font-size: var(--type-small); line-height: 1.8; }
+.official-gap-source cite { display: block; font-style: normal; margin-bottom: 8px; }
+.official-gap-context { font-size: var(--type-small); color: var(--muted); line-height: 1.8; margin-top: 16px; }
+.gap-heading > .tag { margin-bottom: 12px; }
+@media (max-width: 1279px) {
+  .official-gap-quotes { grid-template-columns: 1fr; }
+}
+@media (max-width: 767px) {
+  .official-gap-evidence { padding: 20px; }
+  .official-gap-evidence > h3 { font-size: var(--type-title); }
+  .official-gap-quotes blockquote p { font-size: var(--type-lead); }
+}

@@ -129,6 +129,12 @@
     byId("newsCases").innerHTML = data.newsCases.map((item) => `<article class="news-card"><header><span class="tag neutral">${escapeHtml(item.kind)}</span><time datetime="${item.date}">报道日期：${item.date}</time></header><h3>${escapeHtml(item.title)}</h3><div class="news-analysis"><div><strong>公开报道中的事实</strong><p>${escapeHtml(item.facts)}</p><a class="text-link" href="${item.url}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.source)} · 阅读原文 ↗</a></div><div><strong>信息难点与项目作用</strong><p>${escapeHtml(item.researchNeed)}</p><p class="news-project-role">${escapeHtml(item.projectRole)}</p></div></div></article>`).join("");
   }
   /** @returns {void} */
+  function renderLegalEvidence() {
+    const evidence = data.officialLegalGaps;
+    byId("officialGapQuotes").innerHTML = evidence.items.map((item, index) => `<article><span class="official-gap-index">0${index + 1} / 原文摘句</span><h4>${escapeHtml(item.title)}</h4><blockquote cite="${evidence.url}"><p>${escapeHtml(item.quote)}</p></blockquote><p class="official-gap-explanation">${escapeHtml(item.explanation)}</p></article>`).join("");
+    byId("officialGapSource").innerHTML = `<cite>${escapeHtml(evidence.publisher)} · ${escapeHtml(evidence.document)} · ${escapeHtml(evidence.locator)}</cite><a class="text-link" href="${evidence.url}" target="_blank" rel="noopener noreferrer">核对完整官方原文 ↗</a>`;
+  }
+  /** @returns {void} */
   function renderSources() {
     byId("economyTable").innerHTML = data.economy.map((row) => `<tr><th scope="row">${row.year}</th><td>${row.scale.toFixed(1)}</td><td>${row.share.toFixed(1)}%</td><td><a href="${row.url}" target="_blank" rel="noopener noreferrer">${escapeHtml(row.source)} ↗</a></td></tr>`).join("");
     byId("lawList").innerHTML = data.laws.map((law) => `<article class="law-row"><div class="law-date">${law.date}<small>施行日期</small></div><div><h4>${law.title}</h4><div class="law-meta"><span class="tag">${law.topic}</span><span>${law.issuer} · ${law.articles}</span></div><p>${law.description}</p></div><a class="text-link" href="${law.url}" target="_blank" rel="noopener noreferrer" aria-label="阅读${law.title}官方原文">官方原文 ↗</a></article>`).join("");
@@ -228,6 +234,8 @@
   function exportResearch(policyOnly) {
     const date = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Shanghai" }).format(new Date());
     const lines = ["# 破妄 · 网络生态治理与立法研究", "", `导出日期：${date}（北京时间）`, "", "## 研究定位", "围绕反讽、圈层黑话与复读中的语境歧义，整理模型标签、原始评论与人工复核材料，支持我国网络治理规则细化与立法研究。", ""];
+    const evidence = data.officialLegalGaps;
+    lines.push("## 官方起草说明指出的制度问题", `${evidence.publisher}，${evidence.publishedOn} 发布。${evidence.document}，${evidence.locator}。`, ...evidence.items.map((item) => `- ${item.title}：${item.explanation}`), `官方原文：${evidence.url}`, "文献属性为起草说明；征求意见文本不作为生效法律依据。下文研究问题是本项目提出的论证方向。", "");
     if (!policyOnly) {
       lines.push("## 本地样本概况", state.loaded ? "数据来源：本项目本地语料与已保存的模型分析。" : "本地数据未成功加载，本次导出不包含样本统计。", "");
       if (state.loaded) for (const video of state.videos) lines.push(`- ${video.name}（${video.community || "研究社区"}，${video.bvid}）：采集 ${commentCount(video.corpus_count || 0)} 条；分类 ${commentCount(Object.values(countsFor([video])).reduce((sum, value) => sum + value, 0))} 条；人工锚定 ${commentCount(video.anchor_count || 0)} 条。`, `  分类统计：${categories.map((category) => `${category} ${commentCount(video.analysis?.[category] || 0)}`).join("；")}。`);
@@ -301,6 +309,6 @@
 
   }
   state.year = Number(byId("economyYear").value);
-  renderCosts(); renderNews(); renderEconomy(); renderSources(); bindEvents(); loadLocalData();
+  renderCosts(); renderNews(); renderLegalEvidence(); renderEconomy(); renderSources(); bindEvents(); loadLocalData();
   new ResizeObserver(renderGrowth).observe(byId("growthChart"));
 })();
