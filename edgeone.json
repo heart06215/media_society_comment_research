@@ -1,0 +1,25 @@
+{
+  "installCommand": "echo skip-install",
+  "buildCommand": "echo static-site",
+  "outputDirectory": "./public",
+  "rewrites": [
+    { "source": "/comments", "destination": "/comments.html" },
+    { "source": "/insight", "destination": "/insight.html" },
+    { "source": "/label", "destination": "/label.html" }
+  ],
+  "headers": [
+    {
+      "source": "/*",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Referrer-Policy", "value": "same-origin" }
+      ]
+    }
+  ],
+  "cloudFunctions": {
+    "python": {
+      "maxDuration": 60
+    }
+  }
+}

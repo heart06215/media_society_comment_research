@@ -8,6 +8,8 @@
 """
 import os
 import json
+import hmac
+import time
 import random
 import threading
 import traceback
@@ -50,6 +52,69 @@ CFG = sa.load_project_config()
 CATEGORIES = sa.CATEGORIES
 CAT_COLORS = {"赞美": "#2743FF", "贬低": "#F22560", "水军": "#FFD400", "无意义": "#707A8E",
               "社区对骂": "#6E1EFF", "中立": "#00A88F"}
+
+# ---------- 临时公网演示保护 ----------
+# 本地默认全部关闭；平台部署时通过环境变量启用。
+PUBLIC_BASIC_AUTH = (os.environ.get("POWANG_BASIC_AUTH") or "").strip()
+PUBLIC_READ_ONLY = (os.environ.get("POWANG_READ_ONLY") or "").strip().lower() in ("1", "true", "yes", "on")
+try:
+    CHAT_HOURLY_LIMIT = int(os.environ.get("POWANG_CHAT_LIMIT", "") or (30 if PUBLIC_READ_ONLY else 0))
+except ValueError:
+    CHAT_HOURLY_LIMIT = 30 if PUBLIC_READ_ONLY else 0
+CHAT_HOURLY_LIMIT = max(0, CHAT_HOURLY_LIMIT)
+_CHAT_HITS = []
+_CHAT_LOCK = threading.Lock()
+
+
+def _basic_auth_ok():
+    if not PUBLIC_BASIC_AUTH:
+        return True
+    auth = request.authorization
+    if not auth or not auth.username or auth.password is None:
+        return False
+    try:
+        want_user, want_pass = PUBLIC_BASIC_AUTH.split(":", 1)
+    except ValueError:
+        return False
+    return (hmac.compare_digest(auth.username, want_user)
+            and hmac.compare_digest(auth.password, want_pass))
+
+
+def _chat_budget_ok():
+    """公网演示的问答小时额度，避免密钥被批量消耗。"""
+    if CHAT_HOURLY_LIMIT <= 0:
+        return True
+    now = time.time()
+    with _CHAT_LOCK:
+        cutoff = now - 3600
+        _CHAT_HITS[:] = [t for t in _CHAT_HITS if t >= cutoff]
+        if len(_CHAT_HITS) >= CHAT_HOURLY_LIMIT:
+            return False
+        _CHAT_HITS.append(now)
+        return True
+
+
+@app.before_request
+def _guard_public_demo():
+    if request.path == "/health":
+        return None
+    if not _basic_auth_ok():
+        return Response("需要访问口令", 401,
+                        {"WWW-Authenticate": 'Basic realm="powang", charset="UTF-8"'})
+    if PUBLIC_READ_ONLY and request.method not in ("GET", "HEAD", "OPTIONS"):
+        # 问答接口仍保留，但受上面的口令和小时额度约束。
+        if request.path.startswith("/api/") and request.path != "/api/agent/chat":
+            return err("公网演示为只读模式：不能修改数据或触发分析", 403)
+    return None
+
+
+@app.after_request
+def _security_headers(resp):
+    resp.headers.setdefault("X-Content-Type-Options", "nosniff")
+    resp.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+    resp.headers.setdefault("Referrer-Policy", "same-origin")
+    resp.headers.setdefault("Permissions-Policy", "geolocation=(), microphone=(), camera=()")
+    return resp
 
 
 # ---------- 基础工具 ----------
@@ -266,6 +331,8 @@ def api_agent_chat():
     question = (body.get("question") or "").strip()
     if not question:
         return err("缺少问题")
+    if not _chat_budget_ok():
+        return err("演示问答额度已用完，请稍后再试", 429)
     try:
         ex = _get_agent()
         from langchain_core.messages import HumanMessage

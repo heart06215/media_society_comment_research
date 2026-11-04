@@ -1,0 +1,23 @@
+{
+  "model": "glm-4-flash",
+  "fallback_model": "glm-4-flash-250414",
+  "base_url": "https://open.bigmodel.cn/api/paas/v4/",
+  "fine_tuned_model": "",
+  "concurrency": 12,
+  "videos": [
+    {
+      "bvid": "BV1fy4y1L7Rq",
+      "name": "明日方舟PV",
+      "community": "二游",
+      "community_full": "游戏圈(二次元游戏)",
+      "color": "#2743FF"
+    },
+    {
+      "bvid": "BV1h1kcBfEuJ",
+      "name": "TF家族音乐会",
+      "community": "饭圈",
+      "community_full": "演艺圈(偶像团体)",
+      "color": "#F22560"
+    }
+  ]
+}
