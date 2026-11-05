@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>破妄 · 社区洞察与证据关系图谱</title>
 <link rel="icon" href="/mark.svg" type="image/svg+xml">
-<script src="theme.js"></script><script src="/count-format.js"></script>
+<script src="theme.js"></script><script src="/count-format.js"></script><script src="/brain-layout.js"></script>
 <link rel="stylesheet" href="base.css">
 <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 <style>
@@ -233,8 +233,8 @@
 <link rel="stylesheet" href="/tools.css">
 <script src="/workspace.js" defer></script>
 </head>
-<body class="tool-page workspace-page"><a class="skip-link" href="#main">跳至主要内容</a><div id="workspaceNav"></div><div class="app-workspace"><header class="app-topbar" id="workspaceTopbar"></header><main id="main"><div class="wrap"><div class="kicker">社区结构 · 话术关联</div><h1 class="display" style="font-size:var(--type-display)">社区洞察与证据关系图谱</h1><p class="tool-intro mt">图表能显示分布，不能直接读出动机。结合时间、网络用语与原文核查迷惑性表达；相似文本不证明组织关系，模型标签不证明违法事实。</p>  <div class="sec-head" id="insight"><span class="sec-num">01</span><span class="sec-title">社区结构洞察</span><span class="sec-rule"></span></div>
-  <p class="muted mb-2">六分类结构 · 饭圈×二游双社区对比 · 时间趋势 · 高频网络用语 · 代表性评论</p>
+<body class="tool-page workspace-page"><a class="skip-link" href="#main">跳至主要内容</a><div id="workspaceNav"></div><div class="app-workspace"><header class="app-topbar" id="workspaceTopbar"></header><main id="main"><div class="wrap"><div class="kicker">社区结构 · 话术关联</div><h1 class="display" style="font-size:var(--type-display)">社区结构与治理线索</h1><p class="tool-intro mt">先看分类结构，再找话术关联，回到原文与人工复核，为规则细化与立法评估保留研究材料。</p>  <ol class="research-route" aria-label="治理研究流程"><li aria-current="step"><span>01 / 结构观察</span><small>看分类与时间变化</small></li><li><span>02 / 话术关联</span><small>找圈层词与相似表达</small></li><li><span>03 / 原文核对</span><small>查来源、语境与理由</small></li><li><span>04 / 人工复核</span><small>把难例沉淀为示范</small></li></ol><div class="sec-head" id="insight"><span class="sec-num">01</span><span class="sec-title">先看结构：哪些表达值得追踪</span><span class="sec-rule"></span></div>
+  <p class="muted mb-2">比较两社区的分类、时间变化与圈层词汇，定位需要核验的表达。以下为模型分类统计。</p>
 
   <div class="tabs mb-2" id="videoTabs"></div>
   <div id="summary" class="muted mb-2" style="display:flex;gap:20px;flex-wrap:wrap;font-size:var(--type-small)"></div>
@@ -253,11 +253,11 @@
     </div>
     <div class="grid-2" style="border-top:3px solid var(--line)">
       <div style="padding:14px 18px">
-        <h3 style="font-size:var(--type-body);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">情感结构雷达</h3>
+        <h3 style="font-size:var(--type-body);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">分类结构雷达</h3>
         <div class="chart" id="cmpRadar" style="height:340px"></div>
       </div>
       <div style="padding:14px 18px">
-        <h3 style="font-size:var(--type-body);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">结论速读</h3>
+        <h3 style="font-size:var(--type-body);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">分类差异摘要</h3>
         <div id="cmpInsight" class="small" style="line-height:2;font-size:var(--type-body)"></div>
       </div>
     </div>
@@ -284,8 +284,8 @@
   <div class="gf-head">
     <div class="gf-col gf-col-main">
       <div class="gf-kicker">02 · RELATIONSHIP NETWORK</div>
-      <h2 class="gf-title">评论证据关系图谱</h2>
-      <p class="gf-sub">两个视频名作为左右半球核心，网络用语与真实评论向其聚成双半球；相关度越低的节点越靠外缘，画面两侧是最疏离的评论，中央由共有词条与命中它们的评论连成胼胝体。评论经字符 bigram-Jaccard 核验相似度，相似评论互相连边；节点颜色区分六分类与所属视频。</p>
+      <h2 class="gf-title">双半球语义图谱</h2>
+      <p class="gf-sub">两个视频形成双半球，圈层词条连接相近评论。定位节点、核对来源，再把难例交给人工复核。</p>
     </div>
 
     <div class="gf-col gf-col-filter">
@@ -300,7 +300,7 @@
     </div>
 
     <div class="gf-col gf-col-scale">
-      <div class="gf-block-h"><span>图谱规模</span><span>LIVE</span></div>
+      <div class="gf-block-h"><span>图谱规模</span><span>采集样本</span></div>
       <div class="gf-metrics" id="gfMetrics"></div>
       <div class="gf-layers" id="gfLayers">
         <button type="button" class="gf-layer on" data-layer="comment">评论节点</button>
@@ -345,8 +345,8 @@
 
 <div class="wrap" id="qa" style="padding-top:48px">
   <!-- 问答 -->
-  <div class="sec-head"><span class="sec-num">03</span><span class="sec-title">AI 洞察问答</span><span class="sec-rule"></span></div>
-  <p class="muted mb-2">LangChain Agent · 基于六分类分析结果回答统计、对比、趋势、网络用语含义等问题</p>
+  <div class="sec-head"><span class="sec-num">03</span><span class="sec-title">把发现转成研究问题</span><span class="sec-rule"></span></div>
+  <p class="muted mb-2">围绕分类差异、圈层用语与证据不足处提问，整理后续核验清单。</p>
   <div class="chat-layout">
     <aside class="side">
       <h3>数据快照</h3>
@@ -366,7 +366,7 @@
     <div class="chat-main">
       <div class="chat-log" id="chatLog"></div>
       <div class="chat-input">
-        <input id="chatQ" aria-label="向研究助手提问" placeholder="向 AI 分析师提问..." onkeydown="if(event.key==='Enter')chatSend()">
+        <input id="chatQ" aria-label="向研究助手提问" placeholder="输入需要核验的治理研究问题" onkeydown="if(event.key==='Enter')chatSend()">
         <button class="btn primary" id="chatSendB" onclick="chatSend()">发送 →</button>
       </div>
     </div>
@@ -547,7 +547,7 @@ function gfDraw() {
   const vids = vis.nodes.filter(n => n.kind === "video");
   const multi = vids.length > 1;
   const vidIndex = id => vids.findIndex(v => v.id === id);
-  const videoCenter = i => multi ? [W * (i === 0 ? 0.28 : 0.72), H * 0.50] : [W * 0.50, H * 0.50];
+  const videoCenter = i => BrainLayout.center(W, H, i, multi);
   // 两个视频节点放在各自半球的正中央，作为被大量节点包围的核心
   vids.forEach((n, i) => seed.set(n.id, videoCenter(i)));
 
@@ -563,34 +563,15 @@ function gfDraw() {
   let rnd = 20261021;
   const rndNext = () => (rnd = (rnd * 1103515245 + 12345) % 2147483648) / 2147483648;
 
-  // 半球边界：外缘比内缘更宽、上半部比下半部更高，形成大脑式的双叶轮廓。
-  // frac=0 在视频核心，frac=1 落在半球边缘。
-  const placeInLobe = (vidId, frac, ang) => {
-    const c = seed.get(vidId) || [cx, cy];
-    const gi = vidIndex(vidId);
-    const outward = multi ? (gi === 0 ? -1 : 1) : 0;
-    const cos = Math.cos(ang), sin = Math.sin(ang);
-    // 脑俯视轮廓：横向明显拉宽、纵向压扁，并用超椭圆让外缘更饱满。
-    // taper 让前部（上）略窄、后部（下）略宽，接近大脑俯视图的前后差异。
-    const taper = 1 + 0.09 * Math.sin(ang);
-    const rx = (multi ? W * ((cos * outward > 0) ? 0.24 : 0.195) : W * 0.31) * taper;
-    const ry = H * (sin < 0 ? 0.26 : 0.23);
-    const pX = 0.82;                 // 横向：2/2.44
-    const pY = sin > 0 ? 0.58 : 0.82; // 下半部用更小的指数，把脑底压平
-    const sx = Math.sign(cos) * Math.pow(Math.abs(cos), pX);
-    const sy = Math.sign(sin) * Math.pow(Math.abs(sin), pY);
-    // 低频角度起伏：额叶/顶叶/枕叶几个大起伏，而不是高频毛刺
-    const bump = 1 + 0.045 * Math.sin(ang * 3 + (gi === 0 ? 0.4 : 1.2))
-                   + 0.02 * Math.cos(ang * 5);
-    return [c[0] + rx * sx * bump * frac, c[1] + ry * sy * bump * frac];
-  };
+  // Nodes and the cortical guides use the same hemisphere geometry.
+  const placeInLobe = (vidId, frac, ang) => BrainLayout.point(W, H, Math.max(0, vidIndex(vidId)), multi, frac, ang);
 
   // 跨视频共有词条压在中央纵裂里做桥接
   shared.forEach((n, k) => {
     const t = shared.length <= 1 ? 0.5 : k / (shared.length - 1);
     seed.set(n.id, [
       W * (0.5 + (rndNext() - 0.5) * 0.03),
-      H * (0.22 + 0.56 * t) + (rndNext() - 0.5) * 18
+      H * (0.17 + 0.63 * t) + (rndNext() - 0.5) * 18
     ]);
   });
 
@@ -640,7 +621,7 @@ function gfDraw() {
       const t = bridge.length <= 1 ? 0.5 : i / (bridge.length - 1);
       seed.set(n.id, [
         W * (0.445 + 0.11 * t) + (rndNext() - 0.5) * 10,
-        H * (0.50 + 0.03 * Math.sin(t * Math.PI * 2)) + (rndNext() - 0.5) * 16
+        H * (0.47 + 0.025 * Math.sin(t * Math.PI * 2)) + (rndNext() - 0.5) * 16
       ]);
       bridgeIds.add(n.id);
     });
@@ -666,12 +647,10 @@ function gfDraw() {
 
   const ids = vis.nodes.map(n => n.id);
   const px = ids.map(id => seed.get(id)[0]), py = ids.map(id => seed.get(id)[1]);
-  const isCom = ids.map((id, i) => vis.nodes[i].kind === "comment");
   const bigLim = Math.min(110, Math.max(62, Math.min(W, H) * 0.085));
   const termLim = Math.min(78, Math.max(46, Math.min(W, H) * 0.055));
   const limBase = vis.nodes.map(n => n.kind === "comment" ? 15
     : n.kind === "term" ? termLim : bigLim);
-  const margin = 44;
   for (let it = 0; it < 72; it++) {
     for (let i = 0; i < ids.length; i++) {
       for (let j = i + 1; j < ids.length; j++) {
@@ -687,16 +666,16 @@ function gfDraw() {
     }
   }
   for (let i = 0; i < ids.length; i++) {
-    px[i] = Math.max(margin, Math.min(W - margin, px[i]));
-    // 评论云不压到底部类别行，也不顶到社区节点上
-    py[i] = isCom[i]
-      ? Math.max(H * 0.065, Math.min(H - 180, py[i]))
-      : Math.max(margin, Math.min(H - margin, py[i]));
-    // 社区/视频/类别是版面骨架，不让评论云把它们挤到边缘；评论先画，压在大节点下面
-    const kd = vis.nodes[i].kind;
-    if (kd === "community" || kd === "video" || kd === "category") {
-      const s = seed.get(ids[i]);
-      px[i] = s[0]; py[i] = s[1];
+    const n = vis.nodes[i];
+    const anchor = seed.get(ids[i]) || [cx, cy];
+    if ((n.kind === "comment" && !bridgeIds.has(n.id)) || (n.kind === "term" && !shared.some(t => t.id === n.id))) {
+      const side = Math.max(0, vidIndex(n.vid || firstVideo[n.id]));
+      const maxX = W * 0.035, maxY = H * 0.045;
+      const x = anchor[0] + Math.max(-maxX, Math.min(maxX, px[i] - anchor[0]));
+      const y = anchor[1] + Math.max(-maxY, Math.min(maxY, py[i] - anchor[1]));
+      [px[i], py[i]] = BrainLayout.constrain(W, H, side, multi, x, y);
+    } else {
+      px[i] = anchor[0]; py[i] = anchor[1];
     }
   }
   const pos = new Map(ids.map((id, i) => [id, [px[i], py[i]]]));
@@ -748,7 +727,7 @@ function gfDraw() {
                  fontWeight: tr >= 0.08 ? 900 : 700,
                  textBorderColor: C.surface, textBorderWidth: 2 } });
     }
-    item.label = Object.assign({}, item.label, { formatter: () => n.label });
+    item.label = Object.assign({}, item.label, { formatter: () => n.kind === "video" ? n.label.replace("PV", "\nPV").replace("音乐会", "\n音乐会") : n.label });
     return item;
   });
 
@@ -779,6 +758,20 @@ function gfDraw() {
              layer: e.layer || "", sim: e.sim, lineStyle: ls };
   });
 
+  // Decorative guide nodes share the graph transform, so the outline follows pan and zoom.
+  const guideLinks = [];
+  BrainLayout.guides(W, H, multi).forEach((path, pathIndex) => {
+    const baseGuideColor = !multi ? (vids[0]?.color || C.blue) : (path.side === 0 ? C.blue : C.pink);
+    const guideColor = document.documentElement.dataset.theme === "dark" && baseGuideColor.toLowerCase() === C.blue.toLowerCase() ? C.cyan : baseGuideColor;
+    path.points.forEach((point, i) => {
+      const id = `brain-guide:${pathIndex}:${i}`;
+      data.push({id, name:"", kind:"guide", guide:true, x:point[0], y:point[1], symbolSize:0,
+        label:{show:false}, tooltip:{show:false}, emphasis:{disabled:true}, itemStyle:{opacity:0}});
+      if (i) guideLinks.push({source:`brain-guide:${pathIndex}:${i - 1}`, target:id, guide:true,
+        tooltip:{show:false}, emphasis:{disabled:true}, lineStyle:{color:guideColor, opacity:path.outline ? 0.58 : 0.32, width:path.outline ? 2.5 : 2, curveness:0}});
+    });
+  });
+
   const option = {
     backgroundColor: "transparent",
     animation: false,
@@ -786,6 +779,7 @@ function gfDraw() {
       backgroundColor: C.surface, borderColor: C.line, borderWidth: 2,
       textStyle: { color: C.ink, fontSize: 15 }, extraCssText: "border-radius:0;box-shadow:6px 6px 0 rgba(14,17,22,.15)",
       formatter: p => {
+        if (p.data.guide) return "";
         if (p.dataType === "edge") {
           const s = byId.get(p.data.source), t = byId.get(p.data.target);
           if (p.data.layer === "sim") {
@@ -811,7 +805,7 @@ function gfDraw() {
     series: [{
       type: "graph", layout: "none", roam: true, selectedMode: "single",
       center: [W / 2, H / 2], zoom: 1.136,  // 抵消 layout:none 的 0.88 内缩，让图谱真正铺满画布
-      data: data, links: links,
+      data: data, links: guideLinks.concat(links),
       labelLayout: { hideOverlap: true },
       lineStyle: { curveness: 0.08 },
       emphasis: { focus: "adjacency", scale: 1.12, lineStyle: { opacity: 1, width: 4 } },
@@ -824,7 +818,7 @@ function gfDraw() {
     gfChart = echarts.init(el, null, { renderer: "canvas", devicePixelRatio: dpr, useDirtyRect: true });
     gfChart.on("click", p => {
       if (performance.now() - gfPanEndAt < 300) return;  // 拖拽结束后的误触 click
-      if (p.dataType === "node") gfSelect(p.data.id); else gfClose();
+      if (p.dataType === "node" && !p.data.guide) gfSelect(p.data.id); else gfClose();
     });
     const zr = gfChart.getZr();
 
@@ -921,7 +915,7 @@ function gfBody(n) {
   if (n.kind === "comment") {
     const v = gfData.nodes.find(x => x.id === n.vid);
     const terms = n.terms || [], sims = n.sims || [];
-    return `<p class="gf-quote" style="margin-top:0">${gfEsc(n.text || n.label)}</p>` +
+    return `<p class="gf-quote" style="margin-top:0">${gfEsc(n.text || n.label)}</p><a class="gf-evidence-action" href="/comments?bvid=${encodeURIComponent(n.bvid || (v && v.bvid) || "")}&q=${encodeURIComponent(Array.from(n.text || n.label || "").slice(0,48).join(""))}">在证据库核对原文 ↗</a>` +
       gfRow("所属视频", gfEsc(v ? v.label : n.bvid || "—")) +
       gfRow("社区", gfEsc(n.community || "—")) +
       gfRow("归类", n.category ? gfBadge(n.category) : "未归类") +
@@ -960,7 +954,7 @@ function gfSelect(id) {
   document.getElementById("gfPanelBody").innerHTML = gfBody(n);
   document.getElementById("gfPanel").classList.add("on");
   if (gfChart) {
-    const i = gfVisible().nodes.findIndex(x => x.id === id);
+    const i = gfChart.getOption().series[0].data.findIndex(item => item.id === id);
     if (i >= 0) gfChart.dispatchAction({ type: "select", seriesIndex: 0, dataIndex: i });
   }
 }

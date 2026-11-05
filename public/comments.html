@@ -97,8 +97,10 @@
 <main class="wrap" id="main">
   <div class="kicker">原文检索 · 人工核验</div>
   <h1 class="display" style="font-size:var(--type-display);margin-bottom:4px">评论<span class="stroke">证据库</span></h1>
-  <p class="muted mb">一句评论未必能说明真实立场。按关键词查原文、核对模型理由；反讽、圈层用语与复读需要结合语境复核。</p>
+  <p class="muted mb">定位原文，核对圈层语境与分类理由，为立法评估保留可追溯材料。</p>
 
+  <ol class="research-route" aria-label="治理研究流程"><li><span>01 / 结构观察</span><small>看分类与时间变化</small></li><li><span>02 / 话术关联</span><small>找圈层词与相似表达</small></li><li aria-current="step"><span>03 / 原文核对</span><small>查来源、语境与理由</small></li><li><span>04 / 人工复核</span><small>把难例沉淀为示范</small></li></ol>
+  <h2 class="tool-section-title">按分类与关键词，缩小核验范围</h2>
   <div class="filter-bar">
     <select aria-label="选择研究视频" id="videoSel" style="min-width:210px"></select>
     <div class="category-filters" role="group" aria-label="按评论分类筛选">
@@ -141,7 +143,7 @@
 
 <footer class="footer">
   <span class="brand-name" style="font-size:var(--type-lead);letter-spacing:4px">破妄</span>
-  <span class="muted">六分类由锚定集检索式模型判定 · 二次审查可修正</span>
+  <span class="muted">模型先分类 · 人工核对原文 · 难例进入复核</span>
   <span style="flex:1"></span>
   <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span><span class="d4"></span></div>
 </footer>
@@ -403,7 +405,8 @@ async function init() {
     f.classList.toggle("on", f.dataset.c === curCat);
     f.setAttribute("aria-pressed", String(f.dataset.c === curCat));
   });
-  $("searchBox").value = filters.get("q") || "";
+  const requestedQuery = filters.get("q") || "";
+  $("searchBox").value = requestedQuery.split(/[\r\n]+/).map(line => line.trim()).reduce((longest, line) => line.length > longest.length ? line : longest, "");
   await loadStrip();
   ready = true;
   reset();

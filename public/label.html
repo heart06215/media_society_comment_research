@@ -41,20 +41,22 @@
 
 <main class="wrap" id="main">
   <div class="kicker">人工标注 · 模型复核</div>
-  <h1 class="display" style="font-size:var(--type-metric);margin-bottom:8px">标注与<span class="stroke">二次审查</span></h1>
-  <p class="muted mb-2">重点核对反讽、圈层黑话与复读中的语境歧义。信息不足时先跳过，不强行推断立场；保留正常批评和多元表达，为规则细化提供可核验样本。</p>
+  <h1 class="display" style="font-size:var(--type-metric);margin-bottom:8px">人工示范与<span class="stroke">模型复核</span></h1>
+  <p class="muted mb-2">用少量人工示范统一圈层口径，再复核模型难例。把人力留给语境知识和研究判断，复核结果回到规则与立法研究。</p>
 
+  <ol class="research-route" aria-label="治理研究流程"><li><span>01 / 结构观察</span><small>看分类与时间变化</small></li><li><span>02 / 话术关联</span><small>找圈层词与相似表达</small></li><li><span>03 / 原文核对</span><small>查来源、语境与理由</small></li><li aria-current="step"><span>04 / 人工复核</span><small>把难例沉淀为示范</small></li></ol>
+  <h2 class="tool-section-title">建立示范，修正难例，让经验持续复用</h2>
   <!-- 视频选择 + 进度 -->
   <div class="card accent mb-2">
     <span class="corner"></span>
     <div class="flex-between" style="flex-wrap:wrap">
       <div class="flex" style="flex-wrap:wrap">
         <select aria-label="选择研究视频" id="videoSel" style="min-width:250px"></select>
-        <button class="btn yellow" id="btnMore">追加标注 +50</button>
+        <button class="btn yellow" id="btnMore">补充50条示范</button>
         <span class="muted mono" id="progText"></span>
       </div>
       <div class="flex">
-        <button class="btn primary" id="btnAnalyze" disabled>▶ 开始调用大模型分析</button>
+        <button class="btn primary" id="btnAnalyze" disabled>按示范批量分类</button>
         <span class="muted" id="analyzeHint" style="max-width:220px"></span>
       </div>
     </div>
@@ -62,16 +64,16 @@
     <div class="flex-between mt small" style="flex-wrap:wrap">
       <span class="muted">两视频各完成 <b class="mono" id="goalTxt">50</b> 条后可触发分析（建议目标 100 条）· 当前锚定集总数 <b class="mono" id="nAll">0</b> 条</span>
       <span class="flex" style="gap:10px">
-        <span id="saveStatus" class="muted mono" style="opacity:.7">本地文件: data/labels/anchors.json</span>
-        <button class="btn ghost" id="btnBackup" style="padding:6px 12px;font-size:var(--type-small)">导出备份</button>
+        <span id="saveStatus" class="muted mono" style="opacity:.7">示范与复核记录保存在本地</span>
+        <button class="btn ghost" id="btnBackup" style="padding:6px 12px;font-size:var(--type-small)">导出示范集</button>
       </span>
     </div>
   </div>
 
   <!-- 模式切换 -->
   <div class="mode-tabs">
-    <button type="button" class="mode-tab active" data-mode="label" aria-pressed="true">① 人工标注</button>
-    <button type="button" class="mode-tab" data-mode="review" aria-pressed="false">② 二次审查（大模型结果）</button>
+    <button type="button" class="mode-tab active" data-mode="label" aria-pressed="true">① 建立人工示范</button>
+    <button type="button" class="mode-tab" data-mode="review" aria-pressed="false">② 复核模型分类</button>
   </div>
 
   <!-- 标注模式 -->
@@ -82,7 +84,7 @@
           <span class="badge praise" id="qPos">0 / 0</span>
           <span class="muted mono" id="qMeta"></span>
         </div>
-        <div class="comment-box" id="qText">点击右上角「追加标注」载入待标队列</div>
+        <div class="comment-box" id="qText">点击“补充50条示范”载入待标队列</div>
       </div>
       <div style="display:flex; flex-direction:column; gap:10px; justify-content:center; min-width:230px">
         <button type="button" class="cat-pill praise" data-cat="赞美" aria-pressed="false">赞 美 <span style="font-size:var(--type-caption);opacity:.6;margin-left:8px" class="mono">[1]</span></button>
@@ -105,7 +107,7 @@
   </section>
 
   <!-- 审查模式 -->
-  <section id="modeReview" style="display:none">
+  <section id="modeReview" style="display:none"><p class="tool-review-intro">对照原文与模型理由，确认或修正分类，将难例转成下一轮示范。</p>
     <div class="flex mb" style="flex-wrap:wrap">
       <select id="revCatSel" aria-label="筛选复核类别">
         <option value="">全部类别</option><option value="赞美">赞美</option><option value="贬低">贬低</option>
@@ -189,7 +191,7 @@ function renderQueue() {
   const box = document.getElementById("qText");
   document.getElementById("qPos").textContent = `${idx+1} / ${queue.length}`;
   if (!queue.length) {
-    box.textContent = "队列为空——点「追加标注 +50」或已完成本视频目标。";
+    box.textContent = "队列为空——点「补充50条示范」或已完成本视频目标。";
     document.getElementById("btnSubmit").disabled = true;
     return;
   }
@@ -299,7 +301,7 @@ document.getElementById("btnAnalyze").onclick = async () => {
   try {
     await api("/api/analyze", { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ bvid }) });
     poll(bvid, btn);
-  } catch (e) { alert("触发失败：" + e.message); btn.disabled=false; btn.textContent="▶ 开始调用大模型分析"; }
+  } catch (e) { alert("触发失败：" + e.message); btn.disabled=false; btn.textContent="按示范批量分类"; }
 };
 function poll(bvid, btn) {
   const t = setInterval(async () => {
@@ -307,7 +309,7 @@ function poll(bvid, btn) {
       const d = await api(`/api/analyze/status?bvid=${bvid}`);
       if (d.status === "done") {
         clearInterval(t);
-        btn.disabled = false; btn.textContent = "▶ 开始调用大模型分析";
+        btn.disabled = false; btn.textContent = "按示范批量分类";
         document.getElementById("analyzeHint").textContent = `完成！共${window.ResearchNumbers.commentCount(d.total)}条`;
         loadAnchorsInfo();
       } else if (d.status === "running") {
@@ -315,7 +317,7 @@ function poll(bvid, btn) {
         document.getElementById("analyzeHint").textContent = `分析中 ${window.ResearchNumbers.commentCount(d.done || 0)}/${d.total ? window.ResearchNumbers.commentCount(d.total) : "?"} 条 (${pct}%)，可离开此页`;
       } else if (d.status === "error") {
         clearInterval(t);
-        btn.disabled = false; btn.textContent = "▶ 开始调用大模型分析";
+        btn.disabled = false; btn.textContent = "按示范批量分类";
         document.getElementById("analyzeHint").textContent = "分析失败：" + (d.error || "未知错误");
       }
     } catch(e){}

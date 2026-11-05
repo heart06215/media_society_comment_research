@@ -102,3 +102,31 @@
 .tool-page .list-bar { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; }
 .tool-page .list-bar #listInfo { font-size: var(--type-small); letter-spacing: 0; }
 .tool-page .kicker { font-size: var(--type-caption); letter-spacing: 2px; }
+
+/* A shared evidence-reading sequence for the research tools. */
+.research-route { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); list-style: none; padding: 0; margin: 24px 0 32px; border-bottom: 2px solid var(--line); }
+.research-route li { min-width: 0; padding: 16px 12px; border-top: 4px solid var(--grid); }
+.research-route li[aria-current="step"] { border-top-color: var(--blue); background: var(--hover); }
+.research-route span { display: block; font-size: var(--type-small); font-weight: 900; }
+.research-route small { display: block; font-size: var(--type-caption); color: var(--muted); line-height: 1.8; margin-top: 8px; }
+.tool-section-title { font-size: var(--type-title); margin: 24px 0 16px; line-height: 1.5; }
+.tool-review-intro { font-size: var(--type-body); margin: 12px 0 20px; line-height: 1.8; }
+@media (max-width: 767px) { .research-route { grid-template-columns: repeat(2,minmax(0,1fr)); }.research-route li { padding: 12px 8px; } }
+
+/* The graph occupies a readable brain-shaped canvas rather than a tall empty sheet. */
+.tool-page .graph-full { height: auto; }
+.tool-page .gf-stage { flex: none; height: clamp(720px,58vw,900px); min-height: 720px; }
+.tool-page .gf-head { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; padding: 24px; }
+.tool-page .gf-col { border-left: 0; padding-left: 0; }
+.tool-page .gf-col-main { grid-column: 1 / -1; }
+.tool-page .gf-col-legend { border-top: 1px solid var(--grid); padding-top: 16px; grid-column: 1 / -1; }
+.tool-page .gf-sub { max-width: 860px; font-size: var(--type-body); }
+.tool-page .gf-title { font-size: var(--type-heading); }
+@media (min-width: 1600px) { .tool-page .gf-head { grid-template-columns: 1.15fr 1fr 1fr; }.tool-page .gf-col-main { grid-column: auto; } }
+@media (max-width: 767px) {
+  .tool-page .gf-head { display: grid; grid-template-columns: 1fr; padding: 20px; }
+  .tool-page .gf-stage { height: 620px; min-height: 620px; }
+  .tool-page .gf-col-legend { display: flex; flex-direction: column; }
+}
+
+.tool-page .gf-evidence-action { display: block; padding: 12px; margin-bottom: 20px; border: 2px solid var(--line); color: var(--gov-accent); font-size: var(--type-small); font-weight: 900; }
