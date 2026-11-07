@@ -106,12 +106,12 @@ html[data-theme="dark"] {
 .metric-card { padding: var(--space-5) var(--space-6); background: var(--gov-surface); border: 2px solid var(--gov-border); border-radius: var(--radius-md); }
 .metric-label { display: flex; justify-content: space-between; align-items: center; font-size: var(--type-small); color: var(--gov-muted); gap: var(--space-2); }
 .metric-label svg { width: 17px; height: 17px; color: var(--gov-accent); }
-.metric-value { font-family: "Segoe UI", sans-serif; font-size: var(--type-section); font-weight: 900; letter-spacing: -.5px; line-height: 1.3; margin: var(--space-3) 0; font-variant-numeric: tabular-nums; }
+.metric-value { font-family: var(--font-number); font-size: var(--type-section); font-weight: 900; letter-spacing: -.5px; line-height: 1.3; margin: var(--space-3) 0; font-variant-numeric: tabular-nums; }
 .metric-foot { font-size: var(--type-caption); color: var(--gov-muted); display: flex; gap: var(--space-2); align-items: center; min-height: 18px; }
 .metric-foot > span:last-child { margin-left: auto; }
 .content-section { margin-top: var(--space-10); }
 .section-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-5); margin-bottom: var(--space-5); }
-.section-index { color: var(--gov-accent); font-size: var(--type-small); font-family: "Segoe UI", sans-serif; font-weight: 900; margin-bottom: var(--space-2); }
+.section-index { color: var(--gov-accent); font-size: var(--type-small); font-family: var(--font-number); font-weight: 900; margin-bottom: var(--space-2); }
 .section-index span { margin-left: var(--space-2); font-size: var(--type-caption); letter-spacing: 1.5px; color: var(--gov-muted); font-weight: 400; }
 .section-heading h2 { font-size: var(--type-title); font-weight: 900; line-height: 1.5; }
 .year-control { display: flex; align-items: center; gap: var(--space-3); font-size: var(--type-small); color: var(--gov-muted); white-space: nowrap; }
@@ -131,7 +131,7 @@ html[data-theme="dark"] {
 .donut-fill { stroke: var(--gov-accent); stroke-linecap: round; transition: stroke-dasharray var(--gov-duration); }
 .donut-center { display: flex; flex-direction: column; align-items: center; justify-content: center; position: absolute; inset: 0; }
 .donut-center > span, .donut-center small { color: var(--gov-muted); font-size: var(--type-caption); }
-.donut-center strong { font-size: var(--type-display); font-family: "Segoe UI", sans-serif; font-weight: 900; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.donut-center strong { font-size: var(--type-display); font-family: var(--font-number); font-weight: 900; line-height: 1.5; font-variant-numeric: tabular-nums; }
 .donut-center strong span { font-size: var(--type-lead); margin-left: 2px; }
 .donut-legend { display: flex; flex-direction: column; gap: var(--space-4); font-size: var(--type-caption); flex: 1; max-width: 160px; }
 .donut-legend > div { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
@@ -150,19 +150,19 @@ html[data-theme="dark"] {
 .segmented button { border: 0; background: transparent; color: var(--gov-muted); min-height: 30px; padding: var(--space-1) var(--space-3); border-radius: var(--radius-sm); font-size: var(--type-caption); white-space: nowrap; }
 .segmented button.selected { background: var(--gov-surface); color: var(--gov-accent); font-weight: 900; box-shadow: var(--gov-shadow); }
 .growth-headline { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--space-2) var(--space-3); margin-top: var(--space-5); }
-.growth-headline > strong { font-size: var(--type-section); font-weight: 900; font-family: "Segoe UI", sans-serif; font-variant-numeric: tabular-nums; }
+.growth-headline > strong { font-size: var(--type-section); font-weight: 900; font-family: var(--font-number); font-variant-numeric: tabular-nums; }
 .growth-headline small { font-size: var(--type-small); font-weight: 400; color: var(--gov-muted); }
 .growth-headline > span { font-size: var(--type-caption); color: var(--gov-muted); }
 .growth-headline .growth-badge { color: var(--gov-accent); margin-left: auto; font-size: var(--type-caption); }
 .growth-chart { height: 218px; width: 100%; margin-top: var(--space-1); }
 .growth-chart > svg { width: 100%; height: 100%; overflow: visible; }
 .chart-grid { stroke: var(--gov-border); stroke-dasharray: 3 5; stroke-width: 1; }
-.chart-label { fill: var(--gov-muted); stroke: none; font: var(--type-caption) "Segoe UI", "Microsoft YaHei", sans-serif; }
+.chart-label { fill: var(--gov-muted); stroke: none; font: var(--type-caption) var(--font-number); }
 .chart-line { stroke: var(--gov-accent); stroke-width: 2.5; fill: none; }
 .chart-area { fill: var(--gov-area); stroke: none; }
 .chart-point { fill: var(--gov-surface); stroke: var(--gov-accent); stroke-width: 2; }
 .chart-point.active { fill: var(--gov-accent); }
-.chart-value { fill: var(--gov-accent); stroke: none; font: 600 var(--type-small) "Segoe UI", sans-serif; }
+.chart-value { fill: var(--gov-accent); stroke: none; font: 600 var(--type-small) var(--font-number); }
 .chart-foot { display: flex; align-items: center; justify-content: space-between; font-size: var(--type-caption); margin-top: var(--space-2); color: var(--gov-muted); gap: var(--space-3); }
 .chart-foot > span { display: flex; align-items: center; gap: var(--space-2); }
 .text-link, .text-button { font-size: var(--type-small); color: var(--gov-accent); }
@@ -181,7 +181,7 @@ html[data-theme="dark"] {
 .category-praise { --category-color: var(--cat-praise); }.category-blame { --category-color: var(--cat-blame); }.category-shui { --category-color: var(--cat-shui); }.category-noise { --category-color: var(--cat-noise); }.category-feud { --category-color: var(--cat-feud); }.category-neutral { --category-color: var(--cat-neutral); }
 .panel-footer { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); border-top: 2px solid var(--gov-border); padding-top: var(--space-4); color: var(--gov-muted); font-size: var(--type-caption); flex-wrap: wrap; }
 .focus-total { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--space-2); padding: var(--space-5) 0; border-bottom: 2px solid var(--gov-border); margin-bottom: var(--space-5); }
-.focus-total strong { font-size: var(--type-display); font-family: "Segoe UI", sans-serif; font-weight: 900; font-variant-numeric: tabular-nums; color: var(--gov-accent); }
+.focus-total strong { font-size: var(--type-display); font-family: var(--font-number); font-weight: 900; font-variant-numeric: tabular-nums; color: var(--gov-accent); }
 .focus-total > span { font-size: var(--type-small); color: var(--gov-muted); }.focus-total small { display: block; flex-basis: 100%; color: var(--gov-muted); font-size: var(--type-caption); }
 .focus-row { display: flex; gap: var(--space-3); margin-bottom: var(--space-5); }.focus-icon { display: grid; place-items: center; width: 32px; height: 32px; background: var(--gov-accent-soft); color: var(--gov-accent); border-radius: var(--radius-md); flex-shrink: 0; }
 .focus-icon svg { width: 16px; height: 16px; }.focus-row strong { font-size: var(--type-small); font-weight: 900; }.focus-row p { font-size: var(--type-caption); color: var(--gov-muted); margin-top: var(--space-1); }
@@ -194,7 +194,7 @@ html[data-theme="dark"] {
 .evidence-card details { color: var(--gov-muted); font-size: var(--type-caption); margin-bottom: var(--space-4); }.evidence-card details p { margin-top: var(--space-2); overflow-wrap: anywhere; }
 .evidence-link { margin-top: auto; font-size: var(--type-caption); color: var(--gov-accent); display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); }.evidence-link:hover { text-decoration: underline; }
 .policy-path { display: grid; grid-template-columns: repeat(4, 1fr); margin: var(--space-6) 0; border: 2px solid var(--gov-border); background: var(--gov-surface); border-radius: var(--radius-lg); }
-.policy-path article { padding: var(--space-6); position: relative; }.policy-path article + article { border-left: 2px solid var(--gov-border); }.path-number { display: block; font-size: var(--type-heading); color: var(--gov-accent); font-family: "Segoe UI", sans-serif; margin-bottom: var(--space-3); font-weight: 400; }
+.policy-path article { padding: var(--space-6); position: relative; }.policy-path article + article { border-left: 2px solid var(--gov-border); }.path-number { display: block; font-size: var(--type-heading); color: var(--gov-accent); font-family: var(--font-number); margin-bottom: var(--space-3); font-weight: 400; }
 .policy-path h3 { font-size: var(--type-body); font-weight: 900; }.policy-path p { color: var(--gov-muted); font-size: var(--type-small); margin-top: var(--space-2); line-height: 1.9; }.path-label { display: block; color: var(--gov-accent); font-size: var(--type-caption); margin-top: var(--space-4); }
 .law-list { margin-top: var(--space-5); }.law-row { display: grid; grid-template-columns: 96px 1fr auto; align-items: center; gap: var(--space-6); padding: var(--space-5) 0; border-top: 2px solid var(--gov-border); }.law-date { color: var(--gov-muted); font-size: var(--type-small); font-variant-numeric: tabular-nums; }.law-date small { display: block; font-size: var(--type-caption); margin-top: var(--space-1); }.law-row h4 { font-size: var(--type-body); font-weight: 900; }.law-row p { font-size: var(--type-small); color: var(--gov-muted); margin-top: var(--space-2); }.law-meta { font-size: var(--type-caption); color: var(--gov-muted); display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap; margin-top: var(--space-2); }
 .assistant-grid { display: grid; grid-template-columns: .8fr 1.5fr; gap: var(--space-10); align-items: center; padding: var(--space-5) 0; }.assistant-intro { padding-left: var(--space-4); }.assistant-symbol { margin: var(--space-4) 0; width: 36px !important; height: 36px !important; color: var(--gov-accent); }.assistant-intro h2 { font-size: var(--type-page); line-height: 1.6; font-weight: 900; }.assistant-intro > p { max-width: 280px; color: var(--gov-muted); font-size: var(--type-small); line-height: 1.9; margin: var(--space-4) 0; }.assistant-intro .boundary-note { font-size: var(--type-caption); }
@@ -311,7 +311,7 @@ html[data-theme="dark"] {
 .research-dossier a > span:nth-child(2) { flex: 1; min-width: 0; }
 .research-dossier strong { display: block; font-size: var(--type-body); }
 .research-dossier small { display: block; font-size: var(--type-caption); color: var(--muted); margin-top: 2px; }
-.dossier-index { color: var(--gov-accent); font: 900 var(--type-lead) Consolas, monospace; }
+.dossier-index { color: var(--gov-accent); font: 900 var(--type-lead) var(--font-number); }
 .metric-grid { grid-template-columns: repeat(4,minmax(0,1fr)); }
 .metric-card { min-width: 0; padding: 20px; }
 .metric-label { font-size: var(--type-small); align-items: flex-start; gap: 8px; }
@@ -603,3 +603,11 @@ html[data-theme="dark"] {
 @media (max-width: 767px) { .impact-cost-comparison, .innovation-points { grid-template-columns: 1fr; } }
 
 .project-impact { scroll-margin-top: 92px; }
+
+.baseline-throughput strong, .baseline-row strong, .online-scale-total strong,
+.online-video-count strong, .budget-results strong, .budget-table td, .impact-cost-comparison strong,
+.economy-bottom strong, .donut-legend strong, .growth-badge, .law-date, .content-section time,
+.category-row strong, .category-row > span:last-child, .source-details tbody :is(th, td:not(:last-child)) {
+  font-family: var(--font-number);
+  font-variant-numeric: tabular-nums;
+}

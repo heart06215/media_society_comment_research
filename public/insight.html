@@ -148,6 +148,10 @@
   .gf-metrics { display:grid; grid-template-columns:repeat(3,1fr); margin-top:8px; }
   .gf-metric { padding:7px 9px; border:2px solid var(--line); margin:0 0 -2px -2px; }
   .gf-metric b { display:block; font-size:var(--type-title); font-weight:900; letter-spacing:1px; line-height:1.1; }
+  .gf-metric b, .gf-verify b, .gf-top button :is(.r, .v) {
+    font-family: var(--font-number);
+    font-variant-numeric: tabular-nums;
+  }
   .gf-metric span { display:block; margin-top:3px; font-size:var(--type-caption); font-weight:900; letter-spacing:1.5px; color:var(--muted); }
   .gf-layers { display:flex; gap:6px; margin-top:8px; }
   .gf-layer { flex:1; padding:6px 2px; font-size:var(--type-caption); font-weight:900; letter-spacing:1px; cursor:pointer;
@@ -774,6 +778,7 @@ function gfDraw() {
 
   const option = {
     backgroundColor: "transparent",
+    textStyle: { fontFamily: chartNumberFont },
     animation: false,
     tooltip: {
       backgroundColor: C.surface, borderColor: C.line, borderWidth: 2,
@@ -1045,6 +1050,7 @@ const DB_CATS = ["赞美", "贬低", "水军", "无意义", "社区对骂", "中
 const DB_CLS = { "赞美": "praise", "贬低": "blame", "水军": "shui", "无意义": "noise", "社区对骂": "feud", "中立": "neutral" };
 let dbVideos = [], dbCur = null, dbCharts = [], dbCsPool = {};
 
+const chartNumberFont = getComputedStyle(document.documentElement).getPropertyValue("--font-number").trim();
 const dbC = () => ThemeKit.chartColors();
 function dbCatColor(name) {
   const c = dbC();
@@ -1052,7 +1058,14 @@ function dbCatColor(name) {
            "社区对骂": c.feud, "中立": c.neutral }[name] || c.muted;
 }
 function dbClean() { dbCharts.forEach(c => { try { c.dispose(); } catch (e) {} }); dbCharts = []; }
-function dbMk(id) { const el = document.getElementById(id); if (!el) return null; const c = echarts.init(el); c.setOption({ textStyle: { fontSize: 16 } }); dbCharts.push(c); return c; }
+function dbMk(id) {
+  const el = document.getElementById(id);
+  if (!el) return null;
+  const chart = echarts.init(el);
+  chart.setOption({ textStyle: { fontFamily: chartNumberFont, fontSize: 16 } });
+  dbCharts.push(chart);
+  return chart;
+}
 async function dbApi(url) { const r = await fetch(url); const d = await r.json(); if (!d.success) throw new Error(d.error || "x"); return d.data; }
 function dbEsc(s) { return (s || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
