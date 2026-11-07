@@ -120,7 +120,12 @@
 
 .tool-page .gf-evidence-action { display: block; padding: 12px; margin-bottom: 20px; border: 2px solid var(--line); color: var(--gov-accent); font-size: var(--type-small); font-weight: 900; }
 
-.tool-heading { border-top: 3px solid var(--line); border-bottom: 1px solid var(--line); padding: var(--space-4) 0; margin-bottom: var(--space-5); }
+.tool-heading {
+  background: linear-gradient(to right, var(--blue) 0 60%, var(--cyan) 60% 77%, var(--violet) 77% 90%, var(--pink) 90%) no-repeat top / 100% var(--space-2);
+  border-bottom: 1px solid var(--line);
+  padding: var(--space-6) 0 var(--space-4);
+  margin-bottom: var(--space-5);
+}
 .tool-heading h1 { font-size: clamp(var(--type-heading), 3vw, var(--type-section)); font-weight: 900; line-height: 1.35; }
 .tool-heading p { max-width: 38em; margin-top: var(--space-2); color: var(--muted); }
 .tool-page .chart-card h3 { letter-spacing: 0; }
