@@ -90,26 +90,6 @@
   .rep { border:2px solid var(--line); background:var(--surface); padding:12px; }
   .rep .txt { min-height:56px; margin-top:6px; font-size:var(--type-small); }
 
-  /* ===== 首页内嵌 AI 问答 ===== */
-  .chat-layout { display:grid; grid-template-columns:300px 1fr; gap:16px; height:640px; }
-  @media(max-width:860px){ .chat-layout{grid-template-columns:1fr; height:auto} }
-  .side { border:2px solid var(--line); background:var(--surface); padding:18px; overflow-y:auto;
-    clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%); }
-  .side h3 { font-size:var(--type-small); font-weight:900; letter-spacing:3px; text-transform:uppercase; margin:16px 0 10px; display:flex; align-items:center; gap:8px; }
-  .side h3::before { content:""; width:10px; height:10px; background:var(--cyan); transform:rotate(45deg); }
-  .chat-main { border:2px solid var(--line); background:var(--surface); display:flex; flex-direction:column; min-height:520px; }
-  .chat-log { flex:1; overflow-y:auto; padding:20px; background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px); background-size:32px 32px; }
-  .msg { margin-bottom:16px; max-width:82%; }
-  .msg.user { margin-left:auto; }
-  .msg .who { font-size:var(--type-caption); font-weight:900; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
-  .msg .bubble { padding:11px 15px; border:2px solid var(--line); white-space:pre-wrap; font-size:var(--type-body); background:var(--paper); }
-  .msg.user .bubble { background:var(--blue); color:#fff; border-color:var(--blue); box-shadow:5px 5px 0 rgba(39,67,255,.25); }
-  .msg.ai .bubble { box-shadow:6px 6px 0 rgba(0,217,233,.22); }
-  .chat-input { display:flex; gap:10px; padding:14px; border-top:3px solid var(--line); }
-  .chat-input input { flex:1; }
-  .typing::after { content:"▮"; animation:blink 1s steps(1) infinite; color:var(--cyan); }
-  @keyframes blink { 50%{opacity:0} }
-
   /* 采样评论单卡：占满整行，数字与留白同步放大 */
   .stat-grid.stat-solo { display:block; }
   .stat-cell.stat-wide { display:flex; align-items:baseline; gap:24px; flex-wrap:wrap; padding:24px 30px; }
@@ -233,9 +213,8 @@
 <link rel="stylesheet" href="/tools.css">
 <script src="/workspace.js" defer></script>
 </head>
-<body class="tool-page workspace-page"><a class="skip-link" href="#main">跳至主要内容</a><div id="workspaceNav"></div><div class="app-workspace"><header class="app-topbar" id="workspaceTopbar"></header><main id="main"><div class="wrap"><div class="kicker">社区结构 · 话术关联</div><h1 class="display" style="font-size:var(--type-display)">社区结构与治理线索</h1><p class="tool-intro mt">先看分类结构，再找话术关联，回到原文与人工复核，为规则细化与立法评估保留研究材料。</p>  <ol class="research-route" aria-label="治理研究流程"><li aria-current="step"><span>01 / 结构观察</span><small>看分类与时间变化</small></li><li><span>02 / 话术关联</span><small>找圈层词与相似表达</small></li><li><span>03 / 原文核对</span><small>查来源、语境与理由</small></li><li><span>04 / 人工复核</span><small>把难例沉淀为示范</small></li></ol><div class="sec-head" id="insight"><span class="sec-num">01</span><span class="sec-title">先看结构：哪些表达值得追踪</span><span class="sec-rule"></span></div>
-  <p class="muted mb-2">比较两社区的分类、时间变化与圈层词汇，定位需要核验的表达。以下为模型分类统计。</p>
-
+<body class="tool-page workspace-page"><a class="skip-link" href="#main">跳至主要内容</a><div id="workspaceNav"></div><div class="app-workspace"><header class="app-topbar" id="workspaceTopbar"></header><main id="main"><div class="wrap"><header class="tool-heading"><h1>社区结构与语义图谱</h1><p>比较两个视频的模型分类，沿词条和相似话术找到评论原文。</p></header>
+  <div class="sec-head" id="insight"><h2 class="sec-title">分类统计</h2></div>
   <div class="tabs mb-2" id="videoTabs"></div>
   <div id="summary" class="muted mb-2" style="display:flex;gap:20px;flex-wrap:wrap;font-size:var(--type-small)"></div>
 
@@ -271,7 +250,7 @@
       <div class="chart-card"><h3><i style="background:var(--cat-blame)"></i>各分类样本量</h3><div class="chart" id="bar1"></div></div>
     </div>
     <div class="chart-card"><h3><i style="background:var(--cat-shui)"></i>时间趋势 · 按月堆叠</h3><div class="chart tall" id="trend1"></div></div>
-    <div class="chart-card"><h3><i style="background:var(--cyan)"></i>高频网络用语 TOP15</h3><div class="chart tall" id="slangbar1"></div></div>
+    <div class="chart-card"><h3><i style="background:var(--cyan)"></i>使用最多的 15 个网络用语</h3><div class="chart tall" id="slangbar1"></div></div>
     <div class="chart-card"><h3><i style="background:var(--blue)"></i>代表性评论</h3><div class="rep-grid" id="rep1"></div></div>
   </div>
 
@@ -283,9 +262,8 @@
   <!-- 横向控制面板：标题 / 筛选 / 规模 / 图例，四列铺在图谱上方 -->
   <div class="gf-head">
     <div class="gf-col gf-col-main">
-      <div class="gf-kicker">02 · RELATIONSHIP NETWORK</div>
       <h2 class="gf-title">双半球语义图谱</h2>
-      <p class="gf-sub">两个视频形成双半球，圈层词条连接相近评论。定位节点、核对来源，再把难例交给人工复核。</p>
+      <p class="gf-sub">两个半球对应两个视频。选中圈层词或相似评论，可查看关联和原文。</p>
     </div>
 
     <div class="gf-col gf-col-filter">
@@ -343,53 +321,14 @@
     </div>
 </section>
 
-<div class="wrap" id="qa" style="padding-top:48px">
-  <!-- 问答 -->
-  <div class="sec-head"><span class="sec-num">03</span><span class="sec-title">把发现转成研究问题</span><span class="sec-rule"></span></div>
-  <p class="muted mb-2">围绕分类差异、圈层用语与证据不足处提问，整理后续核验清单。</p>
-  <div class="chat-layout">
-    <aside class="side">
-      <h3>数据快照</h3>
-      <div id="chatSnap"><span class="muted">加载中...</span></div>
-      <h3>试试这样问</h3>
-      <div id="chatHintList" class="muted small" style="line-height:2.05">
-        <div class="hint-q" style="cursor:pointer;padding:3px 0;border-bottom:1px solid var(--grid)">· 这个视频的赞美占比是多少？</div>
-        <div class="hint-q" style="cursor:pointer;padding:3px 0;border-bottom:1px solid var(--grid)">· 如何核验疑似刷评线索？</div>
-        <div class="hint-q" style="cursor:pointer;padding:3px 0;border-bottom:1px solid var(--grid)">· 饭圈和二游的贬低比例对比如何？</div>
-        <div class="hint-q" style="cursor:pointer;padding:3px 0;border-bottom:1px solid var(--grid)">· 社区对骂主要集中在哪里？</div>
-        <div class="hint-q" style="cursor:pointer;padding:3px 0;border-bottom:1px solid var(--grid)">· 有哪些代表性的中立评论？</div>
-        <div class="hint-q" style="cursor:pointer;padding:3px 0">· "砌墙"是什么意思？</div>
-      </div>
-      <h3>工具箱</h3>
-      <div class="muted small">统计查询 · 时间趋势 · 热词排行 · 代表评论 · 双社区对比 · 网络用语RAG检索</div>
-    </aside>
-    <div class="chat-main">
-      <div class="chat-log" id="chatLog"></div>
-      <div class="chat-input">
-        <input id="chatQ" aria-label="向研究助手提问" placeholder="输入需要核验的治理研究问题" onkeydown="if(event.key==='Enter')chatSend()">
-        <button class="btn primary" id="chatSendB" onclick="chatSend()">发送 →</button>
-      </div>
-    </div>
+<div class="wrap" id="qa">
+  <div class="related-tools">
+    <a class="text-link" href="/#efficiency">查看样本分类方法</a>
+    <a class="text-link" href="/#assistant">打开样本问答</a>
   </div>
 </div>
 
-<div class="wrap" style="padding-top:0">
-  <!-- 方法论 -->
-  <div class="sec-head"><span class="sec-num">04</span><span class="sec-title">方法论流水线</span><span class="sec-rule"></span></div>
-  <div class="grid-4">
-    <div class="card flat step"><span class="num">01</span><h3 class="mt">数据采集</h3><p class="muted small mt">B站评论多策略分层采样：时间正序×热度×子评论，覆盖全时间线。</p></div>
-    <div class="card flat step"><span class="num">02</span><h3 class="mt">锚定集</h3><p class="muted small mt">人工精标锚定样本作六分类依赖模板，二次审查确认后扩充。</p></div>
-    <div class="card flat step"><span class="num">03</span><h3 class="mt">RAG+微调</h3><p class="muted small mt">网络用语知识检索注入；金标与预标数据导出，支持微调及后续评估。</p></div>
-    <div class="card flat step"><span class="num">04</span><h3 class="mt">洞察看板</h3><p class="muted small mt">六分类占比、趋势、双社区对比、态度关系图与 AI 问答，一页读完。</p></div>
-  </div>
-</div>
-
-</main><footer class="footer">
-  <span class="brand-name" style="font-size:var(--type-lead);letter-spacing:4px">破妄</span>
-  <span class="muted">基于微调大模型的对互联网社区的评论情感分析软件 · 人工智能应用创新大赛</span>
-  <span style="flex:1"></span>
-  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span><span class="d4"></span></div>
-</footer>
+</main><footer class="footer"><strong>破妄</strong><span>圈层评论与网络立法研究</span></footer>
 
 <script>
 async function loadStats() {
@@ -1277,69 +1216,9 @@ function dbRenderCompare() {
 </script>
 
 <script>
-/* ===== 首页内嵌 AI 问答 ===== */
-async function chatApi(url, opts) { const r = await fetch(url, opts); const d = await r.json(); if (!d.success) throw new Error(d.error || "x"); return d.data; }
-function chatEsc(s) { return (s || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
-
-async function chatLoadSnap() {
-  try {
-    const d = await chatApi("/api/videos");
-    const c = ThemeKit.chartColors();
-    const map = { "赞美": c.praise, "贬低": c.blame, "水军": c.shui, "无意义": c.noise, "社区对骂": c.feud, "中立": c.neutral };
-    document.getElementById("chatSnap").innerHTML = d.videos.map(v => {
-      const cs = v.analysis || {};
-      const line = Object.keys(map).map(n => `<span style="font-weight:900;color:${map[n]}">${cs[n] || 0}</span>`).join(" / ");
-      return `<div style="margin-bottom:12px"><b style="letter-spacing:1px">${chatEsc(v.name)} <span class="badge praise" style="${v.community === "饭圈" ? "background:var(--cat-blame)" : ""}">${chatEsc(v.community || "")}</span></b>
-        <div class="small muted mt" style="margin-top:4px">${v.analyzed ? line : "未分析"}</div></div>`;
-    }).join("");
-  } catch (e) {}
-}
-
-function chatAddMsg(who, html) {
-  const log = document.getElementById("chatLog");
-  const div = document.createElement("div");
-  div.className = "msg " + who;
-  const ts = new Date().toLocaleTimeString("zh-CN", { hour12: false });
-  div.innerHTML = `<div class="who">${who === "user" ? "YOU" : "破妄 AI"} <span style="opacity:.5;margin-left:6px" class="mono">${ts}</span></div><div class="bubble">${html}</div>`;
-  log.appendChild(div);
-  log.scrollTop = log.scrollHeight;
-  return div;
-}
-
-async function chatSend() {
-  const inp = document.getElementById("chatQ");
-  const q = inp.value.trim();
-  if (!q) return;
-  inp.value = "";
-  chatAddMsg("user", chatEsc(q));
-  const loading = chatAddMsg("ai", `<span class="typing">分析中</span>`);
-  document.getElementById("chatSendB").disabled = true;
-  try {
-    const d = await chatApi("/api/agent/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: q }) });
-    loading.querySelector(".bubble").textContent = d.answer || "(空)";
-  } catch (e) {
-    loading.querySelector(".bubble").innerHTML = `<span style="color:var(--cat-blame)">请求失败：${chatEsc(e.message)}</span>`;
-  }
-  document.getElementById("chatSendB").disabled = false;
-}
-
-function chatInit() {
-  document.querySelectorAll(".hint-q").forEach(q => {
-    q.onmouseenter = () => q.style.color = "var(--cyan)";
-    q.onmouseleave = () => q.style.color = "";
-    q.onclick = () => {
-      document.getElementById("chatQ").value = q.textContent.replace(/^·\s*/, "").replace(/？$/, "");
-      chatSend();
-    };
-  });
-  chatAddMsg("ai", "你好，我是破妄 AI 分析师。我可以基于已分析的评论数据回答六分类统计、双社区对比、趋势、网络用语含义等问题。先到「标注」页完成锚定集并触发分析，数据就绪后我就能给你洞察了。");
-  chatLoadSnap();
-}
-
 loadStats();
 gfLoad();
 dbInit();
-chatInit();
 </script>
 </div>
 </body>

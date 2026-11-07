@@ -1,12 +1,10 @@
 /* Original v2 components, with shared workspace spacing and responsive fixes. */
 .tool-page .app-workspace > main.wrap, .tool-page main > .wrap { max-width: 1440px; padding-top: 32px; }
 .tool-page .footer { color: var(--muted); font-size: var(--type-small); }
-.tool-page .chart-card, .tool-page .cmp-block, .tool-page .side, .tool-page .chat-main { border: 2px solid var(--line); border-radius: 0; }
+.tool-page .chart-card, .tool-page .cmp-block { border: 2px solid var(--line); border-radius: 0; }
 .tool-page .chart-card { padding: 20px; }.tool-page .chart-card h3 { font-size: var(--type-body); font-weight: 900; letter-spacing: 1px; }
 .tool-page .chart-card h3 i { width: 8px; height: 8px; border-radius: 0; }
-.tool-page .cmp-head, .tool-page .chat-input { border-bottom-width: 2px; border-top-width: 2px; }
-.tool-page .side h3::before { width: 8px; height: 8px; border-radius: 0; }
-.tool-page .msg .bubble { border-width: 2px; box-shadow: none; border-radius: 0; }
+.tool-page .cmp-head { border-bottom-width: 2px; }
 .tool-page .graph-full { border-top: 3px solid var(--line); border-bottom: 3px solid var(--line); }
 .tool-page .gf-head { border-bottom-width: 2px; grid-template-columns: minmax(0,1.2fr) minmax(0,.9fr) minmax(0,1fr) minmax(0,.8fr); }
 .tool-page .gf-col, .tool-page .gf-search { min-width: 0; }.tool-page .gf-search input { min-width: 0; }
@@ -63,7 +61,6 @@
 .tool-page .comment-distribution summary { cursor: pointer; padding: 8px 0; width: fit-content; }
 .tool-page .comment-distribution #catStrip { margin: 8px 0 16px; }
 .tool-page .app-workspace h1.display { font-size: var(--type-section) !important; line-height: 1.35; letter-spacing: 1px; }
-.tool-page .tool-intro { font-size: var(--type-body); }
 .tool-page .chart-card h3 { font-size: var(--type-lead); }
 .tool-page .gf-head { grid-template-columns: repeat(2,minmax(0,1fr)); }
 .tool-page .gf-title { font-size: var(--type-heading); }
@@ -101,17 +98,9 @@
 
 .tool-page .list-bar { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; }
 .tool-page .list-bar #listInfo { font-size: var(--type-small); letter-spacing: 0; }
-.tool-page .kicker { font-size: var(--type-caption); letter-spacing: 2px; }
 
 /* A shared evidence-reading sequence for the research tools. */
-.research-route { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); list-style: none; padding: 0; margin: 24px 0 32px; border-bottom: 2px solid var(--line); }
-.research-route li { min-width: 0; padding: 16px 12px; border-top: 4px solid var(--grid); }
-.research-route li[aria-current="step"] { border-top-color: var(--blue); background: var(--hover); }
-.research-route span { display: block; font-size: var(--type-small); font-weight: 900; }
-.research-route small { display: block; font-size: var(--type-caption); color: var(--muted); line-height: 1.8; margin-top: 8px; }
-.tool-section-title { font-size: var(--type-title); margin: 24px 0 16px; line-height: 1.5; }
 .tool-review-intro { font-size: var(--type-body); margin: 12px 0 20px; line-height: 1.8; }
-@media (max-width: 767px) { .research-route { grid-template-columns: repeat(2,minmax(0,1fr)); }.research-route li { padding: 12px 8px; } }
 
 /* The graph occupies a readable brain-shaped canvas rather than a tall empty sheet. */
 .tool-page .graph-full { height: auto; }
@@ -130,3 +119,13 @@
 }
 
 .tool-page .gf-evidence-action { display: block; padding: 12px; margin-bottom: 20px; border: 2px solid var(--line); color: var(--gov-accent); font-size: var(--type-small); font-weight: 900; }
+
+.tool-heading { border-top: 3px solid var(--line); border-bottom: 1px solid var(--line); padding: var(--space-4) 0; margin-bottom: var(--space-5); }
+.tool-heading h1 { font-size: clamp(var(--type-heading), 3vw, var(--type-section)); font-weight: 900; line-height: 1.35; }
+.tool-heading p { max-width: 38em; margin-top: var(--space-2); color: var(--muted); }
+.tool-page .chart-card h3 { letter-spacing: 0; }
+
+.tool-page .related-tools { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+.tool-page .related-tools a { color: var(--gov-accent); text-decoration: underline; text-underline-offset: .18em; }
+.tool-page .chart-card { clip-path: none; }
+.tool-page .label-setup .progress > i { background: var(--gov-accent); }

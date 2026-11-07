@@ -93,16 +93,11 @@
   function renderCosts() {
     const config = data.annotationBudget;
     const count = config.videos.reduce((sum, video) => sum + video.onlineCount, 0);
-    const baseline = calculateAnnotationBudget(count, config.secondsPerItem, 1, config.reviewRate, config.seedCount);
-    byId("heroThroughput").textContent = number(baseline.throughput);
-    byId("heroOnlineCount").textContent = commentCount(count);
     byId("onlineScaleTotal").textContent = commentCount(count);
-    byId("onlineVideoCounts").innerHTML = config.videos.map((video) => `<article class="online-video-count"><span>${escapeHtml(video.community)} · 线上评论数</span><h3><a href="${video.videoUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(video.name)} ↗</a></h3><div><strong>${commentCount(video.onlineCount)}</strong><span>条</span></div><small>${escapeHtml(video.bvid)}</small></article>`).join("");
+    byId("onlineVideoCounts").innerHTML = config.videos.map((video) => `<div class="online-video-row"><div><span>${escapeHtml(video.community)}</span><a href="${video.videoUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(video.name)}</a></div><p><strong>${commentCount(video.onlineCount)}</strong> 条</p></div>`).join("");
     const ranking = config.rankingReference;
     byId("onlineRankingNote").textContent = `排名依据：UP 主${ranking.owner}公开榜单，数据日期 ${ranking.dataDate}，${ranking.scope}；非官方实时排名。评论计数另核对于 ${config.commentCountVerifiedAt}。`;
     byId("onlineRankingSource").href = ranking.url;
-    byId("heroOnlineDays").textContent = `1 人工作 ${number(baseline.manualDays)} 天`;
-    byId("heroOnlineCost").textContent = (baseline.manualCost / 10000).toFixed(1);
     const seconds = Number(byId("budgetSeconds").value);
     const efficiency = Number(byId("budgetEfficiency").value);
     const reviewRate = Number(byId("budgetReview").value);
@@ -113,7 +108,7 @@
     byId("budgetManualDays").textContent = `元 · 1 人工作 ${number(result.manualDays)} 天`;
     byId("budgetAssistedCost").textContent = number(result.assistedCost);
     byId("budgetAssistedDays").textContent = `元 · 1 人工作 ${number(result.assistedDays)} 天 · ${commentCount(result.assistedLabels)} 条人工任务`;
-    byId("budgetScopeNote").textContent = `线上视频评论总数 ${commentCount(count)} 条：${config.videos.map((video) => `${video.name} ${commentCount(video.onlineCount)} 条`).join("；")}。核对时间：${config.commentCountVerifiedAt}。`;
+    byId("budgetScopeNote").textContent = `按线上合计 ${commentCount(count)} 条计算。`;
     byId("budgetCountSources").innerHTML = `计数来源：${config.videos.map((video) => `<a href="${video.countUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(video.name)} · 平台公开接口 ↗</a>`).join(" / ")}；字段 ${escapeHtml(config.commentCountField)}。`;
     const difference = result.manualCost - result.assistedCost;
     const percent = result.manualCost ? difference / result.manualCost * 100 : 0;
@@ -126,13 +121,13 @@
   }
   /** @returns {void} */
   function renderNews() {
-    byId("newsCases").innerHTML = data.newsCases.map((item) => `<article class="news-card"><header><span class="tag neutral">${escapeHtml(item.kind)}</span><time datetime="${item.date}">报道日期：${item.date}</time></header><h3>${escapeHtml(item.title)}</h3><div class="news-analysis"><div><strong>事件简述</strong><p>${escapeHtml(item.facts)}</p></div><div><strong>已报道的后果</strong><p>${escapeHtml(item.consequences)}</p></div></div><a class="text-link" href="${item.url}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.source)} · 阅读原文 ↗</a></article>`).join("");
+    byId("newsCases").innerHTML = data.newsCases.map((item) => `<article class="news-card"><div class="news-meta"><time datetime="${item.date}">${item.date}</time><a class="text-link" href="${item.url}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.source)}</a></div><div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.facts)}</p><p><strong>后果：</strong>${escapeHtml(item.consequences)}</p></div></article>`).join("");
   }
   /** @returns {void} */
   function renderLegalEvidence() {
     const evidence = data.officialLegalGaps;
-    byId("officialGapQuotes").innerHTML = evidence.items.map((item, index) => `<article><span class="official-gap-index">0${index + 1} / 原文摘句</span><h4>${escapeHtml(item.title)}</h4><blockquote cite="${evidence.url}"><p>${escapeHtml(item.quote)}</p></blockquote><p class="official-gap-explanation">${escapeHtml(item.explanation)}</p></article>`).join("");
-    byId("officialGapSource").innerHTML = `<cite>${escapeHtml(evidence.publisher)} · ${escapeHtml(evidence.document)} · ${escapeHtml(evidence.locator)}</cite><a class="text-link" href="${evidence.url}" target="_blank" rel="noopener noreferrer">核对完整官方原文 ↗</a>`;
+    byId("officialGapQuotes").innerHTML = evidence.items.map((item) => `<div class="official-quote"><blockquote cite="${evidence.url}"><p>${escapeHtml(item.quote)}</p></blockquote><p><strong>${escapeHtml(item.title)}：</strong>${escapeHtml(item.explanation)}</p></div>`).join("");
+    byId("officialGapSource").innerHTML = `<cite>${escapeHtml(evidence.publisher)} · ${escapeHtml(evidence.document)} · ${escapeHtml(evidence.locator)}</cite><a class="text-link" href="${evidence.url}" target="_blank" rel="noopener noreferrer">查看起草说明原文</a>`;
   }
   /** @returns {void} */
   function renderSources() {
@@ -203,8 +198,7 @@
       byId("analyzedCount").textContent = commentCount(analyzed);
       byId("anchorCount").textContent = commentCount(state.videos.reduce((sum, video) => sum + (Number(video.anchor_count) || 0), 0));
       byId("communityCount").textContent = number(new Set(state.videos.map((video) => video.community).filter(Boolean)).size);
-      byId("communityNames").textContent = [...new Set(state.videos.map((video) => video.community).filter(Boolean))].join(" / ") || "尚未配置社区";
-      byId("analysisCoverage").textContent = sampleCount ? `标签覆盖 ${(analyzed / sampleCount * 100).toFixed(1)}% · 不代表判对` : "暂无采集样本";
+      byId("analysisCoverage").textContent = sampleCount ? `覆盖 ${(analyzed / sampleCount * 100).toFixed(1)}%` : "暂无采集样本";
       byId("connectionState").innerHTML = '<span class="status-dot"></span>本地数据已连接';
       const previousSelection = byId("communitySelect").value;
       byId("communitySelect").innerHTML = '<option value="all">全部研究社区</option>' + state.videos.map((video) => `<option value="${escapeHtml(video.bvid)}">${escapeHtml(video.community || "社区")} · ${escapeHtml(video.name)}</option>`).join("");
@@ -254,7 +248,6 @@
   }
   /** @param {string} role @param {string} message @returns {HTMLElement} */
   function addMessage(role, message) {
-    byId("chatMessages").querySelector(".assistant-welcome")?.remove();
     const node = document.createElement("div"); node.className = `chat-message ${role}`;
     const label = document.createElement("small"); label.textContent = role === "user" ? "研究提问" : "破妄 · AI 助手";
     const body = document.createElement("span"); body.textContent = message;
@@ -291,7 +284,6 @@
   /** @returns {void} */
   function bindEvents() {
     ["budgetSeconds", "budgetEfficiency", "budgetReview"].forEach((id) => byId(id).addEventListener("change", renderCosts));
-    byId("exportGapResearch").addEventListener("click", () => exportResearch(true));
     byId("economyYear").addEventListener("change", (event) => { state.year = Number(event.target.value); renderEconomy(); });
     document.querySelectorAll("[data-trend]").forEach((button) => button.addEventListener("click", () => {
       state.trend = button.dataset.trend;
@@ -303,11 +295,15 @@
     byId("exportReport").addEventListener("click", () => exportResearch(false));
     byId("exportPolicy").addEventListener("click", () => exportResearch(true));
     document.querySelectorAll('a[href="#dataSources"]').forEach((link) => link.addEventListener("click", () => { byId("sourceDetails").open = true; }));
+    const assistant = byId("assistantDetails");
+    const openAssistantFromHash = () => { if (location.hash === "#assistant") assistant.open = true; };
+    window.addEventListener("hashchange", openAssistantFromHash);
+    document.querySelector('a[data-nav-key="assistant"]')?.addEventListener("click", () => { assistant.open = true; });
+    openAssistantFromHash();
     byId("chatForm").addEventListener("submit", sendQuestion);
     byId("chatQuestion").addEventListener("keydown", (event) => { if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); byId("chatForm").requestSubmit(); } });
     byId("stopQuestion").addEventListener("click", () => state.chatController?.abort());
     byId("clearChat").addEventListener("click", () => { state.chatController?.abort(); byId("chatMessages").replaceChildren(); byId("chatQuestion").focus(); });
-    document.querySelectorAll("[data-prompt]").forEach((button) => button.addEventListener("click", () => { byId("chatQuestion").value = button.dataset.prompt; byId("chatQuestion").focus(); }));
 
   }
   state.year = Number(byId("economyYear").value);

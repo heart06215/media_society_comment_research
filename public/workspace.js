@@ -4,7 +4,7 @@
   const home = location.pathname === "/";
   const page = location.pathname.startsWith("/comments") ? "comments"
     : location.pathname.startsWith("/label") ? "label" : home ? "overview" : "insight";
-  const pageNames = { overview: "治理总览", comments: "评论证据库", label: "人工标注与复核", insight: "社区深度洞察" };
+  const pageNames = { overview: "治理总览", comments: "评论证据库", label: "人工标注与复核", insight: "社区结构与语义图谱" };
   const icons = {
     overview: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',
     economy: '<path d="M4 3v17h17M8 14l4-5 4 2 5-7"/>',
@@ -23,14 +23,14 @@
     ["overview", "治理总览", home ? "#overview" : "/"],
     ["ambiguity", "圈层语义难题", home ? "#ambiguity" : "/#ambiguity"],
     ["policy", "立法与规则缺口", home ? "#policy" : "/#policy"],
-    ["efficiency", "标注成本与模型方案", home ? "#efficiency" : "/#efficiency"],
+    ["efficiency", "标注成本", home ? "#efficiency" : "/#efficiency"],
     ["governance", "样本与复核证据", home ? "#governance" : "/#governance"],
-    ["economy", "数字经济观察", home ? "#economy" : "/#economy"],
-    ["assistant", "AI 治理助手", home ? "#assistant" : "/#assistant"],
-    ["news", "典型事件与项目作用", home ? "#news" : "/#news"]
+    ["economy", "数字经济数据", home ? "#economy" : "/#economy"],
+    ["assistant", "样本问答", home ? "#assistant" : "/#assistant"],
+    ["news", "典型事件", home ? "#news" : "/#news"]
   ];
   const tools = [
-    ["insight", "社区深度洞察", "/insight"],
+    ["insight", "社区结构与语义图谱", "/insight"],
     ["graph", "评论关系图谱", "/insight#graphFull"],
     ["comments", "评论证据库", "/comments"],
     ["label", "人工标注与复核", "/label"]
@@ -45,12 +45,11 @@
   const topbar = document.getElementById("workspaceTopbar");
   if (!navigation || !topbar) return;
   navigation.innerHTML = `<aside class="app-sidebar" id="sidebar" aria-label="工作空间导航">
-    <div class="sidebar-brand-row"><a class="app-brand" href="/" aria-label="破妄，治理总览"><img src="/mark.svg" alt="" width="38" height="38"><span><strong>破妄<span class="brand-en">POWANG</span></strong><small>网络生态治理研究平台</small></span></a><button class="sidebar-close" id="sidebarClose" type="button" aria-label="关闭导航">×</button></div>
-    <div class="sidebar-label">研究工作空间 <span>RESEARCH</span></div><nav class="side-nav" aria-label="研究导航">${links(research)}</nav>
-    <div class="sidebar-label">数据与复核 <span>WORKBENCH</span></div><nav class="side-nav" aria-label="数据工具">${links(tools)}</nav>
-    <div class="sidebar-foot"><span class="status-dot"></span><span>让治理有据可依</span><span class="mono">V3.0</span></div>
+    <div class="sidebar-brand-row"><a class="app-brand" href="/" aria-label="破妄，治理总览"><img src="/mark.svg" alt="" width="38" height="38"><span><strong>破妄</strong><small>网络立法研究</small></span></a><button class="sidebar-close" id="sidebarClose" type="button" aria-label="关闭导航">×</button></div>
+    <div class="sidebar-label">研究报告</div><nav class="side-nav" aria-label="研究导航">${links(research)}</nav>
+    <div class="sidebar-label">数据与复核</div><nav class="side-nav" aria-label="数据工具">${links(tools)}</nav>
   </aside><button class="sidebar-scrim" id="sidebarScrim" aria-label="关闭导航" type="button" tabindex="-1" hidden></button>`;
-  topbar.innerHTML = `<div class="topbar-location"><button class="icon-button menu-button" id="menuToggle" type="button" aria-label="打开导航" aria-controls="sidebar" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><span>破妄工作台</span><span class="breadcrumb-sep">/</span><strong>${pageNames[page]}</strong></div><div class="topbar-actions"><span class="connection-state" ${home ? 'id="connectionState" role="status"' : ""}><span class="status-dot"></span>${home ? "正在连接数据" : "本地研究模式"}</span><button class="theme-toggle" data-theme-toggle type="button"><span class="ico"></span><span class="txt">深色</span></button></div>`;
+  topbar.innerHTML = `<div class="topbar-location"><button class="icon-button menu-button" id="menuToggle" type="button" aria-label="打开导航" aria-controls="sidebar" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><span>破妄</span><span class="breadcrumb-sep">/</span><strong>${pageNames[page]}</strong></div><div class="topbar-actions"><span class="connection-state" ${home ? 'id="connectionState" role="status"' : ""}><span class="status-dot"></span>${home ? "正在连接数据" : "本地样本"}</span><button class="theme-toggle" data-theme-toggle type="button"><span class="ico"></span><span class="txt">深色</span></button></div>`;
 
   const sidebar = document.getElementById("sidebar");
   const toggle = document.getElementById("menuToggle");
