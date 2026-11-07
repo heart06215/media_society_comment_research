@@ -4,7 +4,7 @@
    ============================================================ */
 
 :root {
-  --font-number: "Segoe UI", "Microsoft YaHei", sans-serif;
+  --font-number: Bahnschrift, "DIN Alternate", "Segoe UI", "Microsoft YaHei", sans-serif;
   /* Shared reading scale: 18px body, 14px metadata floor. */
   --type-caption: .875rem; --type-small: 1rem; --type-body: 1.125rem;
   --type-lead: 1.25rem; --type-title: 1.5rem; --type-heading: 1.875rem;
