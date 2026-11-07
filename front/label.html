@@ -40,9 +40,15 @@
 <a class="skip-link" href="#main">跳至主要内容</a><div id="workspaceNav"></div><div class="app-workspace"><header class="app-topbar" id="workspaceTopbar"></header>
 
 <main class="wrap" id="main">
-  <header class="tool-heading"><h1>人工标注与复核</h1><p>为模型标注示范，或核对模型结果并更正标签。</p></header>
+  <div class="kicker">人工标注 · 模型复核</div>
+  <h1 class="display" style="font-size:var(--type-metric);margin-bottom:8px">人工示范与<span class="stroke">模型复核</span></h1>
+  <p class="muted mb-2">用少量人工示范统一圈层口径，再复核模型难例。把人力留给语境知识和研究判断，复核结果回到规则与立法研究。</p>
+
+  <ol class="research-route" aria-label="治理研究流程"><li><span>01 / 结构观察</span><small>看分类与时间变化</small></li><li><span>02 / 话术关联</span><small>找圈层词与相似表达</small></li><li><span>03 / 原文核对</span><small>查来源、语境与理由</small></li><li aria-current="step"><span>04 / 人工复核</span><small>把难例沉淀为示范</small></li></ol>
+  <h2 class="tool-section-title">建立示范，修正难例，让经验持续复用</h2>
   <!-- 视频选择 + 进度 -->
-  <div class="card flat label-setup mb-2">
+  <div class="card accent mb-2">
+    <span class="corner"></span>
     <div class="flex-between" style="flex-wrap:wrap">
       <div class="flex" style="flex-wrap:wrap">
         <select aria-label="选择研究视频" id="videoSel" style="min-width:250px"></select>
@@ -66,8 +72,8 @@
 
   <!-- 模式切换 -->
   <div class="mode-tabs">
-    <button type="button" class="mode-tab active" data-mode="label" aria-pressed="true">标注示范</button>
-    <button type="button" class="mode-tab" data-mode="review" aria-pressed="false">复核模型分类</button>
+    <button type="button" class="mode-tab active" data-mode="label" aria-pressed="true">① 建立人工示范</button>
+    <button type="button" class="mode-tab" data-mode="review" aria-pressed="false">② 复核模型分类</button>
   </div>
 
   <!-- 标注模式 -->
@@ -108,14 +114,19 @@
         <option value="水军">水军</option><option value="无意义">无意义</option>
         <option value="社区对骂">社区对骂</option><option value="中立">中立</option>
       </select>
-      <button class="btn cyan" id="btnRevLoad">加载复核队列</button>
+      <button class="btn cyan" id="btnRevLoad">加载审查队列</button>
       <span class="muted" id="revInfo"></span>
     </div>
-    <div class="card accent violet flat" id="revBox"><span class="muted">加载队列后，即可核对评论原文和模型理由。</span></div>
+    <div class="card accent violet flat" id="revBox"><span class="muted">分析完成后，此处载入大模型判定结果供确认/修正。</span></div>
   </section>
 </main>
 
-<footer class="footer"><strong>破妄</strong><span>圈层评论与网络立法研究</span></footer>
+<footer class="footer">
+  <span class="brand-name" style="font-size:var(--type-lead);letter-spacing:4px">破妄</span>
+  <span class="muted">保留分类依据 · 人工核验语境 · 记录复核意见</span>
+  <span style="flex:1"></span>
+  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span><span class="d4"></span></div>
+</footer>
 <div id="toast" class="toast"></div>
 
 <script>

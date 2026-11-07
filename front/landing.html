@@ -11,136 +11,97 @@
 <body class="governance-app workspace-page">
 <a class="skip-link" href="#main">跳至主要内容</a>
 <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 3v17h17M8 14l4-5 4 2 5-7"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v5c0 5 8 10 8 10s8-5 8-10V6Z"/><path d="m8 11 3 3 5-6"/></symbol>
 <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5v16M3 4c4-1 6-1 9 1 3-2 5-2 9-1v15c-4-1-6-1-9 1-3-2-5-2-9-1Z"/></symbol>
+<symbol id="i-message" viewBox="0 0 24 24"><path d="M21 11a9 9 0 0 1-9 9H4l-2 2V11a9 9 0 0 1 19 0Z"/><path d="M7 9h10M7 13h6"/></symbol>
+<symbol id="i-network" viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="18" r="3"/><circle cx="19" cy="18" r="3"/><path d="m10 8-4 7m8-7 4 7M8 18h8"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="m8 11 3 3 5-6"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
 <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
 </svg>
 <div id="workspaceNav"></div><div class="app-workspace"><header class="app-topbar" id="workspaceTopbar"></header>
 <main class="app-main" id="main">
 <section id="overview" class="overview-section">
-<div class="research-opening">
-  <header class="opening-copy">
-    <p class="opening-label">网络立法研究</p>
-    <h1>评论里的隐晦攻击，<span>如何认定？</span></h1>
-    <p>反讽、谐音和圈层黑话可能改变一句话的意思。破妄用少量人工示范指导模型分类，保留评论原文和人工复核结果，供网络暴力认定与平台责任研究使用。</p>
-    <div class="opening-actions"><a class="action primary" href="#policy">查看立法缺口</a><button class="text-button" type="button" id="exportReport"><svg aria-hidden="true"><use href="#i-download"/></svg>导出研究摘要</button></div>
-  </header>
-  <div id="onlineScale" class="online-ledger" aria-labelledby="onlineScaleTitle">
-    <h2 id="onlineScaleTitle">B 站两个视频的线上评论</h2>
-    <p class="online-total"><strong id="onlineScaleTotal">1439万7216</strong> <span>条</span></p>
-    <p class="online-scope">单一视频平台，取自公开榜单评论量前二。</p>
-    <div class="online-video-counts" id="onlineVideoCounts"></div>
-    <p class="online-ranking-note" id="onlineRankingNote"></p>
-    <a class="text-link" id="onlineRankingSource" href="https://www.bilibili.com/video/BV1GAbUz2E9f/" target="_blank" rel="noopener noreferrer">查看榜单来源</a>
-  </div>
-</div>
-<div class="sample-ledger">
-  <h2>本地研究样本</h2>
-  <dl aria-live="polite">
-    <div><dt>已采集评论</dt><dd><strong id="sampleCount">—</strong> 条</dd></div>
-    <div><dt>已有模型标签</dt><dd><strong id="analyzedCount">—</strong> 条 <small id="analysisCoverage"></small></dd></div>
-    <div><dt>人工示范</dt><dd><strong id="anchorCount">—</strong> 条</dd></div>
-    <div><dt>研究社区</dt><dd><strong id="communityCount">—</strong> 个</dd></div>
-  </dl>
-</div>
+<div class="page-heading"><div><div class="eyebrow">网络治理 / 低成本语义分类</div><h1>圈层语义分析与网络立法研究</h1><p>面向圈层黑话、隐晦攻击与大规模评论，为治理规则细化提供可复核的信息依据。</p></div><button class="action secondary" id="exportReport"><svg><use href="#i-download"/></svg>导出研究摘要</button></div>
+<div class="mission-banner"><div class="mission-copy"><span class="banner-kicker"><span></span>圈层知识 · 人工示范 · 模型分类</span><h2>为网络立法研究，<br>补充<span>圈层语义依据。</span></h2><p>圈层黑话、反讽与事件语境抬高认定和取证门槛，治理规则仍需细化；逐条雇佣标注又难以应对海量评论。<br>破妄以少量人工样本建立分类口径，让模型参照示例批量归类，降低持续人工判断的负担。</p><div class="banner-actions"><a class="action light" href="#efficiency">查看标注成本与方案 <svg><use href="#i-arrow"/></svg></a><a class="banner-link" href="#policy">查看立法研究缺口 ↗</a></div></div>
+<aside class="cost-baseline" aria-label="线上视频评论标注成本基线">
+<div class="baseline-heading"><strong>传统逐条人工标注</strong><span class="tag neutral">仅标注工资</span></div>
+<p class="baseline-assumption">60 秒 / 条 · 8 小时有效标注 · 每人每天 150 元</p>
+<div class="baseline-throughput"><strong id="heroOnlineCost">449.9</strong><span>万元（约）</span></div>
+<div class="baseline-row baseline-count"><div><span>仅 bilibili 一个平台 · 两个视频</span><strong id="heroOnlineCount">1439万7216</strong><span>条线上评论</span></div></div>
+<div class="baseline-row total"><div><span>全部逐条人工标注</span><strong id="heroOnlineDays">1 人工作 29,995 天</strong></div><div><span>单人日通量</span><strong><i id="heroThroughput">480</i> 条</strong></div></div>
+<p class="baseline-exclusions"><strong>后续更多预估立法评估用费用未纳入计算</strong>包括标注后的数据整理、总结分析与研究论证等。</p>
+<p class="baseline-note">线上计数核对：2026-11-03。评论数随时间变化，不等于本地已采集量。按完整工作日取整，招聘、培训及额外质检另计。</p>
+<a class="text-link" href="#efficiency">查看线上计数来源与预算公式 ↗</a>
+</aside></div>
+<div id="onlineScale" class="online-video-scale" aria-labelledby="onlineScaleTitle"><div class="section-index">仅一个平台 <span>BILIBILI</span></div><h2 id="onlineScaleTitle">这只是 bilibili 一个视频平台</h2><p class="online-scale-total">公开榜单评论量前二的两个视频，线上评论合计 <strong id="onlineScaleTotal">1439万7216</strong> 条。</p><div class="online-video-counts" id="onlineVideoCounts"></div><p class="online-ranking-note" id="onlineRankingNote"></p><a class="text-link" id="onlineRankingSource" href="https://www.bilibili.com/video/BV1GAbUz2E9f/" target="_blank" rel="noopener noreferrer">查看榜单来源 ↗</a></div>
+<div class="metric-grid" aria-label="本地研究样本概况" aria-live="polite">
+<article class="metric-card"><div class="metric-label">已采集评论样本<svg><use href="#i-message"/></svg></div><div class="metric-value" id="sampleCount">—</div><div class="metric-foot"><span class="status-dot"></span>本地语料库 <span>条</span></div></article>
+<article class="metric-card"><div class="metric-label">已有模型标签<svg><use href="#i-chart"/></svg></div><div class="metric-value" id="analyzedCount">—</div><div class="metric-foot" id="analysisCoverage">等待分析数据</div></article>
+<article class="metric-card"><div class="metric-label">人工锚定样本<svg><use href="#i-check"/></svg></div><div class="metric-value" id="anchorCount">—</div><div class="metric-foot">人工精标与复核 <span>条</span></div></article>
+<article class="metric-card"><div class="metric-label">研究社区<svg><use href="#i-network"/></svg></div><div class="metric-value" id="communityCount">—</div><div class="metric-foot" id="communityNames">基于已配置研究样本</div></article></div>
 <div class="inline-error" id="dataError" role="alert" hidden><span id="dataErrorText"></span><button class="text-button" id="retryData">重新连接</button></div>
 </section>
 <section id="ambiguity" class="content-section">
-<div class="section-heading"><div><h2>为什么单看评论难以认定</h2><p>同一个词在不同圈层、事件或时间里，可能指向不同的人和事。</p></div><a class="text-link" href="/comments">查看评论原文</a></div>
-<dl class="editorial-rows">
-  <div><dt>反讽与引用</dt><dd>字面上的夸奖可能是反话；引用他人的话也可能是在反驳。</dd></div>
-  <div><dt>圈层黑话</dt><dd>谐音、缩写和绰号常与特定人物或事件有关。通用词典无法说明评论在指谁、为什么这样说。</dd></div>
-  <div><dt>重复话术</dt><dd>复读可能是玩梗、跟风或协同行为。文本相似不能证明付费、组织关系或违法。</dd></div>
-</dl>
-<aside class="talent-note"><h3>懂圈层的标注员难找，兼懂研究的人更难找</h3><p>圈内用语、人物关系和事件沿革并非通用知识。标注员需要理解这些背景，再通过培训统一分类口径；研究人员还要能整理证据、设计研究并核对规则。换人或换圈层后，往往需要重新培训。</p></aside>
+<div class="section-heading"><div><div class="section-index">01 <span>THE INTERPRETATION GAP</span></div><h2>圈层黑话复杂，治理认定与证据整理成本高</h2><p>缩写、谐音、反讽、身份标签与复读模板交织；词义会随圈层、时间和事件迁移。通用词典和脱离语境的逐句判断，难以直接提供稳定分类口径。</p></div><a class="text-link" href="/comments">回到原始评论 ↗</a></div>
+<div class="ambiguity-mechanisms">
+<article><span class="mechanism-index">01 / 立场反转</span><h3>字面正向，实际可能相反</h3><p>反话、表情与引用会改变语气。正面词汇不能独立证明赞同，负面词汇也未必指向评论对象。</p></article>
+<article><span class="mechanism-index">02 / 圈层语义</span><h3>同一个梗，圈内外理解不同</h3><p>黑话、缩写和二创需要共同背景。解释网络用语，不等于已经知道说话者的意图。</p></article>
+<article><span class="mechanism-index">03 / 证据断裂</span><h3>看到了复读，仍不知道动机</h3><p>相似文本可能来自玩梗、引用或协同行为。仅凭重复内容，不能推出付费、组织关系或违法事实。</p></article>
+</div>
+<div class="talent-bottleneck"><h3>懂圈层的标注员难找，兼懂研究的人更难找</h3><p>圈内黑话、人物关系与事件沿革，并非多数人具备的通用知识。熟悉一个圈层，也不等于能理解其他圈层；临时培训难以替代长期语境积累。</p><div class="talent-levels"><article><span>第一层 / 标注人才</span><h4>读懂语境，才能形成一致标签</h4><p>需要熟悉黑话与事件背景的标注人员，再通过培训统一六分类口径、处理争议样本。招聘、替换人员和持续更新术语都需要投入。</p></article><article><span>第二层 / 研究人才</span><h4>懂圈层，还要能组织研究</h4><p>研究人员还需兼顾证据整理、数据分析、研究设计与网络治理规则。既理解圈层细节、又能把语义判断转成严谨研究材料的复合能力，更难通过一般招聘补齐。</p></article></div><p class="talent-summary">因此，传统逐条人工标注的瓶颈既是工资，也是稀缺知识与持续组织成本。标注完成后，整理数据、总结发现和研究论证仍需另行投入。</p></div>
 </section>
 <section id="policy" class="content-section">
-<div class="section-heading"><div><h2>立法与规则缺口</h2></div><button class="text-button" type="button" id="exportPolicy">下载立法研究提纲</button></div>
-<div class="official-gap-evidence" aria-labelledby="officialGapTitle">
-  <header><h3 id="officialGapTitle">国家网信办起草说明</h3><time datetime="2026-07-29">2026 年 7 月 29 日</time></header>
-  <div class="official-gap-quotes" id="officialGapQuotes"></div>
-  <p class="official-gap-source" id="officialGapSource"></p>
-  <p class="official-gap-note">起草说明同时指出，我国已初步建立相关制度框架。</p>
-</div>
-<dl class="editorial-rows legal-notes">
-  <div><dt>已施行规章</dt><dd>《网络暴力信息治理规定》第 12 条要求细化分类标准，第 26 条涉及补充证明材料。<a class="text-link" href="https://www.cac.gov.cn/2024-06/14/c_1720043894161555.htm" target="_blank" rel="noopener noreferrer">查看规章</a></dd></div>
-  <div><dt>征求意见文本</dt><dd>《反网络暴力法（征求意见稿）》不作生效法律依据。<a class="text-link" href="https://www.cac.gov.cn/2026-07/29/c_1787072711938509.htm" target="_blank" rel="noopener noreferrer">查看征求意见稿</a> · <a class="text-link" href="https://www.cac.gov.cn/2026-07/29/c_1787072712183583.htm" target="_blank" rel="noopener noreferrer">查看官方解读</a></dd></div>
-</dl>
-<div class="research-questions"><h3>本项目研究的问题</h3><ul>
-  <li><a href="/comments">隐晦攻击的认定需要哪些上下文？</a></li>
-  <li><a href="/insight#graphFull">相似话术还需要什么材料，才能判断是否有关联？</a></li>
-  <li><a href="/label">模型误读时，怎样复核并保留更正记录？</a></li>
-</ul></div>
-<div class="panel policy-library"><div class="panel-title"><h3>网络治理规则参考</h3></div><div class="law-list" id="lawList"></div><div class="panel-footer"><span>规则关联用于研究选题；具体适用需核对事实、现行文本与专业意见。</span></div></div>
+<div class="section-heading"><div><div class="section-index">02 <span>FROM AMBIGUITY TO RULES</span></div><h2>现有立法仍有短板，专门制度供给亟待完善</h2><p>国家网信办 2026 年 7 月 29 日发布的起草说明，从立法分散、概念与平台责任界定、治理顶层设计三个方面说明补齐制度短板的必要性。</p></div><button class="text-button" id="exportPolicy">下载研究提纲 ↗</button></div>
+<div class="official-gap-evidence" aria-labelledby="officialGapTitle"><header><span class="tag">国家网信办 · 官方起草说明</span><time datetime="2026-07-29">2026.07.29 发布</time></header><h3 id="officialGapTitle">制度缺口与不完善，直接看官方原文</h3><div class="official-gap-quotes" id="officialGapQuotes"></div><p class="official-gap-source" id="officialGapSource"></p><p class="official-gap-context">原文同时说明我国已初步建立相关制度框架。这里呈现官方指出的制度短板；下方分列现行规章与征求意见文本。</p></div>
+<div class="legal-grounding"><div><span class="tag">已施行的部门规章</span><h3>已有规则需要更细的语境支撑</h3><p>《网络暴力信息治理规定》自 2024 年 8 月 1 日施行，第 12 条要求细化分类标准，第 26 条涉及证明材料不足时的补充。</p><a class="text-link" href="https://www.cac.gov.cn/2024-06/14/c_1720043894161555.htm" target="_blank" rel="noopener noreferrer">核对现行规定 ↗</a></div><div><span class="tag neutral">2026.07.29 公开征求意见文本</span><h3>专门立法补齐制度供给</h3><p>2026 年 7 月，国家网信办发布《反网络暴力法（征求意见稿）》。官方专家解读指出取证、维权成本与制度衔接难题；该征求意见文本不作生效法律依据。</p><a class="text-link" href="https://www.cac.gov.cn/2026-07/29/c_1787072711938509.htm" target="_blank" rel="noopener noreferrer">查看征求意见通知 ↗</a><p class="legal-update-source"><a class="text-link" href="https://www.cac.gov.cn/2026-07/29/c_1787072712183583.htm" target="_blank" rel="noopener noreferrer">官方解读：制度短板与取证难点 ↗</a></p></div></div>
+<div class="gap-heading"><span class="tag neutral">项目研究方向</span><h3>把制度短板，转成可检验的研究问题</h3><p>以下是本项目围绕圈层语义提出的研究方向，结合评论原文、关联线索与人工复核进一步论证认定标准、证据要求和复核程序。</p></div>
+<div class="rule-gaps"><article><span>01 / 认定尺度</span><h3>怎样辨别隐晦攻击？</h3><p>哪些语境信息能够支持判断？何时应保留“不足以认定”，而不是强行归类？</p><a href="/comments">需要的材料：原文与具体语境 ↗</a></article><article><span>02 / 证据要求</span><h3>相似话术还缺什么证据？</h3><p>如何组织引用、时间与关联证据，避免把文本相似直接等同于组织操控？</p><a href="/insight#graphFull">需要的材料：话术关联与样本来源 ↗</a></article><article><span>03 / 复核程序</span><h3>怎样复核模型误读？</h3><p>分类依据是否可解释？证据不足时如何补充材料、纠正标签并保留正常表达？</p><a href="/label">需要的材料：人工复核记录 ↗</a></article></div>
+<div class="research-output"><div><span class="eyebrow">项目能够交付的研究材料</span><h3>原始评论 → 关联线索 → 人工复核 → 规则问题清单</h3><p>以可追溯材料支持我国网络治理规则细化与立法研究。当前导出的是研究提纲，不能替代完整的取证材料或专业法律意见。</p></div><button class="action primary" type="button" id="exportGapResearch">导出立法研究问题 <svg><use href="#i-download"/></svg></button></div>
+<div class="panel policy-library"><div class="panel-title"><h3>网络治理规则参考</h3><span class="panel-subtitle">官方原文可追溯 · 人工整理的研究关联</span></div><div class="law-list" id="lawList"></div><div class="panel-footer"><span>规则关联用于研究选题；具体适用需核对事实、现行文本与专业意见。</span></div></div>
 </section>
 <section id="efficiency" class="content-section">
-<div class="section-heading"><div><h2>逐条标注要花多少钱</h2><p>以 B 站两个视频的线上评论总数估算。日薪 150 元，工作 8 小时；单条用时可调整。</p></div></div>
+<div class="section-heading"><div><div class="section-index">03 <span>ANNOTATION ECONOMICS</span></div><h2>传统人工标注：工资之外，还有研究成本</h2><p>按两个线上视频的评论总数估算，日薪 150 元、每天 8 小时。标注速度是规划假设，复杂样本应通过试标校准。</p></div></div>
+<div class="cost-boundary-notice"><strong>后续更多预估立法评估用费用未纳入计算</strong><p>上方为逐条标注的工资估算。标注后的数据清洗与归档、结果汇总、总结分析、研究设计及治理建议论证等后续工作，均未纳入当前计算；招聘培训、术语维护和额外质检也需要另行预算。</p></div>
 <div class="panel annotation-calculator">
-<div class="budget-controls"><label>每条标注用时<select id="budgetSeconds"><option value="30">30 秒 / 条（较快）</option><option value="60" selected>60 秒 / 条（基准）</option><option value="90">90 秒 / 条（复杂语境）</option><option value="120">120 秒 / 条（反复核验）</option></select></label><label>8 小时内的有效标注时间<select id="budgetEfficiency"><option value="1">8 小时（理想满负荷）</option><option value="0.75">6 小时（75% 有效时间）</option></select></label></div>
+<div class="budget-controls"><label>每条标注用时<select id="budgetSeconds"><option value="30">30 秒 / 条（较快）</option><option value="60" selected>60 秒 / 条（基准）</option><option value="90">90 秒 / 条（复杂语境）</option><option value="120">120 秒 / 条（反复核验）</option></select></label><label>8 小时内的有效标注时间<select id="budgetEfficiency"><option value="1">8 小时（理想满负荷）</option><option value="0.75">6 小时（75% 有效时间）</option></select></label><label>模型辅助后的人工抽检比例<select id="budgetReview"><option value="0.05">5%（情景假设）</option><option value="0.1" selected>10%（情景假设）</option><option value="0.2">20%（情景假设）</option></select></label></div>
 <p class="budget-scope-note" id="budgetScopeNote"></p><p class="budget-count-sources" id="budgetCountSources"></p>
-<div class="budget-results" aria-live="polite">
-  <article><span>全量人工标注工资</span><strong id="budgetManualCost">4,499,250</strong><small id="budgetManualDays">元 · 1 人工作 29,995 天</small></article>
-  <article><span>单人标注速度</span><strong id="budgetThroughput">480</strong><small>条 / 天</small></article>
-</div>
-<p class="budget-exclusions"><strong>后续更多预估立法评估用费用未纳入计算</strong>，包括数据整理、总结分析和研究论证。招聘、培训和额外质检也需另计。</p>
+<div class="budget-results" aria-live="polite"><article><span>1 人每天可标注</span><strong id="budgetThroughput">480</strong><small>条 / 人 / 天</small></article><article><span>传统逐条人工标注 · 仅工资</span><strong id="budgetManualCost">4,499,250</strong><small id="budgetManualDays">元 · 1 人工作 29,995 天</small></article><article class="assisted"><span>项目当前实践 · 7199条已完成样本</span><strong>≈0</strong><small>元项目成本 · 1人完成 · 免费模型额度</small></article></div>
 
 <div class="table-scroll"><table class="budget-table"><caption>两个视频分别需要多少人工</caption><thead><tr><th scope="col">视频 / 社区</th><th scope="col">待标注条数</th><th scope="col">全人工工作安排</th><th scope="col">人工工资（元）</th></tr></thead><tbody id="budgetVideoRows"></tbody></table></div>
-<details class="budget-formula"><summary>展开全量复核预算与计算方法</summary><div class="budget-review-control"><label>模型辅助后的人工抽检比例<select id="budgetReview"><option value="0.05">5%（情景假设）</option><option value="0.1" selected>10%（情景假设）</option><option value="0.2">20%（情景假设）</option></select></label></div><p><strong>全量雇工复核情景：</strong><span id="budgetAssistedCost">450,000</span> <span id="budgetAssistedDays">元 · 1 人工作 3,000 天</span></p><p class="budget-difference" id="budgetDifference"></p><p id="budgetFormula"></p><p>当前统一写为“1 人工作若干天”，指 1 人按每天 8 小时在岗完成任务所需的工作天数，向上取整；多人并行可缩短日历工期。表格逐视频单独取整，合计允许统一排班，因此个别情景会相差 1 个工作日。</p><p>模型方案采用当前快照的 107 条人工锚定样本，再从其余评论中按选定比例抽检。该比例尚未通过质量实验确定；后续更多预估立法评估用费用未纳入计算，包括数据整理、总结分析与研究论证；模型推理、招聘培训、术语维护、争议仲裁和额外质检也需另计。人工预算差额不是已经验证的总成本节省。</p><p>评论总数取自核对时的哔哩哔哩公开接口 data.stat.reply，遵循平台返回口径，数量持续变化；预算假设这些评论均需逐条标注，不表示已采集或均可访问。去重、楼中楼与删除内容对实际标注工作量的影响，需在采集前进一步核对。</p></details>
+<details class="budget-formula"><summary>展开全量复核预算与计算方法</summary><p><strong>全量雇工复核情景：</strong><span id="budgetAssistedCost">450,000</span> <span id="budgetAssistedDays">元 · 1 人工作 3,000 天</span></p><p class="budget-difference" id="budgetDifference"></p><p id="budgetFormula"></p><p>当前统一写为“1 人工作若干天”，指 1 人按每天 8 小时在岗完成任务所需的工作天数，向上取整；多人并行可缩短日历工期。表格逐视频单独取整，合计允许统一排班，因此个别情景会相差 1 个工作日。</p><p>模型方案采用当前快照的 107 条人工锚定样本，再从其余评论中按选定比例抽检。该比例尚未通过质量实验确定；后续更多预估立法评估用费用未纳入计算，包括数据整理、总结分析与研究论证；模型推理、招聘培训、术语维护、争议仲裁和额外质检也需另计。人工预算差额不是已经验证的总成本节省。</p><p>评论总数取自核对时的哔哩哔哩公开接口 data.stat.reply，遵循平台返回口径，数量持续变化；预算假设这些评论均需逐条标注，不表示已采集或均可访问。去重、楼中楼与删除内容对实际标注工作量的影响，需在采集前进一步核对。</p></details>
 </div>
-<div class="research-questions"><h3>破妄如何分类</h3>
-<ol class="method-list">
-  <li>人工判断少量评论，给出分类示范。</li>
-  <li>按字符相似度检索人工示例，和圈层词条一起交给模型。模型批量输出标签和理由。</li>
-  <li>人工核对难例，修正标签，补充后续可复用的示范。</li>
-</ol></div>
-<p class="method-boundary">目前采用检索示例指导分类。分类准确率、微调收益和全量总成本仍需对照评测。</p>
+<div class="method-heading"><h3>项目方式：让模型参照人的判断，承担规模化归类</h3><p>让稀缺的人类判断经验可复用，减少全量逐条标注，把研究人员留在口径设计、难例复核与分析论证上。</p></div>
+<div class="model-learning-path"><article><span>01 / 人工示范</span><h3>建立领域锚定集</h3><p>人工标出赞美、贬低、水军、无意义、社区对骂、中立，说明真实圈层表达的归类方式。</p></article><article><span>02 / 检索参照</span><h3>按语境召回相近示例</h3><p>字符相似度检索人工样本，配合网络用语词典与提示词，为每次分类提供领域参照。</p></article><article><span>03 / 模型归类</span><h3>批量输出标签与理由</h3><p>大模型返回分类、置信度、理由和网络用语，支持批量处理与断点续跑。</p></article><article><span>04 / 人工复核</span><h3>纠正难例，补充口径</h3><p>保留原文和分类依据，人工修正与补充锚定样本，再用于后续分析。</p></article></div>
+<p class="method-boundary">当前实现为锚定检索与示例驱动的上下文学习，已支持微调数据导出和模型接入。参数微调增益、分类准确率与实际总成本，均需通过独立对照评测验证。</p>
 </section>
 <section id="governance" class="content-section">
-<div class="section-heading"><div><h2>模型分类与原文核对</h2><p>下方样本保留原文、模型理由和复核入口。</p></div><a class="text-link" href="/insight#insight">查看社区对照</a></div>
+<div class="section-heading"><div><div class="section-index">04 <span>COMMUNITY ECOLOGY</span></div><h2>从分类样本中，整理可复核的治理线索</h2><p>模型先提供检索线索；研究人员再核对原文、网络用语和标签依据。既关注隐晦攻击，也防止把正常批评误判为乱象。</p></div><a class="text-link" href="/insight#insight">进入深度洞察 ↗</a></div>
 <div class="governance-grid"><article class="panel community-panel"><div class="panel-title"><h3>社区评论结构</h3><label><span class="sr-only">选择研究社区</span><select id="communitySelect"><option value="all">全部研究社区</option></select></label></div><p class="panel-subtitle" id="communitySummary">正在读取本地分析结果…</p><div class="category-bars" id="categoryBars" aria-live="polite"><div class="empty-state">正在加载评论分类统计…</div></div><div class="panel-footer"><span>六分类为模型分析标签，需结合语境复核。</span><a class="text-link" href="/comments">查看原始评论 ↗</a></div></article>
-<aside class="research-focus">
-  <h3>重点复核样本</h3>
-  <p class="focus-total"><strong id="clueCount">—</strong> 条</p>
-  <p>模型标为“水军”或“社区对骂”的本地样本。复核时应对照原文和事件背景；标签不能证明付费、账号身份或违法。</p>
-  <a class="text-link" href="/label">打开人工复核</a>
-</aside></div>
-<div class="evidence-heading"><h3>原始评论与模型分类依据</h3></div><div class="evidence-grid" id="evidenceCards" aria-live="polite"><div class="empty-state">正在读取代表性评论…</div></div>
+<article class="panel research-focus"><div class="panel-title"><h3>哪些标签需要重点复核</h3><span class="tag neutral">研究线索</span></div><div class="focus-total"><strong id="clueCount">—</strong><span>条标签样本</span><small>“水军”与“社区对骂”模型标签合计，非已确认行为</small></div><div class="focus-row"><span class="focus-icon"><svg><use href="#i-network"/></svg></span><div><strong>相似话术，不能直接认定刷评</strong><p>先对照引用、复读与上下文，再讨论行为关联。</p></div></div><div class="focus-row"><span class="focus-icon"><svg><use href="#i-shield"/></svg></span><div><strong>分类结果，需要回到语境复核</strong><p>模型自报高置信度，也可能误读反话与圈层表达。</p></div></div><a class="action secondary full-width" href="/label">进入人工复核 <svg><use href="#i-arrow"/></svg></a><p class="boundary-note">模型标签不能独立证明违法、付费行为或账号身份。</p></article></div>
+<div class="evidence-heading"><h3>原始评论与模型分类依据</h3><span>本地已分析样本 · 保留原文与复核入口</span></div><div class="evidence-grid" id="evidenceCards" aria-live="polite"><div class="empty-state">正在读取代表性评论…</div></div>
 </section>
 
 <section id="economy" class="content-section">
-<div class="section-heading"><div><h2>中国数字经济规模与 GDP 占比</h2></div><label class="year-control">数据年度 <select id="economyYear" aria-label="数字经济数据年度"><option value="2020">2020 年</option><option value="2021">2021 年</option><option value="2022">2022 年</option><option value="2023">2023 年</option><option value="2024" selected>2024 年</option></select></label></div>
+<div class="section-heading"><div><div class="section-index">05 <span>DEVELOPMENT & GOVERNANCE</span></div><h2>网络治理，关乎数字生活与经济发展</h2><p>在发展背景中理解治理价值，保留数据来源与统计口径。</p></div><label class="year-control">数据年度 <select id="economyYear" aria-label="数字经济数据年度"><option value="2020">2020 年</option><option value="2021">2021 年</option><option value="2022">2022 年</option><option value="2023">2023 年</option><option value="2024" selected>2024 年</option></select></label></div>
 <div class="economy-grid">
 <article class="panel economy-share"><div class="panel-title"><h3>数字经济占 GDP 比重</h3><span class="tag">信通院测算口径</span></div><div class="donut-layout"><div class="gdp-donut" id="gdpDonut" role="img" aria-label="2024年数字经济占GDP的43.8%"><svg viewBox="0 0 200 200" aria-hidden="true"><circle class="donut-track" cx="100" cy="100" r="79"/><circle class="donut-fill" id="donutFill" cx="100" cy="100" r="79" pathLength="100" stroke-dasharray="43.8 100"/></svg><div class="donut-center"><span>GDP 占比</span><strong id="gdpShare">43.8<span>%</span></strong><small id="donutYear">2024 年</small></div></div><div class="donut-legend"><div><span class="legend-dot accent"></span><span>数字经济</span><strong id="digitalLegend">43.8%</strong></div><div><span class="legend-dot rest"></span><span>其他经济</span><strong id="otherLegend">56.2%</strong></div></div></div><div class="economy-bottom"><div><span>数字经济规模</span><strong><span id="economyScale">59.2</span><small> 万亿元</small></strong></div><div><span>较上年占比变化</span><strong class="accent-text" id="shareChange">+1.0<small> 个百分点</small></strong></div></div><a class="source-link" id="shareSource" href="https://www.caict.ac.cn/kxyj/qwfb/bps/202603/P020260323736507370748.pdf" target="_blank" rel="noopener noreferrer">来源：中国信通院《数字经济发展研究报告（2025年）》 ↗</a></article>
-<article class="panel economy-growth"><div class="panel-title"><div><h3>历年数字经济变化</h3><p class="panel-subtitle">2020—2024 年 · 历年公开发布值</p></div><div class="segmented" role="group" aria-label="趋势指标"><button class="selected" data-trend="scale" aria-pressed="true">经济规模</button><button data-trend="share" aria-pressed="false">GDP 占比</button></div></div><div class="growth-headline"><strong id="growthValue">59.2<small> 万亿元</small></strong><span id="growthDescription">2024 年数字经济规模</span><span class="growth-badge" id="growthBadge">较 2020 年 +51.0%</span></div><div class="growth-chart" id="growthChart" role="img" aria-label="中国数字经济规模从2020年39.2万亿元增长至2024年59.2万亿元"></div><div class="chart-foot"><span><i class="legend-dot accent"></i><span id="trendLegend">数字经济规模（万亿元）</span></span><a class="text-link" href="#dataSources">查看数据与口径 ↗</a></div></article></div>
+<article class="panel economy-growth"><div class="panel-title"><div><h3>数字经济增长轨迹</h3><p class="panel-subtitle">2020—2024 年 · 历年公开发布值</p></div><div class="segmented" role="group" aria-label="趋势指标"><button class="selected" data-trend="scale" aria-pressed="true">经济规模</button><button data-trend="share" aria-pressed="false">GDP 占比</button></div></div><div class="growth-headline"><strong id="growthValue">59.2<small> 万亿元</small></strong><span id="growthDescription">2024 年数字经济规模</span><span class="growth-badge" id="growthBadge">较 2020 年 +51.0%</span></div><div class="growth-chart" id="growthChart" role="img" aria-label="中国数字经济规模从2020年39.2万亿元增长至2024年59.2万亿元"></div><div class="chart-foot"><span><i class="legend-dot accent"></i><span id="trendLegend">数字经济规模（万亿元）</span></span><a class="text-link" href="#dataSources">查看数据与口径 ↗</a></div></article></div>
 <div class="statistical-note"><svg><use href="#i-book"/></svg><p><strong>口径说明</strong> 上图为中国信通院数字经济测算，涵盖数字产业化与产业数字化。国家统计局公布的 <a href="https://www.stats.gov.cn/sj/zxfbhjd/202512/t20251230_1962177.html" target="_blank" rel="noopener noreferrer">2024 年数字经济核心产业</a> 增加值为 <strong>14.0891 万亿元</strong>，占 GDP 的 <strong>10.5%</strong>，两者统计范围不同。年度序列采用历年发布值，未作经济普查回溯调整。</p></div>
 </section>
 
 
-<section id="assistant" class="content-section assistant-section" aria-label="样本问答">
-<details id="assistantDetails">
-  <summary>样本问答 <small>使用模型比较样本或查询圈层词义</small></summary>
-  <div class="assistant-panel">
-    <div class="panel-title"><h2>本地样本问答</h2><button class="text-button" id="clearChat" type="button">清空问答</button></div>
-    <div class="chat-messages" id="chatMessages" role="log" aria-label="问答记录" aria-live="polite"></div>
-    <form id="chatForm" class="assistant-form">
-      <label class="sr-only" for="chatQuestion">输入问题</label>
-      <textarea id="chatQuestion" rows="2" maxlength="2000" placeholder="例如：两个视频里哪些标签需要人工复核？" required></textarea>
-      <button class="action primary" id="sendQuestion" type="submit">发送</button>
-      <button class="text-button" id="stopQuestion" type="button" hidden>停止</button>
-    </form>
-    <p class="assistant-caption">需配置模型服务。回答可用于检索线索，事实请核对评论原文。</p>
-  </div>
-</details>
-</section>
+<section id="assistant" class="content-section"><div class="assistant-grid"><div class="assistant-intro"><div class="section-index">06 <span>RESEARCH COPILOT</span></div><svg class="assistant-symbol"><use href="#i-message"/></svg><h2>继续追问，<br>回到真实证据。</h2><p>基于本地评论分析结果，辅助比较社区结构、解释网络用语、梳理治理线索。</p><span class="tag">大模型问答 · 语境知识检索</span><p class="boundary-note">回答依赖已配置的模型服务。法规原文请到上方规则参考核验。</p></div><div class="panel assistant-panel"><div class="panel-title"><h3>破妄 · AI 治理助手</h3><button class="text-button" id="clearChat">清空对话</button></div><div class="chat-messages" id="chatMessages" role="log" aria-label="AI研究问答" aria-live="polite"><div class="assistant-welcome">从一个具体问题开始，探索社区表达背后的治理线索。</div></div><div class="prompt-list"><button type="button" data-prompt="比较两个社区的水军和社区对骂分类数量，说明数据局限与需要人工核验的事项。">哪些标签最需要复核 ↗</button><button type="button" data-prompt="基于已分析评论，指出哪些结论不能仅凭单句作出，并列出仍缺少的语境证据；不要推断账号真实身份、付费行为或违法事实。">哪些证据仍然缺失 ↗</button></div><form id="chatForm" class="assistant-form"><label class="sr-only" for="chatQuestion">向治理助手提问</label><textarea id="chatQuestion" rows="2" maxlength="2000" placeholder="输入研究问题，Enter 发送，Shift + Enter 换行" required></textarea><button class="action primary" id="sendQuestion" type="submit" aria-label="发送问题"><svg><use href="#i-arrow"/></svg></button><button class="text-button" id="stopQuestion" type="button" hidden>停止请求</button></form><div class="assistant-caption">AI 生成内容供研究参考；事实判断应回到原始证据。</div></div></div></section>
 <section id="news" class="content-section">
-<div class="section-heading"><div><h2>典型事件：线上网暴与线下扰序</h2></div></div>
+<div class="section-heading"><div><div class="section-index">07 <span>REAL-WORLD GOVERNANCE NEEDS</span></div><h2>从线上网暴，到违法占路游行与线下冲突</h2><p>国内公开报道与通报：事件经过、秩序破坏与处置结果。</p></div></div>
 <div class="news-case-list" id="newsCases"></div>
-<div id="projectImpact" class="project-conclusion">
-  <div><h3>破妄在其中提供什么</h3><p>传统标注要招人、培训，再逐条判断。破妄把少量人工判断和圈层词条提供给模型，用于批量分类；遇到疑似隐晦攻击，可以沿图谱查相似话术，回到原文核对并更正标签。研究人员据此整理规则评估所需的样本。</p>
-  <a class="text-link" href="/insight#graphFull">查看话术关联图谱</a></div>
-  <aside class="project-cost"><p>项目成本<strong>≈0<small>元</small></strong></p><p>1 人使用免费模型完成 7199 条样本。个人时间未折算；上方工资估算对应两个视频的线上全量。</p></aside>
-</div>
+<div id="projectImpact" class="project-impact"><span class="eyebrow">破妄在其中提供什么</span><h3>少量示范，驱动批量分类</h3><p class="impact-intro">检索圈层知识和人工示例，模型批量归类，人工复核难例。</p><div class="impact-cost-comparison"><article><span>传统方式 · 1439万7216条全量工资估算</span><strong>449.9<small>万元（约）</small></strong><p>招聘、培训、逐条分类；1人每天约480条，全量需工作29995天，整理研究另计。</p><small>60秒/条 · 每天8小时 · 日薪150元</small></article><article class="practice-cost"><span>项目成本</span><strong>≈0<small>元</small></strong><p>1人独立完成，使用免费模型额度，未外聘标注人员。</p><small>7199条已完成样本 · 个人时间未折算</small></article></div><div class="innovation-points"><div><b>01 / 示范驱动</b><p>把人工判断变成模型可复用的分类依据。</p></div><div><b>02 / 圈层增强</b><p>检索相近示例与黑话知识，补足通用理解。</p></div><div><b>03 / 证据闭环</b><p>标签、理由、原文与人工修正连在一起。</p></div></div><div class="impact-links"><a href="/insight"><strong>观察分类结构</strong><span>找出需要追踪的表达 ↗</span></a><a href="/insight#graphFull"><strong>追踪话术关联</strong><span>沿词条与相似评论找来源 ↗</span></a><a href="/comments"><strong>核对原始证据</strong><span>查看原文与分类理由 ↗</span></a><a href="/label"><strong>沉淀人工经验</strong><span>复核难例，补充示范 ↗</span></a></div><p>成本依据作者当前实践；线上全量为预算情景，当前成效以已完成样本为准。</p></div>
 </section>
-<section id="dataSources" class="sources-section"><details id="sourceDetails"><summary><span><svg><use href="#i-book"/></svg>数据来源与研究说明</span><span class="summary-hint">展开资料 <span aria-hidden="true">＋</span></span></summary><div class="source-details"><p>经济资料核验：2026 年 10 月 30 日；国赛与法律资料核验：2026 年 11 月 3 日。经济数据为公开报告静态收录；社区数据来自本项目本地语料与分析结果，不代表全网。</p><div class="table-scroll"><table><caption>中国数字经济历年公开数据</caption><thead><tr><th scope="col">年度</th><th scope="col">规模（万亿元）</th><th scope="col">占 GDP 比重</th><th scope="col">资料来源</th></tr></thead><tbody id="economyTable"></tbody></table></div><p>年度增长折线显示规模变化；2024 年同比名义增长 9.69% 为信通院报告值，与由展示精度计算的增长率可能略有差异。</p><h3>设计研究参考 · 全国获奖项目</h3><p>仅参考全国一、二、三等奖项目，覆盖播客创作、艺术创作、模拟面试与舆情分析。借鉴具体困境、交互体验与成果输出的叙事。以下奖项属于所列作品。</p><div class="reference-list" id="competitionReferences"></div></div></details></section>
-<footer class="app-footer"><strong>破妄</strong><span>圈层评论与网络立法研究</span></footer>
+<section id="dataSources" class="sources-section"><details id="sourceDetails"><summary><span><svg><use href="#i-book"/></svg>数据来源与研究说明</span><span class="summary-hint">展开核验 <span aria-hidden="true">＋</span></span></summary><div class="source-details"><p>经济资料核验：2026 年 10 月 30 日；国赛与法律资料核验：2026 年 11 月 3 日。经济数据为公开报告静态收录；社区数据来自本项目本地语料与分析结果，不代表全网。</p><div class="table-scroll"><table><caption>中国数字经济历年公开数据</caption><thead><tr><th scope="col">年度</th><th scope="col">规模（万亿元）</th><th scope="col">占 GDP 比重</th><th scope="col">资料来源</th></tr></thead><tbody id="economyTable"></tbody></table></div><p>年度增长折线显示规模变化；2024 年同比名义增长 9.69% 为信通院报告值，与由展示精度计算的增长率可能略有差异。</p><h3>设计研究参考 · 全国获奖项目</h3><p>仅参考全国一、二、三等奖项目，覆盖播客创作、艺术创作、模拟面试与舆情分析。借鉴具体困境、交互体验与成果输出的叙事。以下奖项属于所列作品。</p><div class="reference-list" id="competitionReferences"></div></div></details></section>
+<footer class="app-footer"><span><strong>破妄 POWANG</strong><span class="footer-divider">/</span>让真实表达被理解，让网络治理有依据。</span><span>技术向善 · 依法治网 · 人机协同</span></footer>
 </main></div><div class="app-toast" id="appToast" role="status" hidden></div>
 </body></html>

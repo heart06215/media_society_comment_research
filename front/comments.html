@@ -10,7 +10,7 @@
   .wrap { max-width:1920px; padding-top:20px; }
   .wrap > .kicker { margin-bottom:8px; }
   .filter-bar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px; }
-  .f-cat { color:var(--ink); padding:7px 12px; border:2px solid var(--line); font-weight:900; font-size:var(--type-small); letter-spacing:2px; text-transform:uppercase; cursor:pointer; background:var(--surface); }
+  .f-cat { padding:7px 12px; border:2px solid var(--line); font-weight:900; font-size:var(--type-small); letter-spacing:2px; text-transform:uppercase; cursor:pointer; background:var(--surface); }
   .f-cat:hover { background:var(--hover); }
   .f-cat.on.praise { background:var(--cat-praise); color:#fff; }
   .f-cat.on.blame { background:var(--cat-blame); color:#fff; }
@@ -19,6 +19,7 @@
   .f-cat.on.feud { background:var(--cat-feud); color:#fff; }
   .f-cat.on.neutral { background:var(--cat-neutral); color:#fff; }
   .f-cat.on.all { background:var(--ink); color:var(--paper); }
+  html[data-theme="dark"] .f-cat.on.all { color:#090B10; }
   #videoSel, #searchBox, #orderSel { padding:7px 10px; font-size:var(--type-small); }
 
   /* 密密麻麻的评论方格墙 */
@@ -94,7 +95,12 @@
 <a class="skip-link" href="#main">跳至主要内容</a><div id="workspaceNav"></div><div class="app-workspace"><header class="app-topbar" id="workspaceTopbar"></header>
 
 <main class="wrap" id="main">
-  <header class="tool-heading"><h1>评论证据库</h1><p>按视频、分类或关键词查找原文。打开评论可查看模型理由与出处。</p></header>
+  <div class="kicker">原文检索 · 人工核验</div>
+  <h1 class="display" style="font-size:var(--type-display);margin-bottom:4px">评论<span class="stroke">证据库</span></h1>
+  <p class="muted mb">定位原文，核对圈层语境与分类理由，为立法评估保留可追溯材料。</p>
+
+  <ol class="research-route" aria-label="治理研究流程"><li><span>01 / 结构观察</span><small>看分类与时间变化</small></li><li><span>02 / 话术关联</span><small>找圈层词与相似表达</small></li><li aria-current="step"><span>03 / 原文核对</span><small>查来源、语境与理由</small></li><li><span>04 / 人工复核</span><small>把难例沉淀为示范</small></li></ol>
+  <h2 class="tool-section-title">按分类与关键词，缩小核验范围</h2>
   <div class="filter-bar">
     <select aria-label="选择研究视频" id="videoSel" style="min-width:210px"></select>
     <div class="category-filters" role="group" aria-label="按评论分类筛选">
@@ -135,7 +141,12 @@
   <div id="dialogBody" class="c-dialog-body"></div>
 </dialog>
 
-<footer class="footer"><strong>破妄</strong><span>圈层评论与网络立法研究</span></footer>
+<footer class="footer">
+  <span class="brand-name" style="font-size:var(--type-lead);letter-spacing:4px">破妄</span>
+  <span class="muted">模型先分类 · 人工核对原文 · 难例进入复核</span>
+  <span style="flex:1"></span>
+  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span><span class="d4"></span></div>
+</footer>
 
 <script>
 const CATS = ["赞美", "贬低", "水军", "无意义", "社区对骂", "中立"];
@@ -346,7 +357,7 @@ async function loadStrip() {
     const cs = a.category_count || {}, n = a.total || 0, denom = n || 1;
     strip.innerHTML = CATS.map(c => {
       const num = cs[c] || 0, p = ((num / denom) * 100).toFixed(1);
-      return `<button type="button" class="f-cat" data-c="${c}" title="筛选${c}"><span class="badge ${CLS[c]}">${c}</span> <b class="mono">${window.ResearchNumbers.commentCount(num)}</b> <span class="muted mono">${p}%</span></button>`;
+      return `<div class="f-cat" data-c="${c}" style="cursor:pointer;opacity:.85" title="筛选${c}"><span class="badge ${CLS[c]}">${c}</span> <b class="mono">${window.ResearchNumbers.commentCount(num)}</b> <span class="muted mono">${p}%</span></div>`;
     }).join("") + `<div class="muted mono" style="align-self:center;padding:0 12px">总样本 ${window.ResearchNumbers.commentCount(n)}</div>`;
     strip.querySelectorAll(".f-cat").forEach(f => f.onclick = () => applyCat(f.dataset.c));
   } catch (e) {
