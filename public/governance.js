@@ -167,9 +167,16 @@
     const evidence = data.officialLegalGaps;
     byId("officialGapStatus").textContent = evidence.draftStatus;
     byId("officialGapContext").textContent = evidence.enforcementGap;
-    byId("legalAmountCases").innerHTML = data.legalAmounts.map((item) =>
-      `<article><h5>${escapeHtml(item.title)}</h5><strong class="legal-amount">${escapeHtml(item.amount)}</strong><p>${escapeHtml(item.context)}</p><div class="legal-case-links">${caseLinks(item.sources)}</div></article>`
-    ).join("");
+    byId("legalConflictCases").innerHTML = data.legalConflicts.map((item) => `<article>
+      <h5>${escapeHtml(item.title)}</h5>
+      <dl class="legal-comparison">
+        <div><dt>${escapeHtml(item.claimLabel)}</dt><dd><strong>${number(item.claim)}</strong> 元</dd></div>
+        <div><dt>${escapeHtml(item.decisionLabel)}</dt><dd><strong>${number(item.decision)}</strong> 元</dd></div>
+      </dl>
+      <p class="legal-difference">低于诉请 <strong>${number(item.claim - item.decision)}</strong> 元</p>
+      <p>${escapeHtml(item.reason)}</p>
+      <div class="legal-case-links">${caseLinks(item.sources)}</div>
+    </article>`).join("");
     byId("officialGapQuotes").innerHTML = evidence.items.map((item, index) => `<article><span class="official-gap-index">0${index + 1} / 原文摘句</span><h4>${escapeHtml(item.title)}</h4><blockquote cite="${evidence.url}"><p>${escapeHtml(item.quote)}</p></blockquote><p class="official-gap-explanation">${escapeHtml(item.explanation)}</p></article>`).join("");
     byId("officialGapSource").innerHTML = `<cite>${escapeHtml(evidence.publisher)} · ${escapeHtml(evidence.document)} · ${escapeHtml(evidence.locator)}</cite><a class="text-link" href="${evidence.url}" target="_blank" rel="noopener noreferrer">核对完整官方原文 ↗</a>`;
   }
@@ -272,8 +279,8 @@
       lines.push("", "## 数字经济背景", "中国信通院测算口径（数字产业化与产业数字化），历年公开发布值，未作经济普查回溯调整。", ...data.economy.map((row) => `- ${row.year} 年：规模 ${row.scale} 万亿元，占 GDP ${row.share}%。来源：${row.source} ${row.url}`), "", "国家统计局口径：2024 年数字经济核心产业增加值 14.0891 万亿元，占 GDP 10.5%，与上述统计范围不同。", "来源：https://www.stats.gov.cn/sj/zxfbhjd/202512/t20251230_1962177.html", "");
     }
     lines.push("## 游戏账号估值与民间协作", ...data.legalCases.map((item) => `- ${item.title}。${item.facts} 来源：${item.sources.map(({ url }) => url).join("、")}`), "",
-      "## 公开个案金额", "公开资料未提供全国未追责金额。以下数字对应不同的处理和赔付口径。",
-      ...data.legalAmounts.map((item) => `- ${item.title}，${item.amount}。${item.context} 来源：${item.sources.map(({ url }) => url).join("、")}`), "",
+      "## 追责冲突案例",
+      ...data.legalConflicts.map((item) => `- ${item.title}。${item.claimLabel} ${number(item.claim)} 元，${item.decisionLabel} ${number(item.decision)} 元，低于诉请 ${number(item.claim - item.decision)} 元。${item.reason} 来源：${item.sources.map(({ url }) => url).join("、")}`), "",
       "## 研究方法与系统实现", ...data.architecture.map((item) => `- ${item.step} ${item.title}。${item.description}`), "");
     lines.push("## 待论证的研究问题", "1. 如何结合语境与人工复核，区分正常批评、玩梗与人身攻击？", "2. 疑似刷评需要哪些文本之外的证据，才能验证是否存在组织化操纵？", "3. 平台如何建立有解释、可复核的评论治理流程，保护用户合法表达？", "4. 现有规则在隐晦攻击、跨社区传播和证据留存方面有哪些需要进一步调研的难点？", "", "## 证据整理提纲", "- 界定样本范围、采集时间与去重方法；记录样本代表性和选择偏差。", "- 留存评论标识、来源视频、上下文、分类理由、人工复核意见和修订记录。", "- 逐项关联现行规则，明确事实缺口，开展实证与规范论证。", "- 提出研究建议，并评估对合法表达、隐私保护和申诉救济的影响。", "", "## 官方规则参考", ...data.laws.map((law) => `- ${law.title}（${law.date} 施行，参考 ${law.articles}）：${law.url}`), "", "## 研究边界", "本项目目前研究已配置的视频社区样本，不代表全网。模型标签与置信度不是违法认定、付费刷评证明或准确率。规则关联由研究人员整理，不是自动法律裁决。研究提纲需要人工核查与后续论证。", "", `公开经济资料核验日期：${data.verifiedOn}。`);
     lines.push("", "## 语境认定与制度细化", "迷惑性评论可能因反讽、圈层语义与上下文缺失而难以单句判读。当前没有独立测试结果支持识别准确率，不以标签覆盖率代替正确率。", "本项目提出的研究问题是认定尺度、证据要求和复核程序如何细化，不主张我国没有相关法律法规。", "", "## 立法进展资料（与现行规则区分）", `${data.legislation.title}：${data.legislation.date} 发布的${data.legislation.status}。${data.legislation.note}`, data.legislation.url, `法律资料核验：${data.legalVerifiedOn}。`, "模型参照人工锚定示例分类；参数微调增益、识别准确率与实际总成本仍需独立对照评测。");

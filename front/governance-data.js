@@ -115,41 +115,46 @@ window.GovernanceData = Object.freeze({
       ]
     }
   ],
-  legalAmounts: [
+  legalConflicts: [
     {
-      "title": "毁号纠纷 · 调解赔偿",
-      "amount": "5000 元",
-      "context": "《三角洲行动》玩家称游戏内资产损失约 1 亿游戏币。第三方估价3000 余元。据当事人公开进展，最终经调解赔偿 5000 元并道歉。游戏币、估价和赔偿分别是三个口径。",
+      "title": "账号失去控制，充值能退多少",
+      "claimLabel": "玩家请求退还充值",
+      "claim": 400000,
+      "decisionLabel": "生效判决赔偿",
+      "decision": 4200,
+      "reason": "法院认为部分充值已兑换为游戏服务，按交易证据认定账号市场价值，再按玩家私下交易与平台擅自变更登记各自的过错分担损失。",
       "sources": [
         {
-          "title": "新京报：第三方估价",
-          "url": "https://www.bjnews.com.cn/detail/1780013446168371.html"
-        },
-        {
-          "title": "公开调解结果报道",
-          "url": "https://finance.sina.com.cn/tech/roll/2026-06-11/doc-iniazyem3918372.shtml"
+          "title": "上海高院参考性案例",
+          "url": "https://www.hshfy.sh.cn/shfy/web/xxnr.jsp?pa=aaWQ9MTAyMDQ1MDcxMiZ4aD0xJmxtZG09bG0wNDEPdcssz"
         }
       ]
     },
     {
-      "title": "账号转卖案 · 相对不起诉",
-      "amount": "4100 元",
-      "context": "这是平台先行赔付额。江苏检察网披露，检察机关结合认罪、赔偿等情节作相对不起诉。该案经过刑事审查，估价难与不起诉理由需分别理解。",
+      "title": "游戏停服，已用充值退不退",
+      "claimLabel": "玩家要求全额退款",
+      "claim": 114000,
+      "decisionLabel": "生效判决退款",
+      "decision": 25000,
+      "reason": "法院认为运营方已提前通知停服，按未使用虚拟货币的比例核算应退金额。",
       "sources": [
         {
-          "title": "江苏检察网：案件处理",
-          "url": "https://www.jsjc.gov.cn/qingfengyuan/202404/t20240412_190322.shtml"
+          "title": "广东法院消费者权益典型案例",
+          "url": "https://www.gdcourts.gov.cn/gsxx/quanweifabu/anlihuicui/content/post_1047376.html"
         }
       ]
     },
     {
-      "title": "网络水军案 · 公益赔偿",
-      "amount": "100 万元",
-      "context": "最高法公布的参考案例中，流量造假和有偿删帖造成的损失、获利难以直接量化。部分行为已被追究刑责，法院另酌定公益损害赔偿 100 万元。",
+      "title": "朋友圈贬损商誉，损失怎么算",
+      "claimLabel": "商户诉请赔偿",
+      "claim": 30000,
+      "decisionLabel": "法院判赔",
+      "decision": 10000,
+      "reason": "商户索赔 2 万元经济损失与 1 万元精神损害。法院确认视频损害商业信誉并影响营业收入，酌定经济损失。因商户未证明有严重精神损害，该项请求未获支持。二审维持原判。",
       "sources": [
         {
-          "title": "最高法参考案例",
-          "url": "https://www.court.gov.cn/zixun/xiangqing/442011.html"
+          "title": "人民法院报：南通中院典型案例",
+          "url": "https://www.sdcourt.gov.cn/wfhtqfy/443063/443236/8879852/index.html"
         }
       ]
     }
