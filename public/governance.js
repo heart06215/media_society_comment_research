@@ -170,10 +170,10 @@
     byId("legalConflictCases").innerHTML = data.legalConflicts.map((item) => `<article>
       <h5>${escapeHtml(item.title)}</h5>
       <dl class="legal-comparison">
-        <div><dt>${escapeHtml(item.claimLabel)}</dt><dd><strong>${number(item.claim)}</strong> 元</dd></div>
+        <div><dt>${escapeHtml(item.marketLabel)}</dt><dd><strong>${number(item.marketValue)}</strong> 元</dd></div>
         <div><dt>${escapeHtml(item.decisionLabel)}</dt><dd><strong>${number(item.decision)}</strong> 元</dd></div>
       </dl>
-      <p class="legal-difference">低于诉请 <strong>${number(item.claim - item.decision)}</strong> 元</p>
+      <p class="legal-difference">低于交易金额 <strong>${number(item.marketValue - item.decision)}</strong> 元</p>
       <p>${escapeHtml(item.reason)}</p>
       <div class="legal-case-links">${caseLinks(item.sources)}</div>
     </article>`).join("");
@@ -280,7 +280,7 @@
     }
     lines.push("## 游戏账号估值与民间协作", ...data.legalCases.map((item) => `- ${item.title}。${item.facts} 来源：${item.sources.map(({ url }) => url).join("、")}`), "",
       "## 追责冲突案例",
-      ...data.legalConflicts.map((item) => `- ${item.title}。${item.claimLabel} ${number(item.claim)} 元，${item.decisionLabel} ${number(item.decision)} 元，低于诉请 ${number(item.claim - item.decision)} 元。${item.reason} 来源：${item.sources.map(({ url }) => url).join("、")}`), "",
+      ...data.legalConflicts.map((item) => `- ${item.title}。${item.marketLabel} ${number(item.marketValue)} 元，${item.decisionLabel} ${number(item.decision)} 元，低于交易金额 ${number(item.marketValue - item.decision)} 元。${item.reason} 来源：${item.sources.map(({ url }) => url).join("、")}`), "",
       "## 研究方法与系统实现", ...data.architecture.map((item) => `- ${item.step} ${item.title}。${item.description}`), "");
     lines.push("## 待论证的研究问题", "1. 如何结合语境与人工复核，区分正常批评、玩梗与人身攻击？", "2. 疑似刷评需要哪些文本之外的证据，才能验证是否存在组织化操纵？", "3. 平台如何建立有解释、可复核的评论治理流程，保护用户合法表达？", "4. 现有规则在隐晦攻击、跨社区传播和证据留存方面有哪些需要进一步调研的难点？", "", "## 证据整理提纲", "- 界定样本范围、采集时间与去重方法；记录样本代表性和选择偏差。", "- 留存评论标识、来源视频、上下文、分类理由、人工复核意见和修订记录。", "- 逐项关联现行规则，明确事实缺口，开展实证与规范论证。", "- 提出研究建议，并评估对合法表达、隐私保护和申诉救济的影响。", "", "## 官方规则参考", ...data.laws.map((law) => `- ${law.title}（${law.date} 施行，参考 ${law.articles}）：${law.url}`), "", "## 研究边界", "本项目目前研究已配置的视频社区样本，不代表全网。模型标签与置信度不是违法认定、付费刷评证明或准确率。规则关联由研究人员整理，不是自动法律裁决。研究提纲需要人工核查与后续论证。", "", `公开经济资料核验日期：${data.verifiedOn}。`);
     lines.push("", "## 语境认定与制度细化", "迷惑性评论可能因反讽、圈层语义与上下文缺失而难以单句判读。当前没有独立测试结果支持识别准确率，不以标签覆盖率代替正确率。", "本项目提出的研究问题是认定尺度、证据要求和复核程序如何细化，不主张我国没有相关法律法规。", "", "## 立法进展资料（与现行规则区分）", `${data.legislation.title}：${data.legislation.date} 发布的${data.legislation.status}。${data.legislation.note}`, data.legislation.url, `法律资料核验：${data.legalVerifiedOn}。`, "模型参照人工锚定示例分类；参数微调增益、识别准确率与实际总成本仍需独立对照评测。");

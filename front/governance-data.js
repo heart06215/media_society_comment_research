@@ -117,44 +117,44 @@ window.GovernanceData = Object.freeze({
   ],
   legalConflicts: [
     {
-      "title": "账号失去控制，充值能退多少",
-      "claimLabel": "玩家请求退还充值",
-      "claim": 400000,
-      "decisionLabel": "生效判决赔偿",
-      "decision": 4200,
-      "reason": "法院认为部分充值已兑换为游戏服务，按交易证据认定账号市场价值，再按玩家私下交易与平台擅自变更登记各自的过错分担损失。",
+      "title": "游戏账号付款后没拿到",
+      "marketLabel": "交易平台订单实付",
+      "marketValue": 7272,
+      "decisionLabel": "判令平台赔偿",
+      "decision": 3636,
+      "reason": "卖家冒充客服，操作确认收货并收走货款。法院认定买家保管验证码不慎，平台接到反馈后也未及时冻结交易，酌定平台承担一半损失。",
       "sources": [
         {
-          "title": "上海高院参考性案例",
-          "url": "https://www.hshfy.sh.cn/shfy/web/xxnr.jsp?pa=aaWQ9MTAyMDQ1MDcxMiZ4aD0xJmxtZG09bG0wNDEPdcssz"
+          "title": "广州互联网法院案例七",
+          "url": "https://www.thepaper.cn/newsDetail_forward_27184365"
         }
       ]
     },
     {
-      "title": "游戏停服，已用充值退不退",
-      "claimLabel": "玩家要求全额退款",
-      "claim": 114000,
-      "decisionLabel": "生效判决退款",
-      "decision": 25000,
-      "reason": "法院认为运营方已提前通知停服，按未使用虚拟货币的比例核算应退金额。",
+      "title": "二手游戏账号被找回",
+      "marketLabel": "二手平台转卖成交",
+      "marketValue": 3500,
+      "decisionLabel": "判令卖家退款",
+      "decision": 3000,
+      "reason": "同一账号此前经中介以 3000 元成交，后经二手平台转卖。账号被找回后，中介曾向卖家赔付。法院结合使用时间和双方过错，判令卖家部分退款。",
       "sources": [
         {
-          "title": "广东法院消费者权益典型案例",
-          "url": "https://www.gdcourts.gov.cn/gsxx/quanweifabu/anlihuicui/content/post_1047376.html"
+          "title": "人民日报：重庆万州法院案例",
+          "url": "https://paper.people.com.cn/rmrb/images/2024-06/14/10/rmrb2024061410.pdf"
         }
       ]
     },
     {
-      "title": "朋友圈贬损商誉，损失怎么算",
-      "claimLabel": "商户诉请赔偿",
-      "claim": 30000,
-      "decisionLabel": "法院判赔",
-      "decision": 10000,
-      "reason": "商户索赔 2 万元经济损失与 1 万元精神损害。法院确认视频损害商业信誉并影响营业收入，酌定经济损失。因商户未证明有严重精神损害，该项请求未获支持。二审维持原判。",
+      "title": "短视频账号被卖家收回",
+      "marketLabel": "使用权转让实付",
+      "marketValue": 50000,
+      "decisionLabel": "判令卖家退款",
+      "decision": 30000,
+      "reason": "买卖双方签约并完成账号和价款交付。法院认定买方不当使用账号构成违约，合同解除后，按实际使用、履行期限与违约影响酌定部分退款。",
       "sources": [
         {
-          "title": "人民法院报：南通中院典型案例",
-          "url": "https://www.sdcourt.gov.cn/wfhtqfy/443063/443236/8879852/index.html"
+          "title": "江苏法院网：新沂法院案例",
+          "url": "https://www.jsfy.gov.cn/article/97872.html"
         }
       ]
     }
