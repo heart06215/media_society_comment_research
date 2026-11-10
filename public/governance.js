@@ -166,7 +166,6 @@
     ).join("");
     const evidence = data.officialLegalGaps;
     byId("officialGapStatus").textContent = evidence.draftStatus;
-    byId("officialGapContext").textContent = evidence.enforcementGap;
     byId("legalConflictCases").innerHTML = data.legalConflicts.map((item) => `<article>
       <h5>${escapeHtml(item.title)}</h5>
       <dl class="legal-comparison">
@@ -177,7 +176,9 @@
       <p>${escapeHtml(item.reason)}</p>
       <div class="legal-case-links">${caseLinks(item.sources)}</div>
     </article>`).join("");
-    byId("officialGapQuotes").innerHTML = evidence.items.map((item, index) => `<article><span class="official-gap-index">0${index + 1} / 原文摘句</span><h4>${escapeHtml(item.title)}</h4><blockquote cite="${evidence.url}"><p>${escapeHtml(item.quote)}</p></blockquote><p class="official-gap-explanation">${escapeHtml(item.explanation)}</p></article>`).join("");
+    byId("officialGapQuotes").innerHTML = evidence.quotes.map((quote) =>
+      `<blockquote cite="${escapeHtml(evidence.url)}"><p>“${escapeHtml(quote)}”</p></blockquote>`
+    ).join("");
     byId("officialGapSource").innerHTML = `<cite>${escapeHtml(evidence.publisher)} · ${escapeHtml(evidence.document)} · ${escapeHtml(evidence.locator)}</cite><a class="text-link" href="${evidence.url}" target="_blank" rel="noopener noreferrer">核对完整官方原文 ↗</a>`;
   }
   /** @returns {void} */
@@ -271,7 +272,7 @@
     const date = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Shanghai" }).format(new Date());
     const lines = ["# 破妄 · 网络生态治理与立法研究", "", `导出日期：${date}（北京时间）`, "", "## 研究定位", "围绕反讽、圈层黑话与复读中的语境歧义，整理模型标签、原始评论与人工复核材料，支持我国网络治理规则细化与立法研究。", ""];
     const evidence = data.officialLegalGaps;
-    lines.push("## 官方起草说明指出的制度问题", `${evidence.publisher}，${evidence.publishedOn} 发布。${evidence.document}，${evidence.locator}。`, ...evidence.items.map((item) => `- ${item.title}：${item.explanation}`), `官方原文：${evidence.url}`, evidence.draftStatus, evidence.enforcementGap, "");
+    lines.push("## 官方起草说明指出的制度问题", `${evidence.publisher}，${evidence.publishedOn} 发布。${evidence.document}，${evidence.locator}。`, ...evidence.quotes.flatMap((quote) => ["", `> ${quote}`]), "", `官方原文：${evidence.url}`, evidence.draftStatus, evidence.enforcementGap, "");
     if (!policyOnly) {
       lines.push("## 本地样本概况", state.loaded ? "数据来源：本项目本地语料与已保存的模型分析。" : "本地数据未成功加载，本次导出不包含样本统计。", "");
       if (state.loaded) lines.push(`精选后不重复评论样本语料 ${commentCount(state.videos.reduce((sum, video) => sum + (Number(video.corpus_count) || 0), 0))} 条，按视频内文本去重。`);

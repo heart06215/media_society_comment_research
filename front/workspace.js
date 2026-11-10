@@ -26,8 +26,8 @@
     ["efficiency", "标注成本与方案", home ? "#efficiency" : "/#efficiency"],
     ["governance", "分类结果与复核", home ? "#governance" : "/#governance"],
     ["economy", "数字经济规模", home ? "#economy" : "/#economy"],
-    ["assistant", "AI 治理助手", home ? "#assistant" : "/#assistant"],
-    ["news", "典型事件与项目作用", home ? "#news" : "/#news"]
+    ["news", "典型事件与项目作用", home ? "#news" : "/#news"],
+    ["assistant", "查询圈层语境", home ? "#assistant" : "/#assistant"]
   ];
   const tools = [
     ["insight", "社区深度洞察", "/insight"],
@@ -104,11 +104,12 @@
   mobile.addEventListener("change", () => setMenu(false));
   window.addEventListener("hashchange", () => { if (!home && page === "insight") markActive(location.hash === "#graphFull" ? "graph" : "insight"); });
   if (home) {
-    const sections = ["overview", "ambiguity", "policy", "efficiency", "governance", "economy", "assistant", "news"].map((id) => document.getElementById(id));
+    const sections = research.map(([id]) => document.getElementById(id));
     let scheduled = false;
     /** @returns {void} */
     function trackSection() {
-      const current = [...sections].reverse().find((section) => section.getBoundingClientRect().top <= 150) || sections[0];
+      const atPageEnd = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
+      const current = atPageEnd ? sections.at(-1) : [...sections].reverse().find((section) => section.getBoundingClientRect().top <= 150) || sections[0];
       markActive(current.id); scheduled = false;
     }
     window.addEventListener("scroll", () => { if (!scheduled) { scheduled = true; requestAnimationFrame(trackSection); } }, { passive: true });

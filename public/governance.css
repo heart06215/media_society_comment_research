@@ -568,17 +568,15 @@ html[data-theme="dark"] {
 .official-gap-evidence time { font-size: var(--type-small); color: var(--muted); }
 .official-gap-evidence > h3 { font-size: var(--type-heading); line-height: 1.5; margin: 20px 0; }
 .official-gap-quotes { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
-.official-gap-quotes article { min-width: 0; border-top: 5px solid var(--blue); padding: 20px 0 0; }
-.official-gap-quotes article:nth-child(2) { border-top-color: var(--cyan); }
-.official-gap-quotes article:nth-child(3) { border-top-color: var(--pink); }
-.official-gap-index { font-size: var(--type-caption); font-weight: 900; color: var(--muted); }
-.official-gap-quotes h4 { font-size: var(--type-lead); line-height: 1.5; margin: 12px 0; }
-.official-gap-quotes blockquote { margin: 16px 0; border-left: 4px solid var(--gov-accent); padding-left: 12px; }
-.official-gap-quotes blockquote p { font-size: var(--type-title); line-height: 1.7; font-weight: 900; color: var(--gov-accent); }
-.official-gap-explanation { font-size: var(--type-body); line-height: 1.8; }
+.official-gap-quotes blockquote {
+  display: flex; align-items: center; min-width: 0; margin: 0; padding: 16px 20px;
+  border: 2px solid var(--line); background: var(--blue); color: var(--on-dark);
+}
+.official-gap-quotes blockquote:nth-child(2) { background: var(--cyan); color: var(--on-bright); }
+.official-gap-quotes blockquote:nth-child(3) { background: var(--pink); color: var(--on-bright); }
+.official-gap-quotes blockquote p { font-size: var(--type-title); line-height: 1.6; font-weight: 900; }
 .official-gap-source { border-top: 2px solid var(--line); padding-top: 20px; margin-top: 24px; font-size: var(--type-small); line-height: 1.8; }
 .official-gap-source cite { display: block; font-style: normal; margin-bottom: 8px; }
-.official-gap-context { font-size: var(--type-small); color: var(--muted); line-height: 1.8; margin-top: 16px; }
 .gap-heading > .tag { margin-bottom: 12px; }
 @media (max-width: 1279px) {
   .official-gap-quotes { grid-template-columns: 1fr; }
@@ -643,7 +641,7 @@ html[data-theme="dark"] {
   #comparisonRatios { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-.official-gap-status { margin-bottom: var(--space-4); }
+.official-gap-status { font-size: var(--type-small); color: var(--muted); line-height: 1.8; margin-top: 16px; }
 .legal-conflicts { border-top: 2px solid var(--line); margin-top: var(--space-5); padding-top: var(--space-5); }
 .legal-conflicts h4 { font-size: var(--type-title); }
 .legal-conflicts > p, .legal-case-bridge { margin: var(--space-3) 0 var(--space-4); }
