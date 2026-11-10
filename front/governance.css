@@ -668,3 +668,58 @@ html[data-theme="dark"] {
 .legal-case-links { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); }
 .legal-conflicts .legal-case-links { margin-top: auto; }
 .legal-conflicts .legal-case-links a { margin-top: 0; padding-top: var(--space-3); }
+
+/* A short geometric trace introduces each chapter as it enters the viewport. */
+.swarm-trace { display: none; }
+@media screen and (prefers-reduced-motion: no-preference) {
+  .swarm-heading-enter { position: relative; }
+  .swarm-trace {
+    display: block; position: absolute; inset: auto 0 0; height: 4px;
+    pointer-events: none; animation: swarm-trace-out 160ms ease-out 500ms both;
+  }
+  .swarm-trace::before {
+    content: ""; display: block; height: 100%;
+    background: linear-gradient(90deg, var(--blue) 0 36%, var(--cyan) 36% 69%, var(--pink) 69%);
+    transform-origin: left; animation: swarm-guide-in 480ms cubic-bezier(.25, 1, .5, 1) both;
+  }
+  .swarm-trace > span {
+    position: absolute; bottom: 0; left: var(--cursor-stop); width: 20px; height: 24px;
+    background: var(--cursor-color); clip-path: polygon(0 100%, 26% 0, 45% 56%, 100% 74%);
+    animation: swarm-cursor-in 480ms cubic-bezier(.25, 1, .5, 1) both;
+  }
+  .swarm-trace > :nth-child(1) {
+    --cursor-color: var(--blue); --cursor-stop: 24%; --cursor-x: -44px; --cursor-y: -24px;
+  }
+  .swarm-trace > :nth-child(2) {
+    --cursor-color: var(--cyan); --cursor-stop: 56%; --cursor-x: -16px; --cursor-y: -36px;
+    animation-delay: 35ms;
+  }
+  .swarm-trace > :nth-child(3) {
+    --cursor-color: var(--pink); --cursor-stop: 83%; --cursor-x: -36px; --cursor-y: 16px;
+    animation-delay: 70ms;
+  }
+  .swarm-heading-enter:not(:focus-within) h2,
+  .swarm-content-enter:not(:focus-within) > :nth-child(-n+3) {
+    animation: swarm-rise-in 420ms cubic-bezier(.22, 1, .36, 1) var(--swarm-delay, 0ms) backwards;
+  }
+  .swarm-heading-enter h2, .swarm-content-enter > :nth-child(2) { --swarm-delay: 55ms; }
+  .swarm-content-enter > :nth-child(3) { --swarm-delay: 110ms; }
+
+  @keyframes swarm-guide-in {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+  @keyframes swarm-cursor-in {
+    from { opacity: 0; transform: translate(var(--cursor-x), var(--cursor-y)) rotate(-18deg); }
+    25% { opacity: 1; }
+    to { opacity: 1; transform: translate(0, 0) rotate(0); }
+  }
+  @keyframes swarm-trace-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+  @keyframes swarm-rise-in {
+    from { opacity: .4; transform: translateY(var(--space-3)); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
