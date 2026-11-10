@@ -21,11 +21,11 @@
   };
   const research = [
     ["overview", "治理总览", home ? "#overview" : "/"],
-    ["ambiguity", "圈层语义难题", home ? "#ambiguity" : "/#ambiguity"],
-    ["policy", "立法与规则缺口", home ? "#policy" : "/#policy"],
-    ["efficiency", "标注成本与模型方案", home ? "#efficiency" : "/#efficiency"],
-    ["governance", "样本与复核证据", home ? "#governance" : "/#governance"],
-    ["economy", "数字经济观察", home ? "#economy" : "/#economy"],
+    ["ambiguity", "圈层黑话难判", home ? "#ambiguity" : "/#ambiguity"],
+    ["policy", "立法与取证难点", home ? "#policy" : "/#policy"],
+    ["efficiency", "标注成本与方案", home ? "#efficiency" : "/#efficiency"],
+    ["governance", "分类结果与复核", home ? "#governance" : "/#governance"],
+    ["economy", "数字经济规模", home ? "#economy" : "/#economy"],
     ["assistant", "AI 治理助手", home ? "#assistant" : "/#assistant"],
     ["news", "典型事件与项目作用", home ? "#news" : "/#news"]
   ];

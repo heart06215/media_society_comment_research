@@ -611,3 +611,34 @@ html[data-theme="dark"] {
   font-family: var(--font-number);
   font-variant-numeric: tabular-nums;
 }
+
+#hardExamples, #architecture { scroll-margin-top: 92px; }
+.hard-examples-intro { color: var(--muted); margin-bottom: var(--space-3); }
+#evidenceCards { margin-bottom: var(--space-6); }
+.rule-gaps h4, .policy-library .legal-grounding h4 {
+  font-size: var(--type-title);
+  line-height: 1.5;
+  margin: var(--space-3) 0;
+}
+.policy-library .legal-grounding { margin-top: var(--space-4); }
+.policy-sources { margin-top: var(--space-5); }
+.policy-sources summary { padding: var(--space-2) 0; }
+.budget-results .assisted h3 { font-size: var(--type-heading); line-height: 1.35; }
+.model-learning-path .text-link { display: inline-block; margin-top: var(--space-3); }
+.economy-comparison { margin-top: var(--space-5); }
+#comparisonRatios {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: var(--space-4) 0;
+}
+#comparisonRatios > div { border-top: 5px solid var(--blue); padding-top: var(--space-3); }
+#comparisonRatios > div:nth-child(2) { border-color: var(--cyan); }
+#comparisonRatios > div:nth-child(3) { border-color: var(--violet); }
+#comparisonRatios > div:nth-child(4) { border-color: var(--pink); }
+#comparisonRatios dt { font-size: var(--type-small); }
+#comparisonRatios strong { font-family: var(--font-number); font-size: var(--type-page); }
+#comparisonSources { color: var(--muted); font-size: var(--type-small); }
+@media (max-width: 767px) {
+  #comparisonRatios { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
