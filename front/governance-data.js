@@ -1,7 +1,7 @@
 /* 公开报告的静态收录值；来源、口径与年份一并保存，不使用估算补齐缺失年份。 */
 window.GovernanceData = Object.freeze({
   verifiedOn: "2026-10-30",
-  legalVerifiedOn: "2026-11-03",
+  legalVerifiedOn: "2026-11-10",
   projectPractice: {
   "verifiedOn": "2026-11-05",
   "basis": "作者说明",
@@ -89,18 +89,69 @@ window.GovernanceData = Object.freeze({
   ],
   legalCases: [
     {
-      "label": "定性难",
-      "title": "游戏装备被转卖，构成哪一种罪？",
-      "facts": "一名玩家以代练为由取得账号授权，随后转移并出售游戏装备。淮安检察院转载的案例评析列出三种意见，分别涉及诈骗、盗窃和非法获取计算机信息系统数据。",
-      "source": "淮安市检察院转载案例评析",
-      "url": "https://ha.jsjc.gov.cn/dxal/202107/t20210722_729995.shtml"
+      "label": "民间先把材料做出来",
+      "title": "毁号取证靠玩家，估值靠专业协作",
+      "facts": "《三角洲行动》玩家发布维权动态后，征集同类遭遇和直播回放，整理资产清单。游戏交易平台协助寻找有资质的机构，机构逐项询价并估出3000 余元损失。游戏币没有官方人民币定价，玩家的装备清单、熟悉圈层的人提供的交易线索及专业估价，都是核查损失的材料。",
+      "sources": [
+        {
+          "title": "当事人公开求助",
+          "url": "https://www.bilibili.com/opus/1175234005740552193"
+        },
+        {
+          "title": "新京报采访：估值过程",
+          "url": "https://www.bjnews.com.cn/detail/1780013446168371.html"
+        }
+      ]
     },
     {
-      "label": "取证需协助",
-      "title": "游戏账号交易被骗，材料分散在多处",
-      "facts": "苏州警方通报一宗售卖游戏账号后遭遇假中介收取保证金的案例，提醒当事人留存账号、聊天和转账记录，向平台客服和警方求助。同场通报还记录了志愿者和银行人员协助警方劝阻另一起电诈。",
-      "source": "苏州市公安局警务在线",
-      "url": "https://gonganju.suzhou.gov.cn/gaj/zxft/202501/9362a78466a94006801d13192395267c.shtml"
+      "label": "办案难在估价",
+      "title": "一个账号，两次交易差 2000 元",
+      "facts": "江苏检察网披露，同一账号首次成交 4100 元，找回后转卖 2100 元。警方多方联系仍未找到有资质的估价机构。平台先行赔付 4100 元，成为评析讨论认定损失的关键材料。这类案件的数额认定取决于能否拿到可信的成交、赔付或估价材料。",
+      "sources": [
+        {
+          "title": "江苏检察网案例评析",
+          "url": "https://www.jsjc.gov.cn/qingfengyuan/202404/t20240412_190322.shtml"
+        }
+      ]
+    }
+  ],
+  legalAmounts: [
+    {
+      "title": "毁号纠纷 · 调解赔偿",
+      "amount": "5000 元",
+      "context": "《三角洲行动》玩家称游戏内资产损失约 1 亿游戏币。第三方估价3000 余元。据当事人公开进展，最终经调解赔偿 5000 元并道歉。游戏币、估价和赔偿分别是三个口径。",
+      "sources": [
+        {
+          "title": "新京报：第三方估价",
+          "url": "https://www.bjnews.com.cn/detail/1780013446168371.html"
+        },
+        {
+          "title": "公开调解结果报道",
+          "url": "https://finance.sina.com.cn/tech/roll/2026-06-11/doc-iniazyem3918372.shtml"
+        }
+      ]
+    },
+    {
+      "title": "账号转卖案 · 相对不起诉",
+      "amount": "4100 元",
+      "context": "这是平台先行赔付额。江苏检察网披露，检察机关结合认罪、赔偿等情节作相对不起诉。该案经过刑事审查，估价难与不起诉理由需分别理解。",
+      "sources": [
+        {
+          "title": "江苏检察网：案件处理",
+          "url": "https://www.jsjc.gov.cn/qingfengyuan/202404/t20240412_190322.shtml"
+        }
+      ]
+    },
+    {
+      "title": "网络水军案 · 公益赔偿",
+      "amount": "100 万元",
+      "context": "最高法公布的参考案例中，流量造假和有偿删帖造成的损失、获利难以直接量化。部分行为已被追究刑责，法院另酌定公益损害赔偿 100 万元。",
+      "sources": [
+        {
+          "title": "最高法参考案例",
+          "url": "https://www.court.gov.cn/zixun/xiangqing/442011.html"
+        }
+      ]
     }
   ],
   architecture: [
@@ -183,10 +234,12 @@ window.GovernanceData = Object.freeze({
   "publisher": "国家互联网信息办公室",
   "document": "关于《中华人民共和国反网络暴力法（征求意见稿）》的说明",
   "publishedOn": "2026-07-29",
-  "verifiedOn": "2026-11-03",
+  "verifiedOn": "2026-11-10",
   "locator": "一、起草背景 · 第三点",
   "url": "https://www.cac.gov.cn/2026-07/29/c_1787072711938509.htm",
   "documentType": "官方起草说明",
+  "draftStatus": "截至 2026 年 11 月 10 日，可核实的反网络暴力专门立法文本仍是征求意见稿，尚不能作为生效法律适用。",
+  "enforcementGap": "现行刑法与部门规章可以处理部分行为。隐语指向、发布者身份和跨平台记录难以核实，线索可能因证据不足而无法进入追责程序。",
   "items": [
     {
       "title": "规范体系仍较分散",
@@ -207,7 +260,7 @@ window.GovernanceData = Object.freeze({
 },
   legislation: {
   "date": "2026-07-29",
-  "verifiedOn": "2026-11-02",
+  "verifiedOn": "2026-11-10",
   "title": "中华人民共和国反网络暴力法（征求意见稿）",
   "status": "公开征求意见文本",
   "url": "https://www.cac.gov.cn/2026-07/29/c_1787072711938509.htm",

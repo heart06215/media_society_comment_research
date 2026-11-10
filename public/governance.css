@@ -642,3 +642,18 @@ html[data-theme="dark"] {
 @media (max-width: 767px) {
   #comparisonRatios { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+.official-gap-status { margin-bottom: var(--space-4); }
+.legal-amounts { border-top: 2px solid var(--line); margin-top: var(--space-5); padding-top: var(--space-5); }
+.legal-amounts h4 { font-size: var(--type-title); }
+.legal-amounts > p, .legal-case-bridge { margin: var(--space-3) 0 var(--space-4); }
+.legal-amounts article h5 { font-size: var(--type-lead); }
+.legal-amounts .legal-amount {
+  color: var(--gov-accent);
+  font-family: var(--font-number);
+  font-size: var(--type-page);
+  margin: var(--space-2) 0;
+}
+.legal-case-links { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); }
+.legal-amounts .legal-case-links { margin-top: auto; }
+.legal-amounts .legal-case-links a { margin-top: 0; padding-top: var(--space-3); }

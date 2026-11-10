@@ -150,15 +150,26 @@
   function renderNews() {
     byId("newsCases").innerHTML = data.newsCases.map((item) => `<article class="news-card"><header><span class="tag neutral">${escapeHtml(item.kind)}</span><time datetime="${item.date}">报道日期：${item.date}</time></header><h3>${escapeHtml(item.title)}</h3><div class="news-analysis"><div><strong>事件简述</strong><p>${escapeHtml(item.facts)}</p></div><div><strong>语境不明的处置难点</strong><p>${escapeHtml(item.difficulty)}</p></div></div><a class="text-link" href="${item.url}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.source)} · 阅读原文 ↗</a></article>`).join("");
   }
+  /** @param {{title: string, url: string}[]} sources @returns {string} */
+  function caseLinks(sources) {
+    return sources.map(({ title, url }) =>
+      `<a class="text-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(title)} ↗</a>`
+    ).join("");
+  }
   /** @returns {void} */
   function renderLegalEvidence() {
     byId("legalCases").innerHTML = data.legalCases.map((item) =>
-      `<div><span class="tag neutral">${escapeHtml(item.label)}</span><h4>${escapeHtml(item.title)}</h4><p>${escapeHtml(item.facts)}</p><a class="text-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.source)} ↗</a></div>`
+      `<div><span class="tag neutral">${escapeHtml(item.label)}</span><h4>${escapeHtml(item.title)}</h4><p>${escapeHtml(item.facts)}</p><div class="legal-case-links">${caseLinks(item.sources)}</div></div>`
     ).join("");
     byId("architectureSteps").innerHTML = data.architecture.map((item) =>
       `<article><span>${escapeHtml(item.step)}</span><h4>${escapeHtml(item.title)}</h4><p>${escapeHtml(item.description)}</p><a href="${escapeHtml(item.href)}">${escapeHtml(item.action)} ↗</a></article>`
     ).join("");
     const evidence = data.officialLegalGaps;
+    byId("officialGapStatus").textContent = evidence.draftStatus;
+    byId("officialGapContext").textContent = evidence.enforcementGap;
+    byId("legalAmountCases").innerHTML = data.legalAmounts.map((item) =>
+      `<article><h5>${escapeHtml(item.title)}</h5><strong class="legal-amount">${escapeHtml(item.amount)}</strong><p>${escapeHtml(item.context)}</p><div class="legal-case-links">${caseLinks(item.sources)}</div></article>`
+    ).join("");
     byId("officialGapQuotes").innerHTML = evidence.items.map((item, index) => `<article><span class="official-gap-index">0${index + 1} / 原文摘句</span><h4>${escapeHtml(item.title)}</h4><blockquote cite="${evidence.url}"><p>${escapeHtml(item.quote)}</p></blockquote><p class="official-gap-explanation">${escapeHtml(item.explanation)}</p></article>`).join("");
     byId("officialGapSource").innerHTML = `<cite>${escapeHtml(evidence.publisher)} · ${escapeHtml(evidence.document)} · ${escapeHtml(evidence.locator)}</cite><a class="text-link" href="${evidence.url}" target="_blank" rel="noopener noreferrer">核对完整官方原文 ↗</a>`;
   }
@@ -253,14 +264,16 @@
     const date = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Shanghai" }).format(new Date());
     const lines = ["# 破妄 · 网络生态治理与立法研究", "", `导出日期：${date}（北京时间）`, "", "## 研究定位", "围绕反讽、圈层黑话与复读中的语境歧义，整理模型标签、原始评论与人工复核材料，支持我国网络治理规则细化与立法研究。", ""];
     const evidence = data.officialLegalGaps;
-    lines.push("## 官方起草说明指出的制度问题", `${evidence.publisher}，${evidence.publishedOn} 发布。${evidence.document}，${evidence.locator}。`, ...evidence.items.map((item) => `- ${item.title}：${item.explanation}`), `官方原文：${evidence.url}`, "文献属性为起草说明；征求意见文本不作为生效法律依据。下文研究问题是本项目提出的论证方向。", "");
+    lines.push("## 官方起草说明指出的制度问题", `${evidence.publisher}，${evidence.publishedOn} 发布。${evidence.document}，${evidence.locator}。`, ...evidence.items.map((item) => `- ${item.title}：${item.explanation}`), `官方原文：${evidence.url}`, evidence.draftStatus, evidence.enforcementGap, "");
     if (!policyOnly) {
       lines.push("## 本地样本概况", state.loaded ? "数据来源：本项目本地语料与已保存的模型分析。" : "本地数据未成功加载，本次导出不包含样本统计。", "");
       if (state.loaded) lines.push(`精选后不重复评论样本语料 ${commentCount(state.videos.reduce((sum, video) => sum + (Number(video.corpus_count) || 0), 0))} 条，按视频内文本去重。`);
       if (state.loaded) for (const video of state.videos) lines.push(`- ${video.name}（${video.community || "研究社区"}，${video.bvid}）：去重语料 ${commentCount(video.corpus_count || 0)} 条；分类 ${commentCount(Object.values(countsFor([video])).reduce((sum, value) => sum + value, 0))} 条；人工锚定 ${commentCount(video.anchor_count || 0)} 条。`, `  分类统计：${categories.map((category) => `${category} ${commentCount(video.analysis?.[category] || 0)}`).join("；")}。`);
       lines.push("", "## 数字经济背景", "中国信通院测算口径（数字产业化与产业数字化），历年公开发布值，未作经济普查回溯调整。", ...data.economy.map((row) => `- ${row.year} 年：规模 ${row.scale} 万亿元，占 GDP ${row.share}%。来源：${row.source} ${row.url}`), "", "国家统计局口径：2024 年数字经济核心产业增加值 14.0891 万亿元，占 GDP 10.5%，与上述统计范围不同。", "来源：https://www.stats.gov.cn/sj/zxfbhjd/202512/t20251230_1962177.html", "");
     }
-    lines.push("## 定性与取证案例", ...data.legalCases.map((item) => `- ${item.title} ${item.facts} 来源：${item.url}`), "",
+    lines.push("## 游戏账号估值与民间协作", ...data.legalCases.map((item) => `- ${item.title}。${item.facts} 来源：${item.sources.map(({ url }) => url).join("、")}`), "",
+      "## 公开个案金额", "公开资料未提供全国未追责金额。以下数字对应不同的处理和赔付口径。",
+      ...data.legalAmounts.map((item) => `- ${item.title}，${item.amount}。${item.context} 来源：${item.sources.map(({ url }) => url).join("、")}`), "",
       "## 研究方法与系统实现", ...data.architecture.map((item) => `- ${item.step} ${item.title}。${item.description}`), "");
     lines.push("## 待论证的研究问题", "1. 如何结合语境与人工复核，区分正常批评、玩梗与人身攻击？", "2. 疑似刷评需要哪些文本之外的证据，才能验证是否存在组织化操纵？", "3. 平台如何建立有解释、可复核的评论治理流程，保护用户合法表达？", "4. 现有规则在隐晦攻击、跨社区传播和证据留存方面有哪些需要进一步调研的难点？", "", "## 证据整理提纲", "- 界定样本范围、采集时间与去重方法；记录样本代表性和选择偏差。", "- 留存评论标识、来源视频、上下文、分类理由、人工复核意见和修订记录。", "- 逐项关联现行规则，明确事实缺口，开展实证与规范论证。", "- 提出研究建议，并评估对合法表达、隐私保护和申诉救济的影响。", "", "## 官方规则参考", ...data.laws.map((law) => `- ${law.title}（${law.date} 施行，参考 ${law.articles}）：${law.url}`), "", "## 研究边界", "本项目目前研究已配置的视频社区样本，不代表全网。模型标签与置信度不是违法认定、付费刷评证明或准确率。规则关联由研究人员整理，不是自动法律裁决。研究提纲需要人工核查与后续论证。", "", `公开经济资料核验日期：${data.verifiedOn}。`);
     lines.push("", "## 语境认定与制度细化", "迷惑性评论可能因反讽、圈层语义与上下文缺失而难以单句判读。当前没有独立测试结果支持识别准确率，不以标签覆盖率代替正确率。", "本项目提出的研究问题是认定尺度、证据要求和复核程序如何细化，不主张我国没有相关法律法规。", "", "## 立法进展资料（与现行规则区分）", `${data.legislation.title}：${data.legislation.date} 发布的${data.legislation.status}。${data.legislation.note}`, data.legislation.url, `法律资料核验：${data.legalVerifiedOn}。`, "模型参照人工锚定示例分类；参数微调增益、识别准确率与实际总成本仍需独立对照评测。");
