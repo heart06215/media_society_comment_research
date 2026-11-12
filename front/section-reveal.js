@@ -14,15 +14,15 @@
   cursor.innerHTML = '<svg viewBox="0 0 28 32"><path d="M3 2 24 19 14 20 10 29Z"/></svg>';
   const colors = ["blue", "pink", "cyan", "yellow"];
   const tasks = new Set();
-  const entering = new Set();
+  const entering = new Map();
   let frame = 0;
   let colorIndex = 0;
 
   /** @param {HTMLElement} element @returns {void} */
   function finish(element) {
     element.classList.remove("swarm-build");
-    element.style.removeProperty("--swarm-delay");
-    element.style.removeProperty("--swarm-shift");
+    element.style.removeProperty("--swarm-progress");
+    element.style.removeProperty("--swarm-remainder");
     entering.delete(element);
   }
 
@@ -32,7 +32,7 @@
     frame = 0;
     tasks.clear();
     overlay.replaceChildren();
-    entering.forEach(finish);
+    for (const element of entering.keys()) finish(element);
   }
 
   /** @param {object} task @returns {void} */
@@ -42,8 +42,20 @@
     tasks.delete(task);
   }
 
+  /** @param {number} time @param {number} start @returns {number} */
+  function progressAt(time, start) {
+    const elapsed = Math.max(0, Math.min((time - start) / 620, 1));
+    return 1 - Math.pow(1 - elapsed, 3);
+  }
+
   /** @param {number} time @returns {void} */
   function draw(time) {
+    for (const [element, start] of entering) {
+      const progress = progressAt(time, start);
+      element.style.setProperty("--swarm-progress", String(progress));
+      element.style.setProperty("--swarm-remainder", ((1 - progress) * 100) + "%");
+      if (progress === 1) finish(element);
+    }
     for (const task of tasks) {
       const elapsed = time - task.start;
       if (elapsed < 0) continue;
@@ -53,7 +65,7 @@
         continue;
       }
 
-      const progress = 1 - Math.pow(1 - Math.min(elapsed / 620, 1), 3);
+      const progress = progressAt(time, task.start);
       const arrival = Math.min(elapsed / 220, 1);
       const opacity = Math.min(elapsed / 100, 1) * Math.min((1120 - elapsed) / 180, 1);
       const drift = Math.sin(elapsed / 130) * 4;
@@ -68,16 +80,16 @@
         pointer.style.opacity = String(opacity);
       });
     }
-    frame = tasks.size ? requestAnimationFrame(draw) : 0;
+    frame = tasks.size || entering.size ? requestAnimationFrame(draw) : 0;
   }
 
   /** @param {HTMLElement} element @param {number} delay @returns {void} */
   function reveal(element, delay) {
     if (element.contains(document.activeElement)) return;
-    element.style.setProperty("--swarm-delay", `${delay}ms`);
-    element.style.setProperty("--swarm-shift", colorIndex % 2 ? "12px" : "-12px");
+    const start = performance.now() + delay;
     element.classList.add("swarm-build");
-    entering.add(element);
+    entering.set(element, start);
+    if (!frame) frame = requestAnimationFrame(draw);
     if (tasks.size >= (compact.matches ? 2 : 3)) return;
 
     const rect = element.getBoundingClientRect();
@@ -94,8 +106,7 @@
       return pointer;
     });
     overlay.append(outline, ...pointers);
-    tasks.add({ element, outline, pointers, start: performance.now() + delay });
-    if (!frame) frame = requestAnimationFrame(draw);
+    tasks.add({ element, outline, pointers, start });
   }
 
   const observer = new IntersectionObserver((entries) => {
@@ -121,9 +132,6 @@
   ].join(","));
   targets.forEach((target) => {
     if (target.getBoundingClientRect().top >= window.innerHeight) observer.observe(target);
-  });
-  document.addEventListener("animationend", (event) => {
-    if (event.animationName === "swarm-piece-in") finish(event.target);
   });
   // Interaction immediately restores the full content and its focus outline.
   document.addEventListener("pointerdown", clear, { passive: true });
