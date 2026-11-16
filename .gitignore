@@ -20,3 +20,32 @@ node_modules/
 .DS_Store
 .workbuddy/
 tmp/pdfs/
+
+# AI 编程工具规则、记忆和本地编辑器设置
+.agents/
+.codex/
+.claude/
+.opencode/
+.cursor/
+.vscode/
+.idea/
+AGENTS.md
+AGENT.md
+CLAUDE.md
+GEMINI.md
+SKILL.md
+opencode.json
+opencode.jsonc
+
+# 本地写作草稿与参考资料；正式参赛文档位于 docs/ 和 output/pdf/
+/分析与选型报告.md
+/论文-基于微调大模型的视频社区评论塑造解析.md
+/论文-基于微调大模型的视频社区评论塑造解析.docx
+/论文写作素材与实验设计手册.md
+/展示-破妄.txt
+/项目说明.txt
+/make_paper_figures.py
+/images/
+/open-source/
+/docs/论文撰写计划.md
+/docs/参赛评分与后续工作.md

@@ -9,4 +9,3 @@ langgraph>=1.0
 pydantic>=2.0
 fire>=0.7
 openai>=1.30
-matplotlib>=3.7  # 论文插图生成(make_paper_figures.py)

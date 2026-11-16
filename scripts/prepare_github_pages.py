@@ -1,7 +1,7 @@
-"""Build the allowlisted public Pages artifact, without private history/backend/config.
+"""Build the allowlisted public Pages artifact, without backend/history/config.
 
 Only the generated .tmp-pages-site directory is published to the demo repository.
-The primary project repository stays private.
+The primary project repository keeps the complete code and development history.
 """
 from __future__ import annotations
 
@@ -106,7 +106,7 @@ def main() -> None:
             path.write_bytes(content)
     source_commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     write_json("deployment-manifest.json", {"source_commit": source_commit, "mode": "read-only", "comment_count": sum(map(len, comments.values())), "anchor_count": len(anchors), "excluded_fields": sorted(BLOCKED)})
-    (OUTPUT / "README.md").write_text("# 破妄 · 公开演示\n\nhttps://heart06215.github.io/powang-demo/\n\n此仓库仅存放公开演示的前端和授权研究数据。完整项目、后端与开发历史保存在独立私有仓库。\n\n支持评论筛选、社区对比、关系图谱及研究报告下载。实时问答与服务端标注在完整版本运行。\n", encoding="utf-8")
+    (OUTPUT / "README.md").write_text("# 破妄 · 公开演示\n\nhttps://heart06215.github.io/powang-demo/\n\n此仓库仅存放公开演示的前端和授权研究数据。完整项目、后端与开发历史见[源码仓库](https://github.com/heart06215/media_society_comment_research)。\n\n支持评论筛选、社区对比、关系图谱及研究报告下载。实时问答与服务端标注在完整版本运行。\n", encoding="utf-8")
     print(f"Pages artifact: {OUTPUT}")
     print(f"Public comments: {sum(map(len, comments.values()))}; anchors: {len(anchors)}")
 

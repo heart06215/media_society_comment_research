@@ -19,3 +19,14 @@ cloud-functions
 public
 edgeone.json
 scripts
+.agents
+.codex
+.claude
+.workbuddy
+.opencode
+.cursor
+.vscode
+.idea
+node_modules
+.tmp-*
+tmp

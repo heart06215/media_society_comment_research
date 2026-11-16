@@ -2,7 +2,7 @@
 
 演示地址：https://heart06215.github.io/powang-demo/
 
-主仓库`heart06215/media_society_comment_research`保持私有，保存完整代码与开发历史。当前套餐不支持从私有仓库启用Pages，因此仅将生成的前端与授权展示数据发布到公开部署仓库`heart06215/powang-demo`，不复制主仓库历史、Python后端或本地配置。
+主仓库`heart06215/media_society_comment_research`公开供比赛评审浏览，保存完整代码与开发历史。网页演示由独立部署仓库`heart06215/powang-demo`托管，仅包含生成的前端与授权展示数据，不复制主仓库历史、Python后端或本地配置。两者独立更新，主仓库的可见性调整不影响现有演示地址。
 
 ## 可用功能
 
