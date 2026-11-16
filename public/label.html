@@ -35,6 +35,8 @@
 <link rel="stylesheet" href="/tools.css">
 <script src="/workspace.js" defer></script>
 <link rel="icon" href="/mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/research.css">
+<script src="/research-core.js"></script>
 </head>
 <body class="tool-page workspace-page">
 <a class="skip-link" href="#main">跳至主要内容</a><div id="workspaceNav"></div><div class="app-workspace"><header class="app-topbar" id="workspaceTopbar"></header>
@@ -45,7 +47,7 @@
   <p class="muted mb-2">用少量人工示范统一圈层口径，再复核模型难例。把人力留给语境知识和研究判断，复核结果回到规则与立法研究。</p>
 
   <ol class="research-route" aria-label="治理研究流程"><li><span>01 / 结构观察</span><small>看分类与时间变化</small></li><li><span>02 / 话术关联</span><small>找圈层词与相似表达</small></li><li><span>03 / 原文核对</span><small>查来源、语境与理由</small></li><li aria-current="step"><span>04 / 人工复核</span><small>把难例沉淀为示范</small></li></ol>
-  <h2 class="tool-section-title">建立示范，修正难例，让经验持续复用</h2>
+  <h2 class="tool-section-title">建立示范，标注组织化刷评，让经验持续复用</h2>
   <!-- 视频选择 + 进度 -->
   <div class="card accent mb-2">
     <span class="corner"></span>
@@ -89,7 +91,7 @@
       <div style="display:flex; flex-direction:column; gap:10px; justify-content:center; min-width:230px">
         <button type="button" class="cat-pill praise" data-cat="赞美" aria-pressed="false">赞 美 <span style="font-size:var(--type-caption);opacity:.6;margin-left:8px" class="mono">[1]</span></button>
         <button type="button" class="cat-pill blame" data-cat="贬低" aria-pressed="false">贬 低 <span style="font-size:var(--type-caption);opacity:.6;margin-left:8px" class="mono">[2]</span></button>
-        <button type="button" class="cat-pill shui" data-cat="水军" aria-pressed="false">水 军 <span style="font-size:var(--type-caption);opacity:.6;margin-left:8px" class="mono">[3]</span></button>
+        <button type="button" class="cat-pill shui" data-cat="水军" aria-pressed="false">组织化刷评 <span style="font-size:var(--type-caption);opacity:.6;margin-left:8px" class="mono">[3]</span></button>
         <button type="button" class="cat-pill noise" data-cat="无意义" aria-pressed="false">无意义 <span style="font-size:var(--type-caption);opacity:.6;margin-left:8px" class="mono">[4]</span></button>
         <button type="button" class="cat-pill feud" data-cat="社区对骂" aria-pressed="false">社区对骂 <span style="font-size:var(--type-caption);opacity:.6;margin-left:8px" class="mono">[5]</span></button>
         <button type="button" class="cat-pill neutral" data-cat="中立" aria-pressed="false">中 立 <span style="font-size:var(--type-caption);opacity:.6;margin-left:8px" class="mono">[6]</span></button>
@@ -107,11 +109,12 @@
   </section>
 
   <!-- 审查模式 -->
+  <p class="tool-review-intro">组织化刷评：协调刷取、模板化控评与重复传播的话术特征。结合原文和圈层语境，按六分类直接标注。</p>
   <section id="modeReview" style="display:none"><p class="tool-review-intro">对照原文与模型理由，确认或修正分类，将难例转成下一轮示范。</p>
     <div class="flex mb" style="flex-wrap:wrap">
       <select id="revCatSel" aria-label="筛选复核类别">
         <option value="">全部类别</option><option value="赞美">赞美</option><option value="贬低">贬低</option>
-        <option value="水军">水军</option><option value="无意义">无意义</option>
+        <option value="水军">组织化刷评</option><option value="无意义">无意义</option>
         <option value="社区对骂">社区对骂</option><option value="中立">中立</option>
       </select>
       <button class="btn cyan" id="btnRevLoad">加载审查队列</button>
@@ -257,7 +260,7 @@ function renderReview() {
   box.innerHTML = `
     <div class="flex-between mb" style="flex-wrap:wrap">
       <span class="muted mono">${revIdx+1} / ${window.ResearchNumbers.commentCount(revQueue.length)}</span>
-      <span>模型判定 <span class="badge ${CLS[it.model_category]}">${it.model_category}</span>
+      <span>模型判定 <span class="badge ${CLS[it.model_category]}">${ResearchUI.categoryLabel(it.model_category)}</span>
       <span class="muted mono">置信 ${(it.confidence*100).toFixed(0)}%</span></span>
     </div>
     <div class="comment-box">${esc(it.text)}</div>
@@ -265,7 +268,7 @@ function renderReview() {
     <div class="flex mt" style="gap:8px; flex-wrap:wrap">
       <button type="button" class="cat-pill praise" data-r="赞美" aria-pressed="false">赞美</button>
       <button type="button" class="cat-pill blame" data-r="贬低" aria-pressed="false">贬低</button>
-      <button type="button" class="cat-pill shui" data-r="水军" aria-pressed="false">水军</button>
+      <button type="button" class="cat-pill shui" data-r="水军" aria-pressed="false">组织化刷评</button>
       <button type="button" class="cat-pill noise" data-r="无意义" aria-pressed="false">无意义</button>
       <button type="button" class="cat-pill feud" data-r="社区对骂" aria-pressed="false">社区对骂</button>
       <button type="button" class="cat-pill neutral" data-r="中立" aria-pressed="false">中立</button>
@@ -326,6 +329,7 @@ function poll(bvid, btn) {
 
 loadVideos().then(loadQueue);
 </script>
+<script src="/section-reveal.js" defer></script>
 </div>
 </body>
 </html>

@@ -15,5 +15,8 @@ __pycache__/
 *.log
 .tmp-*
 .venv/
+node_modules/
 .pytest_cache/
 .DS_Store
+.workbuddy/
+tmp/pdfs/

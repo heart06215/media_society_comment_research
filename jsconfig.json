@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": true,
+    "target": "ES2022",
+    "lib": ["DOM", "ES2022"],
+    "types": []
+  },
+  "include": ["front/research-types.d.ts", "front/research-core.js", "front/research-dashboard.js"]
+}

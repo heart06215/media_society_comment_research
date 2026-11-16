@@ -13,6 +13,9 @@ import time
 import random
 import threading
 import traceback
+import gzip
+import hashlib
+from pathlib import Path
 from datetime import datetime
 
 from flask import Flask, request, jsonify, send_from_directory, Response
@@ -21,6 +24,7 @@ from flask_cors import CORS
 import sentiment_analyze as sa
 import agent_chat
 import comment_graph as cg
+import research_reports
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 FRONT_DIR = os.path.join(BASE_DIR, "front")
@@ -114,6 +118,15 @@ def _security_headers(resp):
     resp.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
     resp.headers.setdefault("Referrer-Policy", "same-origin")
     resp.headers.setdefault("Permissions-Policy", "geolocation=(), microphone=(), camera=()")
+    if resp.mimetype in ("application/json", "text/html", "text/css", "application/javascript"):
+        resp.vary.add("Accept-Encoding")
+    if ("gzip" in request.headers.get("Accept-Encoding", "") and not resp.direct_passthrough
+            and resp.status_code == 200 and "Content-Encoding" not in resp.headers
+            and resp.mimetype in ("application/json", "text/html", "text/css", "application/javascript")
+            and len(resp.get_data()) > 1024):
+        resp.set_data(gzip.compress(resp.get_data(), compresslevel=5))
+        resp.headers["Content-Encoding"] = "gzip"
+        resp.vary.add("Accept-Encoding")
     return resp
 
 
@@ -188,7 +201,7 @@ def _page(name):
     path = os.path.join(FRONT_DIR, name)
     if not os.path.exists(path):
         return err("页面不存在", 404)
-    r = Response(open(path, "r", encoding="utf-8").read(), mimetype="text/html; charset=utf-8")
+    r = Response(Path(path).read_text(encoding="utf-8"), mimetype="text/html; charset=utf-8")
     r.headers["Cache-Control"] = "no-store"
     return r
 
@@ -207,8 +220,10 @@ def front_static(filename):
             ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml", ".ico": "image/x-icon"}.get(ext)
     if not mime:
         return err("不支持的资源类型", 400)
-    r = Response(open(path, "rb").read(), mimetype=mime)
-    r.headers["Cache-Control"] = "no-store"
+    r = Response(Path(path).read_bytes(), mimetype=mime)
+    r.headers["Cache-Control"] = "public, max-age=0, must-revalidate"
+    r.set_etag(hashlib.sha256(r.get_data()).hexdigest(), weak=True)
+    r.make_conditional(request)
     return r
 
 
@@ -299,7 +314,22 @@ def api_analysis(bvid):
     a = _analyzed(bvid)
     if not a:
         return err("该视频尚未分析", 404)
-    return ok(a)
+    return ok({key: value for key, value in a.items() if key != "_rows"})
+
+
+@app.route("/api/research/report")
+def api_research_report():
+    return ok(research_reports.build_report(Path(DATA_DIR), CFG))
+
+
+@app.route("/api/research/export")
+def api_research_export():
+    try:
+        content, mime, name = research_reports.create_export(
+            Path(DATA_DIR), CFG, request.args.get("format", "zip"), request.args.get("bvid", ""))
+        return Response(content, mimetype=mime, headers={"Content-Disposition": f'attachment; filename="{name}"', "Cache-Control": "no-store"})
+    except ValueError as exc:
+        return err(str(exc))
 
 
 @app.route("/api/corpus/<bvid>")
@@ -336,10 +366,19 @@ def api_agent_chat():
     try:
         ex = _get_agent()
         from langchain_core.messages import HumanMessage
-        result = ex.invoke({"messages": [HumanMessage(content=question)]})
+        started = time.perf_counter()
+        result = ex.invoke({"messages": [HumanMessage(content=question)]}, config={"recursion_limit": 12})
         msgs = result.get("messages", [])
         answer = msgs[-1].content if msgs else str(result)
-        return ok({"answer": answer})
+        trace = []
+        for message in msgs:
+            for call in getattr(message, "tool_calls", []) or []:
+                trace.append({"id": call.get("id"), "name": call.get("name"), "arguments": call.get("args", {}), "status": "called"})
+            if getattr(message, "type", "") == "tool":
+                for step in trace:
+                    if step["id"] == getattr(message, "tool_call_id", None):
+                        step.update(status="complete", result_preview=str(message.content)[:600])
+        return ok({"answer": answer, "trace": trace, "elapsed_seconds": round(time.perf_counter() - started, 2), "execution_mode": "langchain-tools"})
     except Exception as e:
         traceback.print_exc()
         return err(f"Agent 调用失败: {str(e)[:200]}", 500)

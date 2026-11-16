@@ -1,0 +1,866 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-11-14",
+  "reviewer": "Codex 会话模型",
+  "evaluation_kind": "assistant_offline_review",
+  "procedure": "当前会话逐条阅读评论，保存六分类判断及简短理由，再由程序对照人工标签计分。未调用智谱接口。",
+  "blinded": false,
+  "reviews": [
+    {
+      "index": 0,
+      "rpid": "265855685281",
+      "prediction": "贬低",
+      "reason": "对陈异格的设计价值表达不满",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "22b58fad5a9f2ab65566999a817fe51d810ee1b27f85655f254bc6f01ce68ae2"
+    },
+    {
+      "index": 1,
+      "rpid": "4995702342",
+      "prediction": "无意义",
+      "reason": "圈层口号和谐音玩梗",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "42de7e5d1070020515243d1befbb1027f1080d86594c12c58de893543d223955"
+    },
+    {
+      "index": 2,
+      "rpid": "4990469042",
+      "prediction": "社区对骂",
+      "reason": "矛头指向白嫖玩家群体及其评价行为",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "6beac3b6f33c2889309948306c9bcf51292da6eb8821750746ad1a8956dd5e3f"
+    },
+    {
+      "index": 3,
+      "rpid": "235891269232",
+      "prediction": "无意义",
+      "reason": "拼接歌词玩梗并附视频链接",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "5cb4739f96d9a601859da56e6f907aedb0bf6283f566e590d54bece3970a991e"
+    },
+    {
+      "index": 4,
+      "rpid": "115524075312",
+      "prediction": "赞美",
+      "reason": "明确表达喜欢背景音乐",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "379d5d427357d394d57b688aefeda6a0b0c288e52270892fb592edf0287eb597"
+    },
+    {
+      "index": 5,
+      "rpid": "297014818065",
+      "prediction": "无意义",
+      "reason": "大量重复技能与模式名称构成刷屏段落",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "10e10c8f1960086c952d491c85807749d977413a006f4ad1e86cd841df593a8a"
+    },
+    {
+      "index": 6,
+      "rpid": "5059915228",
+      "prediction": "贬低",
+      "reason": "以粉丝减少的段子讽刺运营",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "3da1d672affb3f0292023e74fca79fb054e0e2c09235d2ddc87b31cb83c2be9c"
+    },
+    {
+      "index": 7,
+      "rpid": "5009739347",
+      "prediction": "中立",
+      "reason": "主要预测官方回应时间和后续处理方式",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "b1396d10e91219496e7be35c89d1f8d2d57ace18d9161f0be5d568cfa2aa309d"
+    },
+    {
+      "index": 8,
+      "rpid": "4990041857",
+      "prediction": "贬低",
+      "reason": "明确不认可限定安排",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "bca3b08acc01950041c8fb5d90cbba50ed8fe184c6679d661316ed8e80ee8cfe"
+    },
+    {
+      "index": 9,
+      "rpid": "292972516544",
+      "prediction": "无意义",
+      "reason": "纯表情符号",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "f1da44053feee244a9c021947e8bcea65b9a61afa48e563f9fbd6d605bb692cc"
+    },
+    {
+      "index": 10,
+      "rpid": "96156054784",
+      "prediction": "无意义",
+      "reason": "候鸟式退坑的简短自嘲玩梗",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "d0d667ae535a8890e761e1e57c24c1356d99651fd8d1993b288c83432e0c448a"
+    },
+    {
+      "index": 11,
+      "rpid": "286882488577",
+      "prediction": "无意义",
+      "reason": "重复愿望清单形成刷屏口号",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "bbdea068848739de249d320f8eda3e6318faf0feb97235123ccff32d415bf391"
+    },
+    {
+      "index": 12,
+      "rpid": "279380784336",
+      "prediction": "无意义",
+      "reason": "简短客套回复，无具体讨论内容",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "2313dbbb686a3b374fa950474132cb5c42de742b1b0e6f8e456c04a9e8bed7af"
+    },
+    {
+      "index": 13,
+      "rpid": "232867132032",
+      "prediction": "贬低",
+      "reason": "讽刺官方面对大量批评仍不回应",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "99f65454cddfdf143f7ed7e89df46854a33a2f7dfe2a8f8ba841304d4392c0c0"
+    },
+    {
+      "index": 14,
+      "rpid": "292915274608",
+      "prediction": "无意义",
+      "reason": "重复口号和锤砖表情刷屏",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "735b74ec55e3291e034668ab9b8f960086d3a7530b99478a0ef1fd25bfef3132"
+    },
+    {
+      "index": 15,
+      "rpid": "5013320803",
+      "prediction": "贬低",
+      "reason": "对画师的人体结构表现给出负面评价",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "5390848836390b666527617194cc754c993dda8e128978f7dc691772bb373002"
+    },
+    {
+      "index": 16,
+      "rpid": "121877159008",
+      "prediction": "赞美",
+      "reason": "肯定音乐质量与立绘水准",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "d0a581afb60c309109733f01f02b4b1f11f01f17ac5a076e99484715d9897382"
+    },
+    {
+      "index": 17,
+      "rpid": "119788769904",
+      "prediction": "赞美",
+      "reason": "直接称赞音乐",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "9b8b5312edd3b555a90e09e51933011dca3663f8feb3ec1c34a4328dbe7ccf10"
+    },
+    {
+      "index": 18,
+      "rpid": "290947334241",
+      "prediction": "无意义",
+      "reason": "重复砌墙台词和表情的长段刷屏",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "a099bd2d852b50eaf4e8597463270b80565146f4a4f9eab396ec7690674da718"
+    },
+    {
+      "index": 19,
+      "rpid": "5008589199",
+      "prediction": "贬低",
+      "reason": "指责画师故意不认真创作",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "465d68066bd50d8fe2d22f6fce5cfbebd21463f5aed4e5c63fb4504cdb288b27"
+    },
+    {
+      "index": 20,
+      "rpid": "122188037744",
+      "prediction": "中立",
+      "reason": "预测后续角色，没有明确褒贬",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "a83809264c5bb369b5d5222c8b4d24f317d4e9fb97614b73ffeb1046e54b4409"
+    },
+    {
+      "index": 21,
+      "rpid": "99093904784",
+      "prediction": "水军",
+      "reason": "明确声明复制文案并号召持续发评和顶评",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "075e9908ba7a2d54ba48c406c358880447cef5afad43ed2e8b2167a1d7d805dc"
+    },
+    {
+      "index": 22,
+      "rpid": "4998313734",
+      "prediction": "贬低",
+      "reason": "借清明烧评讽刺删评行为",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "6bc7bc63f8a342d9e90628f95006a04b447d549aabf60d18ed4a42d184652937"
+    },
+    {
+      "index": 23,
+      "rpid": "280784478048",
+      "prediction": "水军",
+      "reason": "围绕评论量目标动员人工队重复刷取",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "2d00b561969a6c3db6138d1a6046f36edd532c1f8b2f80c286e990978beaaf9e"
+    },
+    {
+      "index": 24,
+      "rpid": "237060004528",
+      "prediction": "无意义",
+      "reason": "短句谐音玩梗",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "e2d30a4f01406e4f0a169b91fea8fdd5f27e303c48e85e68d3c7a92cb2fdc3fe"
+    },
+    {
+      "index": 25,
+      "rpid": "5085102739",
+      "prediction": "社区对骂",
+      "reason": "动员另一游戏圈层冲击对立方",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "8235ba2e6ff9ea3ecbe4a246bf2206e5a6685d25afb065024fc9a35ffb57b4e1"
+    },
+    {
+      "index": 26,
+      "rpid": "4992445321",
+      "prediction": "贬低",
+      "reason": "系统批评角色设定、文案、立绘和运营",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "63d5d95b68552c1e6f58d06fc04e43c55f07de5a151d506b2fb45246d72a2042"
+    },
+    {
+      "index": 27,
+      "rpid": "4992527325",
+      "prediction": "贬低",
+      "reason": "质疑主美的绘画水平",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "bb8674af418ddb9c141c1cbba8cb42713cc7070d06237836651ad1c128e61267"
+    },
+    {
+      "index": 28,
+      "rpid": "120607872448",
+      "prediction": "赞美",
+      "reason": "明确称赞背景音乐好听",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "8ae00615c5a5c07e2c1115a15de5085bc28859559d07102aa3acadbd17e08c91"
+    },
+    {
+      "index": 29,
+      "rpid": "292972517072",
+      "prediction": "无意义",
+      "reason": "重复修墙口号并附随机字符",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "468b6149b6dfc83adc4f5683e3acbf4f39456e476c4db2afbf21832d4a39322a"
+    },
+    {
+      "index": 30,
+      "rpid": "121315152416",
+      "prediction": "赞美",
+      "reason": "肯定活动宣传片和音乐，表达重看意愿",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "d672ee87a0c0f0389692fe6c512c3640128bfbc25e398d66c1953c39e5a23c8f"
+    },
+    {
+      "index": 31,
+      "rpid": "5000587165",
+      "prediction": "贬低",
+      "reason": "批评官方控评和承受批评的态度",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "eff65720fba1f97010cd95325ecc5fa308c3a9c6250ea8ff1389f62febe3723a"
+    },
+    {
+      "index": 32,
+      "rpid": "286651066113",
+      "prediction": "赞美",
+      "reason": "以小帅哥和颜值评价表达惊喜",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "cbbe4dcffd5a338f2c813b30b377e033511b2d6c06459c1d88e9591e527ec74b"
+    },
+    {
+      "index": 33,
+      "rpid": "288869258496",
+      "prediction": "赞美",
+      "reason": "对舞台人物关系表达兴奋和喜爱",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "4211c98607998bc6f589d5e9255d403b114697074cea7bc8e16bc2650aec36b8"
+    },
+    {
+      "index": 34,
+      "rpid": "286799126481",
+      "prediction": "赞美",
+      "reason": "积极推荐练习室和同人曲，肯定颜值",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "464994972fa46b8728458be075f1a4ed1f5feeb1a6f785188c97bb868f299910"
+    },
+    {
+      "index": 35,
+      "rpid": "290887616337",
+      "prediction": "无意义",
+      "reason": "押韵的配对口号",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "79d1289f6d6f32243e739e85dab22682954653e6395583a1059c82202b78595c"
+    },
+    {
+      "index": 36,
+      "rpid": "288838633168",
+      "prediction": "赞美",
+      "reason": "肯定舞台比预期好看",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "e8ca3b0cf4abd8f6850d51f5378ef7a070621bfaac9996e1bc8b30cd118c5332"
+    },
+    {
+      "index": 37,
+      "rpid": "286635047553",
+      "prediction": "赞美",
+      "reason": "明确称赞两人的外形、舞蹈和舞台",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "39212fe0b7d6a9cf7b4c2ca1aaffa30d3ddb72bc5114c74e9d19f3d6d384dea7"
+    },
+    {
+      "index": 38,
+      "rpid": "293707267184",
+      "prediction": "赞美",
+      "reason": "表达对表演者未来的祝福",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "e42e9aaa6595e36da4544114e118167254ae11d13b3f26fcfe2d48f99db52916"
+    },
+    {
+      "index": 39,
+      "rpid": "288859835984",
+      "prediction": "赞美",
+      "reason": "对双人舞台表达满足",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "2ee7fa39b5207e43255a99765c62533946443e1802765f31e79dc9f613d24155"
+    },
+    {
+      "index": 40,
+      "rpid": "286641633697",
+      "prediction": "赞美",
+      "reason": "称赞配合和外形，期待更多合作",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "f03fa46de35e36e6313ed9964c992c0fd5a1c16974af0ad203daef98c28c386c"
+    },
+    {
+      "index": 41,
+      "rpid": "286636788289",
+      "prediction": "赞美",
+      "reason": "直接肯定两人的颜值",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "4dea6a52567785c497a7794fb157a7aae86e3f9958c86500f05386020abd2efb"
+    },
+    {
+      "index": 42,
+      "rpid": "286834396081",
+      "prediction": "无意义",
+      "reason": "泛化感叹句，缺少具体讨论信息",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "75e7f7d82b7427ebc581b4c9c385d6e3ef86b532e2c5da6dae495168f8d3b45d"
+    },
+    {
+      "index": 43,
+      "rpid": "293670630080",
+      "prediction": "中立",
+      "reason": "陈述计数差额的算式",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "0e63d1bd1c0e089300d05d31c47d4c4d1620733ff65c3ca118d397f61f5e6b80"
+    },
+    {
+      "index": 44,
+      "rpid": "293985747936",
+      "prediction": "无意义",
+      "reason": "圈层隐喻式应援短句",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "ed4bf47f845e744f2d0a6d316a228e20379ce32af8cced7d631899cde976427d"
+    },
+    {
+      "index": 45,
+      "rpid": "288760676192",
+      "prediction": "赞美",
+      "reason": "以三连行为表达支持",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "f1f6f13e7e493808d59cf041fd77e5ec2f15ca8db3d2d06d1abb9d03c0b4f0e8"
+    },
+    {
+      "index": 46,
+      "rpid": "288765988400",
+      "prediction": "赞美",
+      "reason": "明确评价分享内容好看",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "2c263ea4737c4b24c91b125a1a8c9e122f4026b11a34c8bb0ccb580107e3c2ba"
+    },
+    {
+      "index": 47,
+      "rpid": "286687346945",
+      "prediction": "无意义",
+      "reason": "泛用加油口号",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "ad47d8a0b3cd4a3faf4960cdf2de5e47390300136eb885f5337cd375bc7462d2"
+    },
+    {
+      "index": 48,
+      "rpid": "288889529152",
+      "prediction": "赞美",
+      "reason": "直接称赞外形并表达三连支持",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "8c29d030deab4e85a9940e9def079b35613b27688746c6751dadfdd6afdebae2"
+    },
+    {
+      "index": 49,
+      "rpid": "287516466097",
+      "prediction": "无意义",
+      "reason": "单字回复，缺少具体内容",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "f867f34178594f891eb70a4260f62b1d9289cfa60394f9fee1cbbe4a8b4bf436"
+    },
+    {
+      "index": 50,
+      "rpid": "288740763984",
+      "prediction": "中立",
+      "reason": "分享复盘视频链接，没有直接情感评价",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "4fd058c42b2c2c791e831996a9ec48ec2a155801196f815a9d189a1fc9ad2f32"
+    },
+    {
+      "index": 51,
+      "rpid": "286603763681",
+      "prediction": "赞美",
+      "reason": "正面描写舞台互动和情感表达",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "7c2666745bc09165059a7cb762dbfcd836decf9980fd6cde0de30afbe99d6843"
+    },
+    {
+      "index": 52,
+      "rpid": "288738400048",
+      "prediction": "无意义",
+      "reason": "同一句配对祝愿大量重复",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "2ec40119b4242ddf0309b87ec0212e2fe97cfb05dfd8be9b1c04daf1b7b3dce5"
+    },
+    {
+      "index": 53,
+      "rpid": "288766699824",
+      "prediction": "赞美",
+      "reason": "明确称赞舞台并表达喜爱",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "ff53cd375fd8dc99835e618247670563fff6437c27f7750d4792bbea3668f7ea"
+    },
+    {
+      "index": 54,
+      "rpid": "286657674065",
+      "prediction": "赞美",
+      "reason": "表达对线下参与者的关心和感谢",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "930412ba01173cbbe4838fb98fdd57e03e48c6415333dc375e21c14c04de1f99"
+    },
+    {
+      "index": 55,
+      "rpid": "286638139665",
+      "prediction": "赞美",
+      "reason": "积极认同舞台的暗恋氛围",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "1dae0fa8f7994c8e819546b453faece4356262040788279426948317571b4b1c"
+    },
+    {
+      "index": 56,
+      "rpid": "288952849712",
+      "prediction": "无意义",
+      "reason": "以等级和祖训进行圈层调侃",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "ff5092a724fd5a47a1fdf3f287fca0c8f1138777ca630438d1f6cfc89a12c31c"
+    },
+    {
+      "index": 57,
+      "rpid": "288765330400",
+      "prediction": "赞美",
+      "reason": "叙述喜爱过程并祝福表演者前途",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "b6f430de2a364bcba4617bc45e637fa571a6351ce41773df9c0c80956439d8fb"
+    },
+    {
+      "index": 58,
+      "rpid": "288746209920",
+      "prediction": "赞美",
+      "reason": "积极邀请了解喜爱的配对",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "a07e89bc989e47c599e77d13e66acad0409a53b0f2e4d8417af6640b29c4b34a"
+    },
+    {
+      "index": 59,
+      "rpid": "290887494113",
+      "prediction": "赞美",
+      "reason": "以天使比喻肯定所喜爱的人物",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "1d5b4380f372931f69796120c57b8f93a6dbf0709e3671e05b6943c841785090"
+    },
+    {
+      "index": 60,
+      "rpid": "293668800304",
+      "prediction": "水军",
+      "reason": "成套设问式安利模板集中引导关注",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "4ec1b7b61dd66ab02f544f9668bcb7738a43b0447cb2c3143ee2b4c37142e6c8"
+    },
+    {
+      "index": 61,
+      "rpid": "297512596209",
+      "prediction": "无意义",
+      "reason": "花字押韵应援口号",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "fe65b0df5a8f6296ab1cc651ba88920eacbe804ed96b69893c005435000e8203"
+    },
+    {
+      "index": 62,
+      "rpid": "289901293920",
+      "prediction": "无意义",
+      "reason": "简短配对应援口号",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "9cd119e70994544a3c674953d6b950bd124f8c41312dbc94205507a699f22c81"
+    },
+    {
+      "index": 63,
+      "rpid": "286638154721",
+      "prediction": "水军",
+      "reason": "引用组织安排统一应援与评论口径",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "ff4098d31b0d13eb1be28f9ed6d94ca3f59bce0970a2980298cde44fcfeaf475"
+    },
+    {
+      "index": 64,
+      "rpid": "288747960560",
+      "prediction": "中立",
+      "reason": "询问人物关系，未表达褒贬",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "fd5c0ca6348511d38964acdc3f07ab69c1a36a122296c131557e33935fb52805"
+    },
+    {
+      "index": 65,
+      "rpid": "299325552608",
+      "prediction": "无意义",
+      "reason": "成套花字祝愿，信息量较低",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "ed28abfdf4535eb25cb5c5ca2dc8889d596e7dd711b54fe33d2304ccb77cdcc5"
+    },
+    {
+      "index": 66,
+      "rpid": "288797707888",
+      "prediction": "中立",
+      "reason": "主要介绍舞台人物视角和圈层背景",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "06a9b8c3d99b4b6afad647bf9018e59fa1e3e13d1a840595d6d5e64017233cbc"
+    },
+    {
+      "index": 67,
+      "rpid": "286982761025",
+      "prediction": "水军",
+      "reason": "面向粉丝推广替代手动刷取的操作教程",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "bdc436faa903a484175c660490398bbde641ce6f553c364d8ded07f5361117f0"
+    },
+    {
+      "index": 68,
+      "rpid": "286636371521",
+      "prediction": "赞美",
+      "reason": "通过镜头分析称赞剪辑和舞台策划",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "e1a9822c09f2687760a501d115ef8021b3ae7d83f585821e158c49c5a866cf62"
+    },
+    {
+      "index": 69,
+      "rpid": "293668604000",
+      "prediction": "无意义",
+      "reason": "大量重复配对口号与装饰符号",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "1bba9328c252d46ddb41f97e16c688c3f014c2db8c663d04dfe31f45e944d4b8"
+    },
+    {
+      "index": 70,
+      "rpid": "290729847888",
+      "prediction": "无意义",
+      "reason": "主要由装饰图案和短口号构成",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "bf06aa48ec0a261ffa64e5fb1f727f42601c209364f16c415c50e0fd4ef12c77"
+    },
+    {
+      "index": 71,
+      "rpid": "286640995377",
+      "prediction": "赞美",
+      "reason": "以最喜欢为起点正面解读舞台表达",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "51ab0e19afe267b8b77b091766d172c1c1e5703945e755d4ecb8eb7687cd5e82"
+    },
+    {
+      "index": 72,
+      "rpid": "286674945969",
+      "prediction": "赞美",
+      "reason": "明确表达被人物关系吸引",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "07b1c23c25650378e166d677f159fb20404e5b55dfbdc383f6618413237061d6"
+    },
+    {
+      "index": 73,
+      "rpid": "307606553536",
+      "prediction": "无意义",
+      "reason": "简短冲榜口号",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "ddf7a6af0bc1dacd38a3d004338cb9ac4af2dfb431da95c517c0405d979051d4"
+    },
+    {
+      "index": 74,
+      "rpid": "306142981633",
+      "prediction": "中立",
+      "reason": "主要陈述距离播放量目标的差额",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "3b99a36aa3f3d89aac1e528f95516fbeb39d1f4fd3be1b6b09cccc9821c7b5c6"
+    },
+    {
+      "index": 75,
+      "rpid": "292343678337",
+      "prediction": "无意义",
+      "reason": "成套押韵花字应援",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "9c22de63d8f6a466888426eeb0c9893b9026f7dcb4bcfb3302fdb1fc5c8b277f"
+    },
+    {
+      "index": 76,
+      "rpid": "288747115552",
+      "prediction": "赞美",
+      "reason": "肯定演绎效果和两人的适配程度",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "d25305b812efeb43fadcc96613e8917a729c0bb4ce7477263c8ded1c40315dbc"
+    },
+    {
+      "index": 77,
+      "rpid": "288710071840",
+      "prediction": "水军",
+      "reason": "程式化宣传文案并集中提及表演者账号",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "06127531507522ddc7bd075eb03f1968a3ea56fa496fb15e8bbcf5fbc946c91d"
+    },
+    {
+      "index": 78,
+      "rpid": "288745672192",
+      "prediction": "赞美",
+      "reason": "表达喜爱以及错过内容的遗憾",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "c500deb7971022f181222909cea6b79b77148ee89d40eedb5486347e8970bebd"
+    },
+    {
+      "index": 79,
+      "rpid": "289022021232",
+      "prediction": "水军",
+      "reason": "明确号召增加互动以影响播放计数",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "fcc53c40be5bd01717369222f4f48c9441eccc8b54c4c7ec1dfb974b5b069bda"
+    },
+    {
+      "index": 80,
+      "rpid": "302200699664",
+      "prediction": "无意义",
+      "reason": "圈层梗式报到与互动",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "29d0e1cdb48f57c33a34ea75b03fab4e98b02f15b4222ff91b3ffacf2a57f400"
+    },
+    {
+      "index": 81,
+      "rpid": "306268262912",
+      "prediction": "无意义",
+      "reason": "拼接押韵祝愿与大量装饰符号",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "cd29718764af9f6966e49c834a05eebb4471ad33f66ca57d5a69c351dbb53f11"
+    },
+    {
+      "index": 82,
+      "rpid": "286667589025",
+      "prediction": "无意义",
+      "reason": "简短关注引导，没有具体评价",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "dfb7cb3c9fea86fd35d41220496a636ba9d794653413500502d26fb2cb3f27d6"
+    },
+    {
+      "index": 83,
+      "rpid": "288850784528",
+      "prediction": "赞美",
+      "reason": "称赞人物、粉丝群体和互动氛围",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "262b4282ec59f513aaea2d63c73bdf4cc0ef2fc183193567d411eb2c13acfc8f"
+    },
+    {
+      "index": 84,
+      "rpid": "288757108272",
+      "prediction": "赞美",
+      "reason": "明确肯定人物外形",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "f966a83a5819fe257b511e4548b61813204e72344c09f69640a3de25dfc7df73"
+    },
+    {
+      "index": 85,
+      "rpid": "290126935872",
+      "prediction": "水军",
+      "reason": "以集体誓言统一活动参与和评论口径",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "ec321a5098217870d8dccba7c5e6d742bc0199b7a9659ef542f2bfce9bc98c2c"
+    },
+    {
+      "index": 86,
+      "rpid": "288791346960",
+      "prediction": "赞美",
+      "reason": "以年度视频评价表达高度喜爱",
+      "bvid": "BV1h1kcBfEuJ",
+      "text_sha256": "84b0c565afbc22bb46b6b80e224f9319af4f87137eee199456a327a774523388"
+    },
+    {
+      "index": 87,
+      "rpid": "295022600144",
+      "prediction": "无意义",
+      "reason": "挖楼占位式回复",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "c5c59f74e212b84b7a07ddecdc6a3ef5893236124bd0f90680c28bd6b2a09b11"
+    },
+    {
+      "index": 88,
+      "rpid": "4990029494",
+      "prediction": "贬低",
+      "reason": "批评限定推出突然，影响资源规划",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "2cebd86d2f15346e87f00cf7a0469ee89b966461e2b7fac61be5dbaecf84e61d"
+    },
+    {
+      "index": 89,
+      "rpid": "297010381073",
+      "prediction": "无意义",
+      "reason": "重复修墙玩梗并附随机字符",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "189364f3eff18a86f9fc0801b921ff014b3de382a2a67a831aa35c0ccac6350f"
+    },
+    {
+      "index": 90,
+      "rpid": "4990377933",
+      "prediction": "贬低",
+      "reason": "通过对比指出作品剧情和IP不足",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "d973b1ec34fc8bedd6b55d484df9eae027b5ebaa3ecbf8c76c4ae686ce1a5cb2"
+    },
+    {
+      "index": 91,
+      "rpid": "147934217392",
+      "prediction": "赞美",
+      "reason": "肯定长夜临光内容的支撑作用",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "6a55e75ef3334d36153702e44adcede18e789a6e8f71914584efeaf7819b0a11"
+    },
+    {
+      "index": 92,
+      "rpid": "5050699532",
+      "prediction": "贬低",
+      "reason": "以诅咒策划表达对活动质量的不满",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "c225aa6f8574a0630b9b142f4cb5c63cfdd3674b089a61cc34de507275c17ab3"
+    },
+    {
+      "index": 93,
+      "rpid": "5008148774",
+      "prediction": "贬低",
+      "reason": "指责运营得寸进尺",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "fe03f16e490c7bbcc645fe360250c889a57c652622041065d453fa23b1f8b973"
+    },
+    {
+      "index": 94,
+      "rpid": "123025911712",
+      "prediction": "贬低",
+      "reason": "借日期与争议评论量的巧合讽刺运营",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "84969d3ea76c485c86657b7d13fe02dd24cfa91ad401e96590cea096f7cb7a6e"
+    },
+    {
+      "index": 95,
+      "rpid": "4990275271",
+      "prediction": "无意义",
+      "reason": "以吃瓜梗进行调侃式回应",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "272713c5c4437d68d7b38c7269d423764878c3df31043c561c656a61bb5998c6"
+    },
+    {
+      "index": 96,
+      "rpid": "290877383953",
+      "prediction": "水军",
+      "reason": "围绕刷数据方式发出重复集体行动号召",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "02e98a088bd07914d0472989e546281e5e9d37b9e1ae08487cc977469b91824c"
+    },
+    {
+      "index": 97,
+      "rpid": "290840605329",
+      "prediction": "无意义",
+      "reason": "反复粘贴修墙台词形成刷屏",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "1c4f938ae7d676498fbc6af2d4577b68d646408325e2cebe416dd9fb0abd0465"
+    },
+    {
+      "index": 98,
+      "rpid": "5069341393",
+      "prediction": "赞美",
+      "reason": "直接以大佬和牛表示肯定",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "84efa16e3363bd361479a4a30b225320847b80b52c00db7343f41258425668c5"
+    },
+    {
+      "index": 99,
+      "rpid": "4991695193",
+      "prediction": "贬低",
+      "reason": "持续批评美工、文案和商业运营",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "9de4cd54cab077994f0b261025e57978eb9f2cd369681ad314e21aeaac6dfde1"
+    },
+    {
+      "index": 100,
+      "rpid": "5004169149",
+      "prediction": "贬低",
+      "reason": "以辛苦啦反讽删评行为",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "c46918900ef9acfa7e50fba77381adf24cfb7536e26461100cd6b49e29b5053f"
+    },
+    {
+      "index": 101,
+      "rpid": "5098503322",
+      "prediction": "贬低",
+      "reason": "核心立场为辱骂和质问游戏运营",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "9203d01539b0e89ca1f758ca47b8e920ce3d971362d77637a3a94a0c05544091"
+    },
+    {
+      "index": 102,
+      "rpid": "179124633072",
+      "prediction": "赞美",
+      "reason": "肯定游戏进步并表达持续热爱",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "3277c4b3119e36c7e3720bc895fc09fc6d2f892e7b325f6f4460aaccfac692ad"
+    },
+    {
+      "index": 103,
+      "rpid": "237717131056",
+      "prediction": "无意义",
+      "reason": "复制歌词、玩梗台词和版本链接清单",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "4a9e9dd65a03e3c837ce7069c4eef2c9bac416564fd787e4d39fadd251f15494"
+    },
+    {
+      "index": 104,
+      "rpid": "290652623441",
+      "prediction": "无意义",
+      "reason": "复述角色台词并插入大量表情",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "a92e76933ab61f1ad76449ce7b336876f412047115f4d9da26949b497f354801"
+    },
+    {
+      "index": 105,
+      "rpid": "297014810113",
+      "prediction": "水军",
+      "reason": "反复提出评论量目标并号召支援刷取",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "b55b1de8127eec784a0a11cada0c3e9ac624cc0f235eeb64e2a74a20709eab6e"
+    },
+    {
+      "index": 106,
+      "rpid": "5008799330",
+      "prediction": "贬低",
+      "reason": "对双限定卡池安排表达不满",
+      "bvid": "BV1fy4y1L7Rq",
+      "text_sha256": "8c3332a42f067cca8ca7b6b6dd32e5ec3f0eac52549e13cc54944ea0500bfd97"
+    }
+  ]
+}

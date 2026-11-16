@@ -8,8 +8,8 @@
 用法：
   python benchmark_methods.py --selftest=true            # 词典分类器自检(无API)
   python benchmark_methods.py --methods dict             # 仅词典基线
-  python benchmark_methods.py                            # 全部方法(需API，锚定集须已标注)
-产出：控制台表格 + data/analysis/benchmark_report.json(含表4可直接粘贴的Markdown行)。
+  python benchmark_methods.py                            # 默认离线三档看板记录
+产出：默认三档记录写入 benchmark_report.json；旧四方法实验写入 benchmark_legacy_report.json。
 """
 import os
 import re
@@ -28,7 +28,7 @@ import sentiment_analyze as sa
 
 CATEGORIES = sa.CATEGORIES
 ANCHORS_PATH = os.path.join(BASE_DIR, "data", "labels", "anchors.json")
-REPORT_PATH = os.path.join(BASE_DIR, "data", "analysis", "benchmark_report.json")
+REPORT_PATH = os.path.join(BASE_DIR, "data", "analysis", "benchmark_legacy_report.json")
 
 # ---------- 零样本提示词(仅六分类定义，无词典/无参照/无RAG) ----------
 ZS_SYSTEM = """你是一名资深的互联网社区评论情感分析专家。
@@ -37,7 +37,7 @@ ZS_SYSTEM = """你是一名资深的互联网社区评论情感分析专家。
 六分类定义：
 - 赞美：对视频内容/演唱者/游戏/作品表达明确喜爱、支持、肯定、夸赞、感动。
 - 贬低：对内容或主体表达不满、批评、嘲讽、贬低、质疑(如指责假唱/修音/质量差)。
-- 水军：被购买的评论——伪装成真实用户发布的付费夸赞或付费差评(组织化控评、模板化夸赞/抹黑话术及其复制粘贴变体)。
+- 水军（组织化刷评）：疑似组织化评论刷取、模板化控评或重复传播的文本特征；不能推断付费身份，仅提及“水军”不是该标签的依据。
 - 无意义：纯表情、单字灌水(哈哈哈哈/前排/来了/沙发)、抢楼占位、无意义刷屏口号，以及"关注我/加V领福利"式显性引流广告。
 - 社区对骂：评论者之间的互相攻击、拉踩、站队对线、人身攻击、群体嘲讽；矛头指向其他用户或群体。
 - 中立：客观陈述事实、提问求证、补充信息、中性讨论，没有明确褒贬情绪，也不是灌水或广告。
@@ -202,12 +202,15 @@ def _selftest():
     return bad == 0
 
 
-def run(methods="dict,llm_zeroshot,rag,finetune", bvid="", concurrency=8, limit=0, selftest=False):
+def run(methods="semantic", bvid="", concurrency=3, limit=0, selftest=False):
     """表4 对照实验。锚定集(data/labels/anchors.json)为金标；--methods 逗号分隔选择方法。"""
     if selftest:
         ok = _selftest()
         sys.exit(0 if ok else 1)
 
+    if methods == "semantic":
+        from evaluation import run as run_dashboard_evaluation
+        return run_dashboard_evaluation(methods=methods, bvid=bvid, concurrency=concurrency)
     method_list = [m.strip() for m in methods.split(",") if m.strip()]
     groups = _load_anchor_groups(bvid)
     total = sum(len(v) for v in groups.values())
@@ -232,12 +235,12 @@ def run(methods="dict,llm_zeroshot,rag,finetune", bvid="", concurrency=8, limit=
     # ---- 基线-词典(本地) ----
     if "dict" in method_list:
         db = DictBaseline()
-        rows = [{**it, "category": db.classify(it["text"])} for it in items_all]
+        rows = [{**it, "gold": it["category"], "category": db.classify(it["text"])} for it in items_all]
         report["methods"]["dict"] = eval_pairs(rows)
         report["per_video"]["dict"] = {}
         for bv, arr in groups.items():
             sub = [{"category": db.classify(a["text"]), "gold": a["category"]} for a in arr]
-            report["per_video"]["dict"][bv] = _metrics(sub)
+            report["per_video"]["dict"][bv] = eval_pairs(sub)
         print("[dict] 词典基线完成")
 
     # ---- LLM 系列共用底座 ----

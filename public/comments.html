@@ -90,6 +90,8 @@
 <link rel="stylesheet" href="/tools.css">
 <script src="/workspace.js" defer></script>
 <link rel="icon" href="/mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/research.css">
+<script src="/research-core.js"></script>
 </head>
 <body class="tool-page workspace-page">
 <a class="skip-link" href="#main">跳至主要内容</a><div id="workspaceNav"></div><div class="app-workspace"><header class="app-topbar" id="workspaceTopbar"></header>
@@ -107,7 +109,7 @@
     <button type="button" class="f-cat on all" data-c="all">全部</button>
     <button type="button" class="f-cat praise" data-c="赞美">赞美</button>
     <button type="button" class="f-cat blame" data-c="贬低">贬低</button>
-    <button type="button" class="f-cat shui" data-c="水军">水军</button>
+    <button type="button" class="f-cat shui" data-c="水军">组织化刷评</button>
     <button type="button" class="f-cat noise" data-c="无意义">无意义</button>
     <button type="button" class="f-cat feud" data-c="社区对骂">社区对骂</button>
     <button type="button" class="f-cat neutral" data-c="中立">中立</button>
@@ -199,7 +201,7 @@ function fmtPct(x) {
 function cellHtml(c, idx) {
   const cls = CLS[c.category] || "";
   const badge = c.category
-    ? `<span class="badge ${cls}">${c.category}</span>`
+    ? `<span class="badge ${cls}">${ResearchUI.categoryLabel(c.category)}</span>`
     : `<span class="badge noise" style="opacity:.45">未分类</span>`;
   const conf = c.category ? `<span class="c-conf mono">${fmtPct(c.confidence)}</span>` : "";
   return `<button type="button" class="c-cell ${cls}" data-i="${idx}" title="点击展开全文">
@@ -212,7 +214,7 @@ function cellHtml(c, idx) {
 function openDetail(c) {
   const cls = CLS[c.category] || "";
   dialogBadge.innerHTML = c.category
-    ? `<span class="badge ${cls}">${c.category}</span>`
+    ? `<span class="badge ${cls}">${ResearchUI.categoryLabel(c.category)}</span>`
     : `<span class="badge noise" style="opacity:.45">未分类</span>`;
   dialogMeta.textContent = `♥ ${fmtLike(c.like)} · ${fmtFull(c.ctime)}${c.category ? ` · 置信度 ${fmtPct(c.confidence)}` : ""}`;
   const tags = (c.slang_tags || []).filter(Boolean).slice(0, 20)
@@ -223,7 +225,7 @@ function openDetail(c) {
       <span><b>用户</b> ${esc(c.uname || "匿名")}</span>
       <span><b>时间</b> ${fmtFull(c.ctime)}</span>
       <span><b>点赞</b> ${fmtLike(c.like)}</span>
-      <span><b>分类</b> ${esc(c.category || "未分类")}</span>
+      <span><b>分类</b> ${esc(ResearchUI.categoryLabel(c.category || "未分类"))}</span>
       ${c.category ? `<span><b>置信度</b> ${fmtPct(c.confidence)}</span>` : ""}
       ${c.reason ? `<span class="d-reason"><b>模型理由</b> ${esc(c.reason)}</span>` : ""}
     </div>
@@ -357,7 +359,7 @@ async function loadStrip() {
     const cs = a.category_count || {}, n = a.total || 0, denom = n || 1;
     strip.innerHTML = CATS.map(c => {
       const num = cs[c] || 0, p = ((num / denom) * 100).toFixed(1);
-      return `<div class="f-cat" data-c="${c}" style="cursor:pointer;opacity:.85" title="筛选${c}"><span class="badge ${CLS[c]}">${c}</span> <b class="mono">${window.ResearchNumbers.commentCount(num)}</b> <span class="muted mono">${p}%</span></div>`;
+      return `<div class="f-cat" data-c="${c}" style="cursor:pointer;opacity:.85" title="筛选${c}"><span class="badge ${CLS[c]}">${ResearchUI.categoryLabel(c)}</span> <b class="mono">${window.ResearchNumbers.commentCount(num)}</b> <span class="muted mono">${p}%</span></div>`;
     }).join("") + `<div class="muted mono" style="align-self:center;padding:0 12px">总样本 ${window.ResearchNumbers.commentCount(n)}</div>`;
     strip.querySelectorAll(".f-cat").forEach(f => f.onclick = () => applyCat(f.dataset.c));
   } catch (e) {
@@ -453,6 +455,7 @@ dialog.addEventListener("click", e => {
 setupInfinite();
 init();
 </script>
+<script src="/section-reveal.js" defer></script>
 </div>
 </body>
 </html>

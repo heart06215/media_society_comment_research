@@ -19,6 +19,7 @@
     comments: '<path d="M4 4h16v13H9l-5 4Z"/><path d="M8 8h8M8 12h6"/>',
     label: '<rect x="4" y="3" width="16" height="18"/><path d="m8 11 3 3 5-6"/>'
   };
+  icons.evaluation = icons.insight;
   const research = [
     ["overview", "治理总览", home ? "#overview" : "/"],
     ["ambiguity", "圈层黑话难判", home ? "#ambiguity" : "/#ambiguity"],
@@ -32,6 +33,7 @@
   const tools = [
     ["insight", "社区深度洞察", "/insight"],
     ["graph", "评论关系图谱", "/insight#graphFull"],
+    ["evaluation", "模型测试与微调报告", "/insight#evaluation"],
     ["comments", "评论证据库", "/comments"],
     ["label", "人工标注与复核", "/label"]
   ];
@@ -77,7 +79,7 @@
     if (expanded) document.getElementById("sidebarClose").focus();
     else if (mobile.matches) toggle.focus();
   }
-  markActive(!home && location.hash === "#graphFull" ? "graph" : page);
+  markActive(!home && location.hash === "#graphFull" ? "graph" : !home && location.hash === "#evaluation" ? "evaluation" : page);
   sidebar.inert = mobile.matches;
   toggle.addEventListener("click", () => setMenu(true));
   scrim.addEventListener("click", () => setMenu(false));
@@ -102,7 +104,7 @@
     }
   });
   mobile.addEventListener("change", () => setMenu(false));
-  window.addEventListener("hashchange", () => { if (!home && page === "insight") markActive(location.hash === "#graphFull" ? "graph" : "insight"); });
+  window.addEventListener("hashchange", () => { if (!home && page === "insight") markActive(location.hash === "#graphFull" ? "graph" : location.hash === "#evaluation" ? "evaluation" : "insight"); });
   if (home) {
     const sections = research.map(([id]) => document.getElementById(id));
     let scheduled = false;

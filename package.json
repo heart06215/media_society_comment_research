@@ -1,0 +1,10 @@
+{
+  "name": "powang-frontend-checks",
+  "private": true,
+  "scripts": {
+    "check:types": "tsc --project jsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "5.8.3"
+  }
+}

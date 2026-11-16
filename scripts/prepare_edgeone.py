@@ -59,6 +59,12 @@ def _public_config() -> dict:
 
 
 def main() -> None:
+    # Check the two exact generated targets before any recursive replacement.
+    for target in (PUBLIC, FUNCTION_DATA):
+        resolved = target.resolve()
+        if not resolved.is_relative_to(ROOT.resolve()) or resolved not in (
+                ROOT.resolve() / "public", ROOT.resolve() / "cloud-functions" / "data"):
+            raise ValueError(f"Unsafe generated directory: {resolved}")
     # 1. Static site
     shutil.rmtree(PUBLIC, ignore_errors=True)
     shutil.copytree(FRONT, PUBLIC)
@@ -74,6 +80,8 @@ def main() -> None:
 
     _copy_glob(DATA / "crawled", "*.json", FUNCTION_DATA / "crawled")
     _copy_glob(DATA / "analysis", "*_analyzed.json", FUNCTION_DATA / "analysis")
+    _copy_file(DATA / "analysis" / "benchmark_report.json", FUNCTION_DATA / "analysis" / "benchmark_report.json")
+    _copy_file(DATA / "evaluation" / "method_targets.json", FUNCTION_DATA / "evaluation" / "method_targets.json")
     _copy_file(DATA / "labels" / "anchors.json", FUNCTION_DATA / "labels" / "anchors.json")
     for name in ("slang_dict.json", "rag_knowledge.json", "config.example.json"):
         _copy_file(DATA / name, FUNCTION_DATA / name)
@@ -84,6 +92,8 @@ def main() -> None:
     # 3. Stdlib-only helper modules used by the EdgeOne API
     _copy_file(ROOT / "comment_graph.py", FUNCTIONS / "comment_graph.py")
     _copy_file(ROOT / "rag_knowledge.py", FUNCTIONS / "rag_knowledge.py")
+    _copy_file(ROOT / "research_reports.py", FUNCTIONS / "research_reports.py")
+    _copy_file(ROOT / "agent_runtime.py", FUNCTIONS / "agent_runtime.py")
 
     print("public/:", len([p for p in PUBLIC.rglob("*") if p.is_file()]), "files")
     print("cloud-functions/data/:", len([p for p in FUNCTION_DATA.rglob("*") if p.is_file()]), "files")

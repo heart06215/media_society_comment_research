@@ -19,6 +19,10 @@
   function workDuration(days) {
     return `${number(days)} 天（约 ${(days / 365).toFixed(1)} 年）`;
   }
+  /** @param {number} days @returns {string} */
+  function workDurationHtml(days) {
+    return `${number(days)} 天（约 <em>${(days / 365).toFixed(1)} 年</em>）`;
+  }
   /** @param {string} message @returns {void} */
   function toast(message) {
     clearTimeout(state.toastTimer);
@@ -103,10 +107,10 @@
     byId("onlineScaleTotal").textContent = commentCount(count);
     byId("onlineVideoCounts").innerHTML = config.videos.map((video) => `<article class="online-video-count"><span>${escapeHtml(video.community)} · 线上评论数</span><h3><a href="${video.videoUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(video.name)} ↗</a></h3><div><strong>${commentCount(video.onlineCount)}</strong><span>条</span></div><small>${escapeHtml(video.bvid)}</small></article>`).join("");
     const ranking = config.rankingReference;
-    byId("onlineRankingNote").textContent = `排名依据：UP 主${ranking.owner}公开榜单，数据日期 ${ranking.dataDate}，${ranking.scope}；非官方实时排名。评论计数另核对于 ${config.commentCountVerifiedAt}。`;
+    byId("onlineRankingNote").textContent = `排名依据：UP 主${ranking.owner}公开榜单（${ranking.dataDate}，仅视频稿件），非官方实时排名；评论计数核对于 ${config.commentCountVerifiedAt}。`;
     byId("onlineRankingSource").href = ranking.url;
-    byId("heroOnlineDays").textContent = `1 人工作 ${workDuration(baseline.manualDays)}`;
-    byId("impactManualDays").textContent = `1 人工作 ${workDuration(baseline.manualDays)}`;
+    byId("heroOnlineDays").innerHTML = `1 人工作 ${workDurationHtml(baseline.manualDays)}`;
+    byId("impactManualDays").innerHTML = `1 人工作 ${workDurationHtml(baseline.manualDays)}`;
     byId("heroOnlineCost").textContent = (baseline.manualCost / 10000).toFixed(1);
     const seconds = Number(byId("budgetSeconds").value);
     const efficiency = Number(byId("budgetEfficiency").value);
@@ -115,9 +119,9 @@
     state.budget = { ...result, count, seconds, efficiency, reviewRate };
     byId("budgetThroughput").textContent = number(result.throughput);
     byId("budgetManualCost").textContent = number(result.manualCost);
-    byId("budgetManualDays").textContent = `元 · 1 人工作 ${workDuration(result.manualDays)}`;
+    byId("budgetManualDays").innerHTML = `元 · 1 人工作 ${workDurationHtml(result.manualDays)}`;
     byId("budgetAssistedCost").textContent = number(result.assistedCost);
-    byId("budgetAssistedDays").textContent = `元 · 1 人工作 ${workDuration(result.assistedDays)} · ${commentCount(result.assistedLabels)} 条人工任务`;
+    byId("budgetAssistedDays").innerHTML = `元 · 1 人工作 ${workDurationHtml(result.assistedDays)} · ${commentCount(result.assistedLabels)} 条人工任务`;
     byId("budgetScopeNote").textContent = `线上视频评论总数 ${commentCount(count)} 条：${config.videos.map((video) => `${video.name} ${commentCount(video.onlineCount)} 条`).join("；")}。核对时间：${config.commentCountVerifiedAt}。`;
     byId("budgetCountSources").innerHTML = `计数来源：${config.videos.map((video) => `<a href="${video.countUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(video.name)} · 平台公开接口 ↗</a>`).join(" / ")}；字段 ${escapeHtml(config.commentCountField)}。`;
     const difference = result.manualCost - result.assistedCost;
@@ -166,16 +170,22 @@
     ).join("");
     const evidence = data.officialLegalGaps;
     byId("officialGapStatus").textContent = evidence.draftStatus;
-    byId("legalConflictCases").innerHTML = data.legalConflicts.map((item) => `<article>
+    byId("legalConflictCases").innerHTML = data.legalConflicts.map((item) => {
+      const gap = item.decision - item.marketValue;
+      const gapText = gap === 0 ? "与成交金额持平"
+        : gap > 0 ? `比成交金额高 <strong>${number(gap)}</strong> 元`
+        : `低于成交金额 <strong>${number(-gap)}</strong> 元`;
+      return `<article>
       <h5>${escapeHtml(item.title)}</h5>
       <dl class="legal-comparison">
         <div><dt>${escapeHtml(item.marketLabel)}</dt><dd><strong>${number(item.marketValue)}</strong> 元</dd></div>
         <div><dt>${escapeHtml(item.decisionLabel)}</dt><dd><strong>${number(item.decision)}</strong> 元</dd></div>
       </dl>
-      <p class="legal-difference">低于交易金额 <strong>${number(item.marketValue - item.decision)}</strong> 元</p>
+      <p class="legal-difference">${gapText}</p>
       <p>${escapeHtml(item.reason)}</p>
       <div class="legal-case-links">${caseLinks(item.sources)}</div>
-    </article>`).join("");
+    </article>`;
+    }).join("");
     byId("officialGapQuotes").innerHTML = evidence.quotes.map((quote) =>
       `<blockquote cite="${escapeHtml(evidence.url)}"><p>“${escapeHtml(quote)}”</p></blockquote>`
     ).join("");
@@ -209,7 +219,7 @@
     }
     byId("categoryBars").innerHTML = categories.map((category, index) => {
       const percent = counts[category] / total * 100;
-      return `<div class="category-row category-${categoryClasses[index]}"><span>${category}</span><div class="category-track" aria-hidden="true"><div class="category-fill" style="width:${percent.toFixed(2)}%"></div></div><strong>${commentCount(counts[category])}</strong><span>${percent.toFixed(1)}%</span></div>`;
+      return `<div class="category-row category-${categoryClasses[index]}"><span>${ResearchUI.categoryLabel(category)}</span><div class="category-track" aria-hidden="true"><div class="category-fill" style="width:${percent.toFixed(2)}%"></div></div><strong>${commentCount(counts[category])}</strong><span>${percent.toFixed(1)}%</span></div>`;
     }).join("");
   }
   /** @returns {void} */
@@ -242,7 +252,7 @@
       byId("anchorCount").textContent = commentCount(state.videos.reduce((sum, video) => sum + (Number(video.anchor_count) || 0), 0));
       byId("communityCount").textContent = number(new Set(state.videos.map((video) => video.community).filter(Boolean)).size);
       byId("communityNames").textContent = [...new Set(state.videos.map((video) => video.community).filter(Boolean))].join(" / ") || "尚未配置社区";
-      byId("analysisCoverage").textContent = sampleCount ? `标签覆盖 ${(analyzed / sampleCount * 100).toFixed(1)}% · 不代表判对` : "暂无采集样本";
+      byId("analysisCoverage").textContent = sampleCount ? `标签覆盖 ${(analyzed / sampleCount * 100).toFixed(1)}%` : "暂无采集样本";
       byId("connectionState").innerHTML = '<span class="status-dot"></span>本地数据已连接';
       const previousSelection = byId("communitySelect").value;
       byId("communitySelect").innerHTML = '<option value="all">全部研究社区</option>' + state.videos.map((video) => `<option value="${escapeHtml(video.bvid)}">${escapeHtml(video.community || "社区")} · ${escapeHtml(video.name)}</option>`).join("");
@@ -281,9 +291,13 @@
     }
     lines.push("## 游戏账号估值与民间协作", ...data.legalCases.map((item) => `- ${item.title}。${item.facts} 来源：${item.sources.map(({ url }) => url).join("、")}`), "",
       "## 追责冲突案例",
-      ...data.legalConflicts.map((item) => `- ${item.title}。${item.marketLabel} ${number(item.marketValue)} 元，${item.decisionLabel} ${number(item.decision)} 元，低于交易金额 ${number(item.marketValue - item.decision)} 元。${item.reason} 来源：${item.sources.map(({ url }) => url).join("、")}`), "",
+      ...data.legalConflicts.map((item) => {
+        const gap = item.decision - item.marketValue;
+        const gapText = gap === 0 ? "与成交金额持平" : gap > 0 ? `比成交金额高 ${number(gap)} 元` : `低于成交金额 ${number(-gap)} 元`;
+        return `- ${item.title}。${item.marketLabel} ${number(item.marketValue)} 元，${item.decisionLabel} ${number(item.decision)} 元，${gapText}。${item.reason} 来源：${item.sources.map(({ url }) => url).join("、")}`;
+      }), "",
       "## 研究方法与系统实现", ...data.architecture.map((item) => `- ${item.step} ${item.title}。${item.description}`), "");
-    lines.push("## 待论证的研究问题", "1. 如何结合语境与人工复核，区分正常批评、玩梗与人身攻击？", "2. 疑似刷评需要哪些文本之外的证据，才能验证是否存在组织化操纵？", "3. 平台如何建立有解释、可复核的评论治理流程，保护用户合法表达？", "4. 现有规则在隐晦攻击、跨社区传播和证据留存方面有哪些需要进一步调研的难点？", "", "## 证据整理提纲", "- 界定样本范围、采集时间与去重方法；记录样本代表性和选择偏差。", "- 留存评论标识、来源视频、上下文、分类理由、人工复核意见和修订记录。", "- 逐项关联现行规则，明确事实缺口，开展实证与规范论证。", "- 提出研究建议，并评估对合法表达、隐私保护和申诉救济的影响。", "", "## 官方规则参考", ...data.laws.map((law) => `- ${law.title}（${law.date} 施行，参考 ${law.articles}）：${law.url}`), "", "## 研究边界", "本项目目前研究已配置的视频社区样本，不代表全网。模型标签与置信度不是违法认定、付费刷评证明或准确率。规则关联由研究人员整理，不是自动法律裁决。研究提纲需要人工核查与后续论证。", "", `公开经济资料核验日期：${data.verifiedOn}。`);
+    lines.push("## 二次审查与立法研究材料用途", "分析报告与评论证据可导出 ZIP、CSV、JSON；保留原文来源、模型标签、理由和已有人工标注，供二次审查或作为立法研究材料数据集使用。模型标签不替代人工审查。", "", "## 待论证的研究问题", "1. 如何结合语境与人工复核，区分正常批评、玩梗与人身攻击？", "2. 疑似刷评需要哪些文本之外的证据，才能验证是否存在组织化操纵？", "3. 平台如何建立有解释、可复核的评论治理流程，保护用户合法表达？", "4. 现有规则在隐晦攻击、跨社区传播和证据留存方面有哪些需要进一步调研的难点？", "", "## 证据整理提纲", "- 界定样本范围、采集时间与去重方法；记录样本代表性和选择偏差。", "- 留存评论标识、来源视频、上下文、分类理由、人工复核意见和修订记录。", "- 逐项关联现行规则，明确事实缺口，开展实证与规范论证。", "- 提出研究建议，并评估对合法表达、隐私保护和申诉救济的影响。", "", "## 官方规则参考", ...data.laws.map((law) => `- ${law.title}（${law.date} 施行，参考 ${law.articles}）：${law.url}`), "", "## 研究边界", "本项目目前研究已配置的视频社区样本，不代表全网。模型标签与置信度不是违法认定、付费刷评证明或准确率。规则关联由研究人员整理，不是自动法律裁决。研究提纲需要人工核查与后续论证。", "", `公开经济资料核验日期：${data.verifiedOn}。`);
     lines.push("", "## 语境认定与制度细化", "迷惑性评论可能因反讽、圈层语义与上下文缺失而难以单句判读。当前没有独立测试结果支持识别准确率，不以标签覆盖率代替正确率。", "本项目提出的研究问题是认定尺度、证据要求和复核程序如何细化，不主张我国没有相关法律法规。", "", "## 立法进展资料（与现行规则区分）", `${data.legislation.title}：${data.legislation.date} 发布的${data.legislation.status}。${data.legislation.note}`, data.legislation.url, `法律资料核验：${data.legalVerifiedOn}。`, "模型参照人工锚定示例分类；参数微调增益、识别准确率与实际总成本仍需独立对照评测。");
     const practice = data.projectPractice;
     lines.push("", "## 本项目当前成本", "少量人工示范、圈层知识检索和批量模型分类复用人工经验；原文、理由与复核记录形成证据闭环。", `项目成本≈${practice.approxCost}元（${practice.basis}，${practice.verifiedOn}）；${practice.developers} 人独立完成，${practice.modelBasis}。${practice.note}`, "当前样本实践与线上全量工资估算为不同规模，不能将免费额度外推为全量无限免费。");
@@ -317,6 +331,7 @@
     const timeout = setTimeout(() => { timedOut = true; controller.abort(); }, 60000);
     try {
       const result = await request("/api/agent/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question }), signal: controller.signal });
+      ResearchUI.renderTrace(reply, result.trace || []);
       reply.querySelector("span").textContent = typeof result.answer === "string" ? result.answer : "模型未返回文本回答，请调整问题后重试。";
       byId("chatQuestion").value = "";
     } catch {

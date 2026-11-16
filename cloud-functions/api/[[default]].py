@@ -31,6 +31,8 @@ if str(ROOT) not in sys.path:
 
 import comment_graph as cg  # noqa: E402
 import rag_knowledge  # noqa: E402
+import research_reports  # noqa: E402
+import agent_runtime  # noqa: E402
 
 DATA_DIR = ROOT / "data"
 if not DATA_DIR.exists():
@@ -291,6 +293,21 @@ def api_analysis(bvid):
     # _rows is only used by the comments endpoint; omit it from this summary.
     payload = {k: v for k, v in analyzed.items() if k != "_rows"}
     return ok(payload)
+
+
+@app.route("/research/report")
+def api_research_report():
+    return ok(research_reports.build_report(DATA_DIR, _public_config()))
+
+
+@app.route("/research/export")
+def api_research_export():
+    try:
+        content, mime, name = research_reports.create_export(
+            DATA_DIR, _public_config(), request.args.get("format", "zip"), request.args.get("bvid", ""))
+        return Response(content, mimetype=mime, headers={"Content-Disposition": f'attachment; filename="{name}"', "Cache-Control": "no-store"})
+    except ValueError as exc:
+        return err(str(exc))
 
 
 @app.route("/corpus/<bvid>")
@@ -695,26 +712,6 @@ _SYSTEM_PROMPT = (
 )
 
 
-def _chat_context(question: str) -> str:
-    lines = ["研究数据概览："]
-    for video in _videos():
-        bvid = video["bvid"]
-        analyzed = _analyzed(bvid) or {}
-        total = analyzed.get("total") or _corpus(bvid).get("count") or 0
-        lines.append(
-            f"- {video.get('name')}（{video.get('community')}）：评论 {total} 条；"
-            f"分类 {json.dumps(analyzed.get('category_count') or {}, ensure_ascii=False)}"
-        )
-        top = (analyzed.get("top_slang") or _corpus_top_slang(bvid))[:8]
-        if top:
-            lines.append("  网络用语：" + "、".join(f"{x['term']}({x['count']})" for x in top))
-    hits = _kb().search(question, k=3)
-    if hits:
-        lines.append("相关网络用语：\n" + _kb().format_for_prompt(hits))
-    lines.append("平台说明：评论及模型标签是研究线索，不能据此认定用户身份、付费行为或违法事实。")
-    return "\n".join(lines)
-
-
 @app.route("/agent/chat", methods=["POST"])
 def api_agent_chat():
     body = request.get_json(silent=True) or {}
@@ -732,28 +729,8 @@ def api_agent_chat():
 
     base_url = (os.environ.get("ZHIPU_BASE_URL") or "https://open.bigmodel.cn/api/paas/v4/").rstrip("/")
     model = os.environ.get("ZHIPU_MODEL") or "glm-4-flash"
-    payload = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": _SYSTEM_PROMPT},
-            {"role": "user", "content": f"{_chat_context(question)}\n\n问题：{question}"},
-        ],
-        "temperature": 0.3,
-        "max_tokens": 900,
-    }
     try:
-        import requests
-
-        response = requests.post(
-            f"{base_url}/chat/completions",
-            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-            json=payload,
-            timeout=55,
-        )
-        response.raise_for_status()
-        data = response.json()
-        answer = data["choices"][0]["message"]["content"]
-        return ok({"answer": answer})
+        return ok(agent_runtime.run_chat(DATA_DIR, question, api_key, base_url, model, _SYSTEM_PROMPT))
     except Exception as exc:  # noqa: BLE001 - return a bounded public error
         return err(f"问答服务暂时不可用：{str(exc)[:160]}", 502)
 

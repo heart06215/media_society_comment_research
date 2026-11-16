@@ -5,11 +5,11 @@
 
 :root {
   --font-number: Bahnschrift, "DIN Alternate", "Segoe UI", "Microsoft YaHei", sans-serif;
-  /* Shared reading scale: 18px body, 14px metadata floor. */
-  --type-caption: .875rem; --type-small: 1rem; --type-body: 1.125rem;
-  --type-lead: 1.25rem; --type-title: 1.5rem; --type-heading: 1.875rem;
-  --type-page: 2.25rem; --type-section: 2.5rem; --type-display: 3rem;
-  --type-metric: 3.5rem; --type-large: 4rem; --type-poster: 4.5rem; --type-jumbo: 5.5rem;
+  /* Shared reading scale: 22px body, 18px metadata floor. */
+  --type-caption: 1.125rem; --type-small: 1.25rem; --type-body: 1.375rem;
+  --type-lead: 1.75rem; --type-title: 2.125rem; --type-heading: 2.5rem;
+  --type-page: 2.75rem; --type-section: 3.25rem; --type-display: 3.75rem;
+  --type-metric: 4.25rem; --type-large: 4.75rem; --type-poster: 5.75rem; --type-jumbo: 6.75rem;
   /* 冷色撞色盘 */
   --blue:   #2743FF;  /* 电光蓝 */
   --cyan:   #00D9E9;  /* 荧光青 */
