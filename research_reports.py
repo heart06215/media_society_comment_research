@@ -31,6 +31,7 @@ def build_report(data_dir: Path, config: dict | None = None) -> dict:
     analyses = [read_json(p, {}) for p in sorted((data_dir / "analysis").glob("*_analyzed.json"))]
     benchmark = read_json(data_dir / "analysis" / "benchmark_report.json", {})
     design_targets = read_json(data_dir / "evaluation" / "method_targets.json", {}).get("targets", {})
+    reported_results = read_json(data_dir / "evaluation" / "reported_results.json", {}).get("methods", {})
     counts = Counter(a.get("category") for a in anchors)
     categories = ["赞美", "贬低", "水军", "无意义", "社区对骂", "中立"]
     methods = []
@@ -44,8 +45,15 @@ def build_report(data_dir: Path, config: dict | None = None) -> dict:
         target_value = target.get("accuracy")
         target_record = ({"accuracy": target_value, "metric_kind": "design_target", "label": "目标准确率"}
                          if type(target_value) in (int, float) and 0 <= target_value <= 1 else None)
+        reported = reported_results.get(key)
+        if not (isinstance(reported, dict) and reported.get("status") == "complete"
+                and type(reported.get("accuracy")) in (int, float)
+                and 0 <= reported["accuracy"] <= 1 and reported.get("source")):
+            reported = None
+        method_status = reported["status"] if reported else (result or {}).get("status", "not_run")
         methods.append({"id": key, "name": name, "description": description, "target": target_record,
-                        "status": result.get("status", "not_run") if result else "not_run",
+                        "reported_result": reported,
+                        "status": method_status,
                         "result": result})
     ft = benchmark.get("parameter_finetune") or {}
     has_ft = bool(config.get("fine_tuned_model"))
@@ -101,15 +109,25 @@ def report_markdown(report: dict, rows: list[dict]) -> str:
              "## 研究用途", "用于二次审查、研究复现及立法研究材料数据集。模型标签作为研究线索，人工结论应结合原文语境和其他证据。", "",
              "## 三档方法测试与历史回看", "| 方法 | 指标 | 数值 | 完成/样本 |", "| --- | --- | --- | --- |"]
     for method in report["methods"]:
+        reported = method.get("reported_result")
+        if reported:
+            lines.append(f"| {method['name']} | {reported['metric_label']} | 约{reported['accuracy']:.0%}（实测） | — |")
+            continue
         r = method.get("result") or {}
         metric = r.get("accuracy", r.get("agreement"))
         value = f"{metric:.2%}" if metric is not None else "未测试"
         lines.append(f"| {method['name']} | {r.get('metric_label', '无独立结果')} | {value} | {r.get('completed', 0)}/{r.get('n', 0)} |")
-    targets = [method for method in report["methods"] if method.get("target")]
+    targets = [method for method in report["methods"] if method.get("target") and not method.get("reported_result")]
     if targets:
         lines += ["", "## 方案目标", "| 方法 | 目标准确率 |", "| --- | --- |"]
         for method in targets:
             lines.append(f"| {method['name']} | 约 {method['target']['accuracy']:.0%} |")
+    reported = [method for method in report["methods"] if method.get("reported_result")]
+    if reported:
+        lines += ["", "## 外部测试记录"]
+        for method in reported:
+            record = method["reported_result"]
+            lines.append(f"- {method['name']}：约{record['accuracy']:.0%}（实测）。记录来源：{record['source']}；登记日期：{record.get('reported_date', '')}。")
     benchmark = report.get("benchmark") or {}
     lines += ["", f"测试协议：{benchmark.get('protocol', '尚未运行独立分组测试')}", benchmark.get("comparison_note", ""),
               "项目模型的正式对照采用完整分类流程；会话内试读记录保存在 benchmark.json 的 conversation_trials。",

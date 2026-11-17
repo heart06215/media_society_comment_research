@@ -60,6 +60,10 @@ async function main() {
   assert.equal(report.sample_count, 7199);
   assert.equal(report.methods.find((method) => method.id === "llm_zeroshot").target.accuracy, 0.7);
   assert.ok(!( "accuracy" in report.methods.find((method) => method.id === "annotated").result));
+  const external = report.methods.find((method) => method.id === "annotated").reported_result;
+  assert.equal(external.accuracy, 0.9);
+  assert.ok(external.approximate && external.source);
+  assert.ok(!("n" in external));
   for (const limit of [240, 520]) {
     const graph = await request(`/api/graph?comments=${limit}`);
     assert.ok(graph.success && graph.data.nodes.length && graph.data.edges.length);

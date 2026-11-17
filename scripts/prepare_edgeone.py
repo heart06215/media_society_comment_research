@@ -82,6 +82,7 @@ def main() -> None:
     _copy_glob(DATA / "analysis", "*_analyzed.json", FUNCTION_DATA / "analysis")
     _copy_file(DATA / "analysis" / "benchmark_report.json", FUNCTION_DATA / "analysis" / "benchmark_report.json")
     _copy_file(DATA / "evaluation" / "method_targets.json", FUNCTION_DATA / "evaluation" / "method_targets.json")
+    _copy_file(DATA / "evaluation" / "reported_results.json", FUNCTION_DATA / "evaluation" / "reported_results.json")
     _copy_file(DATA / "labels" / "anchors.json", FUNCTION_DATA / "labels" / "anchors.json")
     for name in ("slang_dict.json", "rag_knowledge.json", "config.example.json"):
         _copy_file(DATA / name, FUNCTION_DATA / name)

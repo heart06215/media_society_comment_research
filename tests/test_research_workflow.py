@@ -117,7 +117,19 @@ class ExportTests(unittest.TestCase):
         markdown = research_reports.report_markdown(report, [])
         self.assertIn("## 方案目标", markdown)
         self.assertIn("| 大模型 | 约 70% |", markdown)
-        self.assertIn("| 我们的微调标注大模型 | 约 90% |", markdown)
+        self.assertIn("| 我们的微调标注大模型 | 实测准确率 | 约90%（实测） | — |", markdown)
+
+    def test_external_measurement_preserves_source_without_invented_counts(self):
+        report = research_reports.build_report(ROOT / "data")
+        method = next(item for item in report["methods"] if item["id"] == "annotated")
+        result = method["reported_result"]
+        self.assertEqual(result["accuracy"], 0.9)
+        self.assertTrue(result["approximate"])
+        self.assertEqual(result["evaluation_kind"], "team_reported_external_model_test")
+        self.assertTrue(result["source"])
+        for field in ("n", "correct", "macro_f1", "per_class"):
+            self.assertNotIn(field, result)
+        self.assertNotIn("accuracy", method["result"])
 
     def test_review_package_separates_labels_and_omits_identity_fields(self):
         with tempfile.TemporaryDirectory(prefix=".tmp-test-", dir=ROOT) as folder:
@@ -172,6 +184,8 @@ class ApiTests(unittest.TestCase):
                 report = response.get_json()["data"]
                 self.assertEqual(report["sample_count"], 7199)
                 self.assertEqual(len(report["methods"]), 3)
+                annotated = next(item for item in report["methods"] if item["id"] == "annotated")
+                self.assertEqual(annotated["reported_result"]["accuracy"], 0.9)
                 download = client.get(prefix + "/research/export?format=zip&bvid=BV1fy4y1L7Rq")
                 self.assertEqual(download.status_code, 200)
                 with zipfile.ZipFile(io.BytesIO(download.data)) as archive:

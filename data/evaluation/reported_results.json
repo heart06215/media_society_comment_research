@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "methods": {
+    "annotated": {
+      "status": "complete",
+      "accuracy": 0.9,
+      "approximate": true,
+      "metric_label": "实测准确率",
+      "evaluation_kind": "team_reported_external_model_test",
+      "source": "项目团队提供的其他大模型测试结果",
+      "reported_date": "2026-11-17"
+    }
+  }
+}
