@@ -50,6 +50,7 @@ html[data-theme="dark"] {
 .workbench-card { background: var(--surface); border: 2px solid var(--line); padding: var(--space-8); display: flex; align-items: flex-start; flex-direction: column; gap: var(--space-4); min-width: 0; }
 .workbench-card h2 { font-size: var(--type-title); }
 .workbench-card p { color: var(--muted); margin-bottom: auto; }
+.workbench-card .action { text-decoration: none; }
 .news-case-list, .news-card { min-width: 0; }
 .news-card { overflow-wrap: anywhere; }
 @media (max-width: 767px) { .workbench-main { padding: var(--space-8) var(--space-4); } .workbench-grid { grid-template-columns: 1fr; } .workbench-card { padding: var(--space-6); } }
@@ -781,12 +782,16 @@ html[data-theme="dark"] .platform-chips span:last-child { color: #090B10; }
 }
 
 /* 微调情况报告：标注扫描表 */
-.finetune-scan { width: 100%; border-collapse: collapse; margin: 16px 0 12px; font-size: var(--type-small); }
+.finetune-scan { width: 100%; table-layout: fixed; border-collapse: collapse; margin: 16px 0 12px; font-size: var(--type-small); }
 .finetune-scan caption { text-align: left; font-size: var(--type-caption); color: var(--muted); padding-bottom: 8px; }
 .finetune-scan th, .finetune-scan td { border-bottom: 1px solid var(--grid); padding: 8px 6px; text-align: left; vertical-align: top; }
 .finetune-scan thead th { font-size: var(--type-caption); color: var(--muted); letter-spacing: 1px; }
-.finetune-scan tbody th { font-weight: 900; white-space: nowrap; }
-.finetune-scan td:last-child { font-variant-numeric: tabular-nums; font-weight: 900; white-space: nowrap; }
+.finetune-scan th:first-child { width: 28%; }
+.finetune-scan th:nth-child(2) { width: 38%; }
+.finetune-scan th:last-child { width: 34%; }
+.finetune-scan :is(th, td) { overflow-wrap: anywhere; }
+.finetune-scan tbody th { font-weight: 900; white-space: normal; }
+.finetune-scan td:last-child { font-variant-numeric: tabular-nums; font-weight: 900; white-space: normal; }
 @media (max-width: 767px) { .finetune-scan th, .finetune-scan td { padding: 6px 4px; } .finetune-scan tbody th, .finetune-scan td:last-child { white-space: normal; } }
 .finetune-anchor-list { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 0 0 12px; padding: 0; list-style: none; }
 .finetune-anchor-list li { display: flex; align-items: baseline; gap: 6px; font-size: var(--type-caption); }
