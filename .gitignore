@@ -52,3 +52,6 @@ opencode.jsonc
 
 # Signed submission materials and registration details stay local.
 /output/submission-local/
+
+# Local Baidu submission package includes signed competition documents.
+/传智杯百度网盘提交/
