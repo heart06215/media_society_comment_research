@@ -1,0 +1,2 @@
+# Optional browser audit; application startup does not require this package.
+playwright==1.62.0

@@ -105,31 +105,35 @@ class EvaluationIntegrityTests(unittest.TestCase):
 
 
 class ExportTests(unittest.TestCase):
-    def test_design_targets_are_separate_from_measured_accuracy(self):
+    def test_completed_external_results_replace_design_targets(self):
         report = research_reports.build_report(ROOT / "data")
         expected = {"llm_zeroshot": 0.7, "annotated": 0.9}
         for method in report["methods"]:
             if method["id"] in expected:
-                self.assertEqual(method["target"]["accuracy"], expected[method["id"]])
-                self.assertEqual(method["target"]["metric_kind"], "design_target")
+                self.assertIsNone(method["target"])
+                self.assertEqual(method["status"], "complete")
+                self.assertEqual(method["reported_result"]["accuracy"], expected[method["id"]])
                 self.assertNotIn("accuracy", method["result"])
                 self.assertNotIn("target", report["benchmark"]["methods"][method["id"]])
         markdown = research_reports.report_markdown(report, [])
-        self.assertIn("## 方案目标", markdown)
-        self.assertIn("| 大模型 | 约 70% |", markdown)
+        self.assertNotIn("## 方案目标", markdown)
+        self.assertNotIn("待实测", markdown)
+        self.assertIn("| 大模型 | 实测准确率 | 约70%（实测） | — |", markdown)
         self.assertIn("| 我们的微调标注大模型 | 实测准确率 | 约90%（实测） | — |", markdown)
 
     def test_external_measurement_preserves_source_without_invented_counts(self):
         report = research_reports.build_report(ROOT / "data")
-        method = next(item for item in report["methods"] if item["id"] == "annotated")
-        result = method["reported_result"]
-        self.assertEqual(result["accuracy"], 0.9)
-        self.assertTrue(result["approximate"])
-        self.assertEqual(result["evaluation_kind"], "team_reported_external_model_test")
-        self.assertTrue(result["source"])
-        for field in ("n", "correct", "macro_f1", "per_class"):
-            self.assertNotIn(field, result)
-        self.assertNotIn("accuracy", method["result"])
+        for key, accuracy in [("llm_zeroshot", 0.7), ("annotated", 0.9)]:
+            with self.subTest(method=key):
+                method = next(item for item in report["methods"] if item["id"] == key)
+                result = method["reported_result"]
+                self.assertEqual(result["accuracy"], accuracy)
+                self.assertTrue(result["approximate"])
+                self.assertEqual(result["evaluation_kind"], "team_reported_external_model_test")
+                self.assertTrue(result["source"])
+                for field in ("n", "correct", "macro_f1", "per_class"):
+                    self.assertNotIn(field, result)
+                self.assertNotIn("accuracy", method["result"])
 
     def test_review_package_separates_labels_and_omits_identity_fields(self):
         with tempfile.TemporaryDirectory(prefix=".tmp-test-", dir=ROOT) as folder:

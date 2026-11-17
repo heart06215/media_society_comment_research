@@ -1,6 +1,15 @@
 {
   "schema_version": 1,
   "methods": {
+    "llm_zeroshot": {
+      "status": "complete",
+      "accuracy": 0.7,
+      "approximate": true,
+      "metric_label": "实测准确率",
+      "evaluation_kind": "team_reported_external_model_test",
+      "source": "项目团队确认已完成的外部模型测试结果",
+      "reported_date": "2026-11-17"
+    },
     "annotated": {
       "status": "complete",
       "accuracy": 0.9,

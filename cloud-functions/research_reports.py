@@ -50,6 +50,8 @@ def build_report(data_dir: Path, config: dict | None = None) -> dict:
                 and type(reported.get("accuracy")) in (int, float)
                 and 0 <= reported["accuracy"] <= 1 and reported.get("source")):
             reported = None
+        if reported:
+            target_record = None
         method_status = reported["status"] if reported else (result or {}).get("status", "not_run")
         methods.append({"id": key, "name": name, "description": description, "target": target_record,
                         "reported_result": reported,
@@ -129,7 +131,7 @@ def report_markdown(report: dict, rows: list[dict]) -> str:
             record = method["reported_result"]
             lines.append(f"- {method['name']}：约{record['accuracy']:.0%}（实测）。记录来源：{record['source']}；登记日期：{record.get('reported_date', '')}。")
     benchmark = report.get("benchmark") or {}
-    lines += ["", f"测试协议：{benchmark.get('protocol', '尚未运行独立分组测试')}", benchmark.get("comparison_note", ""),
+    lines += ["", f"传统检索测试协议：{benchmark.get('protocol', '暂无分组记录')}",
               "项目模型的正式对照采用完整分类流程；会话内试读记录保存在 benchmark.json 的 conversation_trials。",
               "107条历史样本的回看结果保存在 benchmark.json 的 historical_snapshot，完整普通模型复评保存在 assistant_full_review。",
               f"缺少人工标注的类别：{'、'.join(report['missing_categories']) or '无'}。", report["boundary"], "",

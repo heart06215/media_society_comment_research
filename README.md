@@ -110,6 +110,10 @@ flowchart TD
 - [前端升级与资料来源](docs/前端升级与资料来源.md)：官方数据、法规、获奖项目参考与界面说明。
 - [开发记录](docs/开发记录.md)：已有开发过程记录。
 
+## 开发检查
+
+开发检查可运行 `python -m unittest discover -s tests` 和 `npm run check:types`。页面检查另需 `pip install -r requirements-ui.txt`，准备演示快照后运行 `python tests/check_review_ui.py`；Windows使用已安装的Edge，其他系统需Chromium。该检查覆盖三档结果的全部显示位置、导出、导航及评论交互，不发送模型请求。
+
 ## 团队信息
 
 | 项目 | 报名信息 |

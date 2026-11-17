@@ -19,9 +19,12 @@
 ```powershell
 python scripts/prepare_github_pages.py
 node tests/check_pages_runtime.cjs
+python tests/check_review_ui.py
 ```
 
 生成目录为`.tmp-pages-site`，已被主仓库忽略。此目录可作为公开部署仓库的独立Git工作区，构建器保留其中的`.git`目录。检查生成文件后，在该目录提交并推送到`heart06215/powang-demo`。
+
+浏览器检查需要Playwright及本机Edge（其他系统使用Chromium），覆盖三档方法卡片、微调表的全部结果行、所有分类下拉选项、Markdown/JSON/ZIP导出、导航和评论交互。发布后可用`python tests/check_review_ui.py --base-url https://heart06215.github.io/powang-demo/`检查实际站点；该脚本阻止模型请求。
 
 Pages设置为从公开部署仓库的`main`分支根目录发布，`.nojekyll`用于按原样托管静态文件。网站根路径固定为`/powang-demo/`；改部署仓库名称时需要同步构建器的`BASE`。
 

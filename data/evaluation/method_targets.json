@@ -1,9 +1,8 @@
 {
   "schema_version": 1,
   "metric_kind": "design_target",
-  "label": "目标准确率",
-  "targets": {
-    "llm_zeroshot": {"accuracy": 0.7},
-    "annotated": {"accuracy": 0.9}
-  }
+  "label": "历史方案目标",
+  "status": "superseded",
+  "superseded_by": "reported_results.json",
+  "targets": {}
 }
