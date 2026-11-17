@@ -6,6 +6,7 @@ Usage: python scripts/build_technical_pdf.py [--font PATH] [--bold-font PATH]
 from __future__ import annotations
 
 import argparse
+import json
 import html
 import re
 from pathlib import Path
@@ -23,7 +24,8 @@ from reportlab.platypus import (
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "docs" / "参赛技术文档.md"
-OUTPUT = ROOT / "output" / "pdf" / "破妄-参赛技术文档.pdf"
+OUTPUT = ROOT / "output" / "pdf" / "澄明-参赛技术文档.pdf"
+REGISTRATION = {}
 BLUE = colors.HexColor("#2743FF")
 INK = colors.HexColor("#14203A")
 MUTED = colors.HexColor("#526078")
@@ -163,10 +165,10 @@ def page_chrome(canvas, doc) -> None:
     canvas.line(MARGIN, PAGE_H - 35, PAGE_W - MARGIN, PAGE_H - 35)
     canvas.setFont("BoldCN", 8)
     canvas.setFillColor(BLUE)
-    canvas.drawString(MARGIN, PAGE_H - 25, "POWANG / 破妄")
+    canvas.drawString(MARGIN, PAGE_H - 25, "CHENGMING / 澄明")
     canvas.setFont("BodyCN", 8)
     canvas.setFillColor(MUTED)
-    canvas.drawRightString(PAGE_W - MARGIN, PAGE_H - 25, "参赛技术文档 · 2026.11.16")
+    canvas.drawRightString(PAGE_W - MARGIN, PAGE_H - 25, "参赛技术文档 · 2026.11.17")
     canvas.line(MARGIN, 35, PAGE_W - MARGIN, 35)
     canvas.drawString(MARGIN, 21, "人工示范 · 圈层检索 · 可追溯研究")
     canvas.drawRightString(PAGE_W - MARGIN, 21, f"{doc.page:02d}")
@@ -187,10 +189,10 @@ class Cover(Flowable):
         c.rect(-MARGIN, 500, PAGE_W, 195, fill=1, stroke=0)
         c.setFillColor(colors.HexColor("#ABFFF4"))
         c.setFont("Helvetica-Bold", 15)
-        c.drawString(0, 651, "POWANG / TECHNICAL DOCUMENT")
+        c.drawString(0, 651, "CHENGMING / TECHNICAL DOCUMENT")
         c.setFont("BoldCN", 63)
         c.setFillColor(colors.white)
-        c.drawString(-2, 549, "破妄")
+        c.drawString(-2, 549, "澄明")
         c.setFont("BoldCN", 24)
         c.drawString(0, 443, "社区评论与网络治理研究平台")
         c.setFont("BodyCN", 12)
@@ -218,10 +220,13 @@ class Cover(Flowable):
         c.setStrokeColor(colors.HexColor("#455373"))
         c.line(0, 104, WIDTH, 104)
         c.setFont("BodyCN", 9)
-        c.drawString(0, 79, "参赛技术文档 / V3.0 / 2026年11月16日")
-        c.drawString(0, 58, "项目维护：heart06215")
+        c.drawString(0, 79, "参赛技术文档 / V3.0 / 2026年11月17日")
+        c.drawString(0, 58, "榆林大学 / 我周围的都是高手 / B组")
+        if REGISTRATION:
+            c.drawString(0, 39, "团队成员：" + "、".join(REGISTRATION["members"]) + " / 团队编号" + REGISTRATION["team_id"])
+            c.drawString(0, 20, "指导教师：" + "、".join(REGISTRATION["advisors"]))
         c.setFont("Helvetica", 8)
-        c.drawString(0, 32, "github.com/heart06215/media_society_comment_research")
+        c.drawString(0, 0, "github.com/heart06215/media_society_comment_research")
 
 
 def parse_page(text: str, sty: dict[str, ParagraphStyle]) -> list:
@@ -269,10 +274,15 @@ def parse_page(text: str, sty: dict[str, ParagraphStyle]) -> list:
 
 
 def main() -> None:
+    global REGISTRATION
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--font")
     parser.add_argument("--bold-font")
+    parser.add_argument("--private", action="store_true", help="Use local registration for signed submission materials")
     args = parser.parse_args()
+    if args.private:
+        REGISTRATION = json.loads((ROOT / "output/submission-local/registration.json").read_text(encoding="utf-8"))
+    output = ROOT / "output/submission-local/澄明-参赛技术文档.pdf" if args.private else OUTPUT
     register_fonts(args.font, args.bold_font)
     content = SOURCE.read_text(encoding="utf-8")
     parts = re.split(r"<!-- page: \w+ -->", content)
@@ -282,12 +292,12 @@ def main() -> None:
         if index:
             story.append(PageBreak())
         story.append(KeepInFrame(WIDTH, PAGE_H - 108, parse_page(part, sty), mode="shrink", hAlign="LEFT", vAlign="TOP"))
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    doc = BaseDocTemplate(str(OUTPUT), pagesize=A4, title="破妄 · 参赛技术文档", author="heart06215", subject="社区评论、人工标注增强与网络治理研究", leftMargin=MARGIN, rightMargin=MARGIN, topMargin=58, bottomMargin=49, allowSplitting=0)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    doc = BaseDocTemplate(str(output), pagesize=A4, title="澄明 · 参赛技术文档", author="、".join(REGISTRATION.get("members", [])) or "我周围的都是高手", subject="社区评论、人工标注增强与网络治理研究", leftMargin=MARGIN, rightMargin=MARGIN, topMargin=58, bottomMargin=49, allowSplitting=0)
     frame = Frame(MARGIN, 49, WIDTH, PAGE_H - 107, leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
     doc.addPageTemplates(PageTemplate(id="technical", frames=frame, onPage=page_chrome))
     doc.build(story)
-    print(OUTPUT)
+    print(output)
 
 
 if __name__ == "__main__":

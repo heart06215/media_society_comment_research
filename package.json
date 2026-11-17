@@ -1,5 +1,5 @@
 {
-  "name": "powang-frontend-checks",
+  "name": "chengming-frontend-checks",
   "private": true,
   "scripts": {
     "check:types": "tsc --project jsconfig.json"

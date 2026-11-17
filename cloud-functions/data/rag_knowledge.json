@@ -1,5 +1,5 @@
 {
-  "说明": "破妄 · 网络用语RAG知识库。用于检索增强(Retrieval-Augmented Generation)：分类时按评论相关网络用语检索知识并注入prompt，提升网络用语特化分类能力。term=词条, meaning=含义, sentiment=倾向, aliases=别名, examples=示例, note=备注。加长知识库。",
+  "说明": "澄明 · 网络用语RAG知识库。用于检索增强(Retrieval-Augmented Generation)：分类时按评论相关网络用语检索知识并注入prompt，提升网络用语特化分类能力。term=词条, meaning=含义, sentiment=倾向, aliases=别名, examples=示例, note=备注。加长知识库。",
   "entries": [
     {"term": "砌墙", "meaning": "大量刷评论/弹幕的行为，逐条盖楼如砌砖", "sentiment": "中性", "aliases": ["盖楼", "刷楼"],
      "examples": ["当砌则砌！🔨🧱", "修墙了喵", "我在多索雷斯盖楼"],

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""破妄 · 表4 四方法对照实验脚本
+"""澄明 · 表4 四方法对照实验脚本
 论文 4.2 节协议：对人工锚定集(金标)分别以四种模式分类，产出 Accuracy / Macro-F1 / 水军Recall。
   dict          基线-词典      本地规则+情感词典打分，不消耗API
   llm_zeroshot  零样本LLM      glm-4-flash 直接分类，无参照、无RAG

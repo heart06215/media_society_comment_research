@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""EdgeOne Makers read-only API for 破妄.
+"""EdgeOne Makers read-only API for 澄明.
 
 Deployment layout:
     cloud-functions/api/[[default]].py   <- this file
@@ -706,7 +706,7 @@ def api_rag_search():
 
 # ---------- lightweight chat ----------
 _SYSTEM_PROMPT = (
-    "你是「破妄」研究平台的中文助手。请只依据下面提供的统计数据、网络用语知识"
+    "你是「澄明」研究平台的中文助手。请只依据下面提供的统计数据、网络用语知识"
     "和平台说明回答。规则：不推断用户身份、付费行为或违法事实；区分模型标签与"
     "人工确认；证据不足时明确说明；回答简洁，优先给出研究线索和复核建议。"
 )

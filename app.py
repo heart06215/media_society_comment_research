@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""破妄 · Flask 后端
+"""澄明 · Flask 后端
 职责：
   1. 服务包豪斯前端页面(front/*.html)
   2. 数据API：视频信息、语料、分析结果
@@ -184,6 +184,11 @@ def page_landing():
 @app.route("/comments")
 def page_comments():
     return _page("comments.html")
+
+
+@app.route("/workbench")
+def page_workbench():
+    return _page("workbench.html")
 
 
 @app.route("/insight")
@@ -961,5 +966,5 @@ def api_rag_search():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    print(f"破妄 · 评论情感分析平台 http://localhost:{port}")
+    print(f"澄明 · 评论情感分析平台 http://localhost:{port}")
     app.run(host="127.0.0.1", port=port, debug=True, threaded=True)

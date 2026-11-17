@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""破妄 · B站评论爬虫
+"""澄明 · B站评论爬虫
 基于 bilibili-API-collect 公开接口文档改造：
   - 主评论：GET https://api.bilibili.com/x/v2/reply/main?type=1&oid={aid}&mode={m}&next={cursor}
     mode=2 时间正序(游标近似条数偏移) / mode=3 热度排序

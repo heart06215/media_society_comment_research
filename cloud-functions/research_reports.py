@@ -95,7 +95,7 @@ def evidence_rows(data_dir: Path, bvid: str = "") -> list[dict]:
 
 
 def report_markdown(report: dict, rows: list[dict]) -> str:
-    lines = ["# 破妄 · 评论分析与二次审查报告", "",
+    lines = ["# 澄明 · 评论分析与二次审查报告", "",
              f"导出时间：{datetime.now(timezone.utc).isoformat()}",
              f"本次导出 {len(rows)} 条评论；研究快照共 {report['sample_count']} 条、{report['anchor_count']} 条人工标注。", "",
              "## 研究用途", "用于二次审查、研究复现及立法研究材料数据集。模型标签作为研究线索，人工结论应结合原文语境和其他证据。", "",
@@ -142,7 +142,7 @@ def create_export(data_dir: Path, config: dict, fmt: str = "zip", bvid: str = ""
     csv_bytes = csv_buffer.getvalue().encode("utf-8-sig")
     markdown = report_markdown(report, rows).encode("utf-8")
     json_bytes = json.dumps({"manifest": manifest, "report": report, "comments": rows}, ensure_ascii=False, indent=2).encode("utf-8")
-    stem = "powang-research-" + (bvid or "all")
+    stem = "chengming-research-" + (bvid or "all")
     if fmt == "json":
         return json_bytes, "application/json; charset=utf-8", stem + ".json"
     if fmt == "csv":

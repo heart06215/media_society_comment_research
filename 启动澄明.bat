@@ -2,7 +2,7 @@
 chcp 65001 >nul
 setlocal
 cd /d "%~dp0"
-title 破妄 · 评论情感分析平台
+title 澄明 · 评论情感分析平台
 if not defined PORT set "PORT=5000"
 set "URL=http://127.0.0.1:%PORT%/"
 set "PY="

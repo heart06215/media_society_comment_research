@@ -3,6 +3,7 @@
   "buildCommand": "echo static-site",
   "outputDirectory": "./public",
   "rewrites": [
+    { "source": "/workbench", "destination": "/workbench.html" },
     { "source": "/comments", "destination": "/comments.html" },
     { "source": "/insight", "destination": "/insight.html" },
     { "source": "/label", "destination": "/label.html" }

@@ -38,7 +38,7 @@ def load(path: str):
 
 def rewrite_reference(match: re.Match) -> str:
     attr, quote, value = match.groups()
-    path = re.sub(r"^/(comments|insight|label)(?=$|[?#])", r"/\1.html", value)
+    path = re.sub(r"^/(comments|insight|label|workbench)(?=$|[?#])", r"/\1.html", value)
     if path == "/":
         path = "/index.html"
     return attr + quote + BASE + path.lstrip("/") + quote
@@ -64,11 +64,9 @@ def main() -> None:
         text = re.sub(r'''((?:href|src)=)(["'])(/(?!/)[^"']*)["']''', rewrite_reference, text)
         if source.suffix == ".html":
             text = text.replace('<head>', '<head>\n<script src="' + BASE + 'pages-runtime.js"></script>', 1)
-        if source.name == "workspace.js":
-            text = text.replace('const home = location.pathname === "/";', 'const routePath = location.pathname.replace("' + BASE + '", "/").replace(/\\.html$/, "");\n  const home = routePath === "/" || routePath === "/index";')
-            text = text.replace('location.pathname.startsWith(', 'routePath.startsWith(')
         (OUTPUT / source.name).write_text(text, encoding="utf-8")
     shutil.copy2(OUTPUT / "landing.html", OUTPUT / "index.html")
+    shutil.copytree(ROOT / "front/vendor", OUTPUT / "vendor")
     shutil.copy2(ROOT / "scripts" / "pages-runtime.js", OUTPUT / "pages-runtime.js")
     (OUTPUT / ".nojekyll").touch()
 
@@ -87,7 +85,13 @@ def main() -> None:
     sys.path.insert(0, str(ROOT))
     import research_reports
     report = research_reports.build_report(ROOT / "data", config)
-    write_json("data/site.json", {"videos": videos, "analyses": analyses, "comments": comments, "anchors": [{key: value for key, value in row.items() if key in COMMENT_FIELDS} for row in anchors], "report": report})
+    # Small overview payloads render before per-video comments or graph data.
+    write_json("data/videos.json", videos)
+    write_json("data/report.json", report)
+    write_json("data/anchors.json", [{key: value for key, value in row.items() if key in COMMENT_FIELDS} for row in anchors])
+    for bvid in comments:
+        write_json(f"data/comments-{bvid}.json", comments[bvid])
+        write_json(f"data/analysis-{bvid}.json", analyses[bvid])
 
     # Generate the exact graph response used by the live project, without model calls.
     import app
@@ -106,7 +110,7 @@ def main() -> None:
             path.write_bytes(content)
     source_commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     write_json("deployment-manifest.json", {"source_commit": source_commit, "mode": "read-only", "comment_count": sum(map(len, comments.values())), "anchor_count": len(anchors), "excluded_fields": sorted(BLOCKED)})
-    (OUTPUT / "README.md").write_text("# 破妄 · 公开演示\n\nhttps://heart06215.github.io/powang-demo/\n\n此仓库仅存放公开演示的前端和授权研究数据。完整项目、后端与开发历史见[源码仓库](https://github.com/heart06215/media_society_comment_research)。\n\n支持评论筛选、社区对比、关系图谱及研究报告下载。实时问答与服务端标注在完整版本运行。\n", encoding="utf-8")
+    (OUTPUT / "README.md").write_text("# 澄明 · 公开演示\n\nhttps://heart06215.github.io/powang-demo/\n\n此仓库仅存放公开演示的前端和授权研究数据。完整项目、后端与开发历史见[源码仓库](https://github.com/heart06215/media_society_comment_research)。\n\n支持评论筛选、社区对比、关系图谱及研究报告下载。实时问答与服务端标注在完整版本运行。\n", encoding="utf-8")
     print(f"Pages artifact: {OUTPUT}")
     print(f"Public comments: {sum(map(len, comments.values()))}; anchors: {len(anchors)}")
 

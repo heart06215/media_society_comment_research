@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""破妄 · 主入口 (fire CLI)
+"""澄明 · 主入口 (fire CLI)
 用法：
   python project_main.py --mode crawl          # 爬取两视频评论
   python project_main.py --mode analyze        # 用锚定集+大模型分析全量评论
@@ -72,7 +72,7 @@ def run(mode="stats", bvid="", limit=0):
     elif mode == "serve":
         from app import app
         port = int(os.environ.get("PORT", 5000))
-        print(f"破妄平台: http://localhost:{port}")
+        print(f"澄明平台: http://localhost:{port}")
         app.run(host="127.0.0.1", port=port, threaded=True)
     elif mode == "stats":
         print("=" * 40)

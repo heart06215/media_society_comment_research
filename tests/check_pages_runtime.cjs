@@ -5,6 +5,7 @@ const path = require("node:path");
 const vm = require("node:vm");
 const root = path.resolve(__dirname, "..", ".tmp-pages-site");
 const base = "https://heart06215.github.io/powang-demo/";
+const fetchedFiles = [];
 const context = {
   URL, Request, Response, Set, Map, Object, Number, String, Error,
   location: new URL(base),
@@ -13,6 +14,7 @@ const context = {
   window: {fetch: async (input) => {
     const url = new URL(String(input), base);
     const local = path.join(root, url.pathname.slice("/powang-demo/".length));
+    fetchedFiles.push(path.relative(root, local).replaceAll("\\", "/"));
     return new Response(fs.readFileSync(local));
   }},
 };
@@ -29,7 +31,13 @@ async function request(route, options) {
 async function main() {
   const videos = (await request("/api/videos")).data.videos;
   assert.equal(videos.length, 2);
+  assert.deepEqual(fetchedFiles, ["data/videos.json"]);
+  const firstReport = (await request("/api/research/report")).data;
+  assert.equal(firstReport.sample_count, 7199);
+  assert.ok(!fetchedFiles.some((name) => name.includes("comments-")));
   const bvid = videos[0].bvid;
+  const analysis = (await request(`/api/analysis/${bvid}`)).data;
+  assert.equal(analysis.total, 4267);
   const first = (await request(`/api/comments?bvid=${bvid}&size=96&page=1`)).data;
   const second = (await request(`/api/comments?bvid=${bvid}&size=96&page=2`)).data;
   assert.equal(first.total, 4267);
