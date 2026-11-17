@@ -70,16 +70,16 @@ def audit(base: str, save_doc_assets: bool) -> None:
         for width in (1440, 1024, 390, 320):
             page.set_viewport_size({"width": width, "height": 1000})
             metrics = page.locator("#homeTitle").evaluate("""e => {
-              const r=e.getBoundingClientRect(), p=e.closest('.home-hero').getBoundingClientRect(), s=getComputedStyle(e);
-              return {offset:Math.abs(r.x+r.width/2-p.x-p.width/2),color:s.color,stroke:s.webkitTextStrokeWidth};
+              const r=e.getBoundingClientRect(), icon=e.closest('.home-hero-brand').querySelector('img').getBoundingClientRect(), s=getComputedStyle(e);
+              return {gap:r.left-icon.right,iconWidth:icon.width,color:s.color,stroke:s.webkitTextStrokeWidth};
             }""")
-            assert metrics["offset"] < 1 and metrics["color"] == "rgba(0, 0, 0, 0)" and metrics["stroke"] == "2px", (width, metrics)
+            assert 8 <= metrics["gap"] <= 28 and metrics["iconWidth"] > 0 and metrics["color"] == "rgba(0, 0, 0, 0)" and metrics["stroke"] == "2px", (width, metrics)
             assert page.evaluate("document.documentElement.scrollWidth<=innerWidth+1"), ("home overflow", width)
         page.set_viewport_size({"width": 1440, "height": 1000})
         page.screenshot(path=str(OUTPUT / "home.png"))
         if save_doc_assets:
             page.screenshot(path=str(ROOT / "docs/assets/technical.home.jpg"), type="jpeg", quality=85)
-        results.append("centered outlined title, no pinyin, four viewport widths")
+        results.append("outlined title beside brand icon, no pinyin, four viewport widths")
         page.get_by_role("button", name="切换深色模式").click()
         assert page.locator("#homeTitle").evaluate("e=>getComputedStyle(e).color") == "rgba(0, 0, 0, 0)"
         page.screenshot(path=str(OUTPUT / "home-dark.png"))
