@@ -140,6 +140,44 @@ def audit(base: str, save_doc_assets: bool) -> None:
         results.append("all three cards, all three table rows, all dropdown methods, small approx prefix")
         results.append("small initial payloads, local charts, deferred comments and graph")
 
+        for theme in ("light", "dark"):
+            if theme == "dark":
+                page.get_by_role("button", name="切换深色模式").click()
+            for width in (1440, 1024, 768, 390, 320):
+                page.set_viewport_size({"width": width, "height": 1000})
+                page.wait_for_timeout(180)
+                assert page.evaluate("document.documentElement.scrollWidth<=innerWidth+1"), ("insight overflow", theme, width)
+                clipped = page.locator("#overview .stat-cell,#overview .n,.evaluation-card-head,.method-metrics dd,.research-export h3,.snapshot-metrics dt,.theme-toggle").evaluate_all("""els=>els.filter(e=>e.clientWidth && e.scrollWidth>e.clientWidth+1).map(e=>e.textContent)""")
+                assert not clipped, ("insight clipped text", theme, width, clipped)
+                assert page.locator(".research-export h3").evaluate("e=>e.clientWidth>=220"), ("squeezed export heading", theme, width)
+                atomic = page.locator(".finetune-scan tbody th,.finetune-scan tbody td:last-child,.finetune-anchor-list span,.snapshot-metrics dt").evaluate_all("""els=>els.filter(e=>{
+                  const range=document.createRange();range.selectNodeContents(e);
+                  const lines=[...range.getClientRects()];return lines.length && Math.max(...lines.map(r=>r.top))-Math.min(...lines.map(r=>r.top))>2;
+                }).map(e=>e.textContent)""")
+                assert not atomic, ("split labels or percentages", theme, width, atomic)
+                if width == 1440:
+                    bottoms = page.locator(".method-metrics").evaluate_all("els=>els.map(e=>e.getBoundingClientRect().top)")
+                    assert max(bottoms) - min(bottoms) <= 1, ("method metrics misaligned", theme, bottoms)
+                if width == 390:
+                    table = page.locator(".finetune-table-wrap")
+                    table.focus()
+                    page.keyboard.press("ArrowRight")
+                    page.wait_for_timeout(180)
+                    assert table.evaluate("e=>e.scrollLeft>0"), "Comparison table must scroll with keyboard"
+                page.locator('#videoTabs [data-b="__cmp__"]').click()
+                page.wait_for_selector("#cmpDiff canvas")
+                broken = page.locator(".cmp-head > span:not(.muted),.cmp-category,.cmp-value").evaluate_all("""els=>els.filter(e=>{
+                  const range=document.createRange();range.selectNodeContents(e);
+                  const lines=[...range.getClientRects()];return lines.length && Math.max(...lines.map(r=>r.top))-Math.min(...lines.map(r=>r.top))>2;
+                }).map(e=>e.textContent)""")
+                assert not broken, ("split community comparison labels", theme, width, broken)
+                assert page.evaluate("document.documentElement.scrollWidth<=innerWidth+1"), ("comparison overflow", theme, width)
+                page.locator("#videoTabs .tab").first.click()
+                page.wait_for_selector("#pie1 canvas")
+        page.set_viewport_size({"width": 1440, "height": 1000})
+        page.get_by_role("button", name="切换浅色模式").click()
+        results.append("insight alignment at five widths in both themes; intact labels and keyboard table scrolling")
+
         for extension in ("md", "json", "zip"):
             response = context.request.get(base + "downloads/research." + extension)
             assert response.ok, extension
